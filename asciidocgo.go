@@ -2,6 +2,6 @@ package asciidocgo
 
 import "io"
 
-func load(input io.Reader) string {
-	return ""
+func Load(input io.Reader) *Document {
+	return nil
 }
