@@ -1,4 +1,5 @@
-/* Asciidocgo implements an AsciiDoc renderer in Go.
+/*
+Asciidocgo implements an AsciiDoc renderer in Go.
 
 Methods for parsing Asciidoc input files and rendering documents using eRuby
 templates.
@@ -44,7 +45,17 @@ package asciidocgo
 
 import "io"
 
-// Accepts input as an IO (or StringIO), String or String Array object.
+// Accepts input as a string
+func LoadString(input string) *Document {
+	return nil
+}
+
+// Accepts input as an array of strings
+func LoadStrings(inputs ...string) *Document {
+	return nil
+}
+
+// Accepts input as an IO.
 // If the input is a File, information about the file is stored in attributes on
 // the Document object.
 func Load(input io.Reader) *Document {
