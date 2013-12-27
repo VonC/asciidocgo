@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed -n "\${p;q};N;/\n\t\t.\//{D};P;D" | sed -n "\${p;q};N;/${USERNAME}/{s/${USERNAME}/VonC/g};P;D"
