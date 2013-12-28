@@ -6,7 +6,8 @@ type Document struct {
 }
 
 type monitorData struct {
-	readTime int
+	readTime  int
+	parseTime int
 }
 
 // Error returned when accessing times on a Document not monitored
@@ -37,4 +38,11 @@ func (d *Document) ReadTime() (readTime int, err error) {
 		return 0, &NotMonitoredError{"No readTime: current document is not monitored"}
 	}
 	return d.monitorData.readTime, nil
+}
+
+func (d *Document) ParseTime() (readTime int, err error) {
+	if d.IsMonitored() == false {
+		return 0, &NotMonitoredError{"No parseTime: current document is not monitored"}
+	}
+	return d.monitorData.parseTime, nil
 }
