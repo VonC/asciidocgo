@@ -71,3 +71,7 @@ func TestDocumentMonitor(t *testing.T) {
 		So(totalTime, ShouldEqual, loadRenderTime+writeTime)
 	})
 }
+
+func TestDocumentInitialize(t *testing.T) {
+
+}
