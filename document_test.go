@@ -24,4 +24,9 @@ func TestDocumentMonitor(t *testing.T) {
 		So(err, ShouldHaveSameTypeAs, notMonitoredError)
 		So(err.Error(), ShouldContainSubstring, "not monitored")
 	})
+	Convey("A monitored empty Document should return 0 when accessing times", t, func() {
+		readTime, err := dm.ReadTime()
+		So(err, ShouldBeNil)
+		So(readTime, ShouldBeZeroValue)
+	})
 }
