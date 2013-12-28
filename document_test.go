@@ -9,7 +9,7 @@ import (
 var dm = new(Document).Monitor()
 var dnm = new(Document)
 var notMonitoredError = &NotMonitoredError{"test"}
-var monitorFNames = []string{"ReadTime", "ParseTime", "LoadTime"}
+var monitorFNames = []string{"ReadTime", "ParseTime", "LoadTime", "RenderTime"}
 
 func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
