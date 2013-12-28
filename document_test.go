@@ -1,7 +1,6 @@
 package asciidocgo
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
@@ -32,15 +31,10 @@ func TestDocumentMonitor(t *testing.T) {
 		for _, fname := range monitorFNames {
 			dfunc := dtype.MethodByName(fname)
 			ret := dfunc.Call([]reflect.Value{})
-			So(ret[1], shouldBeNilReflectValue)
-			So(ret[0].Int(), ShouldBeZeroValue)
+			time := ret[0].Int()
+			err := ret[1].Interface()
+			So(err, ShouldBeNil)
+			So(time, ShouldBeZeroValue)
 		}
 	})
-}
-
-func shouldBeNilReflectValue(actual interface{}, expected ...interface{}) string {
-	if actual.(reflect.Value).IsNil() {
-		return ""
-	}
-	return "Value " + fmt.Sprintf("%v", actual) + " should be nil"
 }
