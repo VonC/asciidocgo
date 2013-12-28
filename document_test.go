@@ -9,7 +9,7 @@ import (
 var dm = new(Document).Monitor()
 var dnm = new(Document)
 var notMonitoredError = &NotMonitoredError{"test"}
-var monitorFNames = [1]string{"ReadTime"}
+var monitorFNames = [2]string{"ReadTime", "ParseTime"}
 
 func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
@@ -21,6 +21,11 @@ func TestDocumentMonitor(t *testing.T) {
 		})
 	})
 	Convey("A non-monitored Document should return error when accessing times", t, func() {
+		defer func() {
+			if x := recover(); x != nil {
+				So(x, ShouldBeNil)
+			}
+		}()
 		dtype := reflect.ValueOf(dnm)
 		for _, fname := range monitorFNames {
 			dfunc := dtype.MethodByName(fname)
@@ -32,6 +37,11 @@ func TestDocumentMonitor(t *testing.T) {
 		}
 	})
 	Convey("A monitored empty Document should return 0 when accessing times", t, func() {
+		defer func() {
+			if x := recover(); x != nil {
+				So(x, ShouldBeNil)
+			}
+		}()
 		dtype := reflect.ValueOf(dm)
 		for _, fname := range monitorFNames {
 			dfunc := dtype.MethodByName(fname)
