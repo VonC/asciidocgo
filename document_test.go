@@ -1,6 +1,8 @@
 package asciidocgo
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -8,6 +10,7 @@ import (
 var dm = new(Document).Monitor()
 var dnm = new(Document)
 var notMonitoredError = &NotMonitoredError{"test"}
+var monitorFNames = [1]string{"ReadTime"}
 
 func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
@@ -25,8 +28,19 @@ func TestDocumentMonitor(t *testing.T) {
 		So(err.Error(), ShouldContainSubstring, "not monitored")
 	})
 	Convey("A monitored empty Document should return 0 when accessing times", t, func() {
-		readTime, err := dm.ReadTime()
-		So(err, ShouldBeNil)
-		So(readTime, ShouldBeZeroValue)
+		dtype := reflect.ValueOf(dm)
+		for _, fname := range monitorFNames {
+			dfunc := dtype.MethodByName(fname)
+			ret := dfunc.Call([]reflect.Value{})
+			So(ret[1], shouldBeNilReflectValue)
+			So(ret[0].Int(), ShouldBeZeroValue)
+		}
 	})
+}
+
+func shouldBeNilReflectValue(actual interface{}, expected ...interface{}) string {
+	if actual.(reflect.Value).IsNil() {
+		return ""
+	}
+	return "Value " + fmt.Sprintf("%v", actual) + " should be nil"
 }
