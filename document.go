@@ -40,7 +40,7 @@ func (d *Document) ReadTime() (readTime int, err error) {
 	return d.monitorData.readTime, nil
 }
 
-func (d *Document) ParseTime() (readTime int, err error) {
+func (d *Document) ParseTime() (parseTime int, err error) {
 	if d.IsMonitored() == false {
 		return 0, &NotMonitoredError{"No parseTime: current document is not monitored"}
 	}
