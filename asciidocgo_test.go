@@ -1,7 +1,9 @@
 package asciidocgo
 
-import "testing"
-import . "github.com/smartystreets/goconvey/convey"
+import (
+	"testing"
+	. "github.com/smartystreets/goconvey/convey"
+)
 
 func TestAsciidocgo(t *testing.T) {
 	Load(nil)
