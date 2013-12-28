@@ -33,6 +33,8 @@ func (d *Document) Monitor() *Document {
 	return d
 }
 
+// Time to read the document from IO source
+// Error if document didn't activated the monitoring
 func (d *Document) ReadTime() (readTime int, err error) {
 	if d.IsMonitored() == false {
 		return 0, &NotMonitoredError{"No readTime: current document is not monitored"}
@@ -40,6 +42,8 @@ func (d *Document) ReadTime() (readTime int, err error) {
 	return d.monitorData.readTime, nil
 }
 
+// Time to parse the document once read from IO source
+// Error if document didn't activated the monitoring
 func (d *Document) ParseTime() (parseTime int, err error) {
 	if d.IsMonitored() == false {
 		return 0, &NotMonitoredError{"No parseTime: current document is not monitored"}
@@ -47,6 +51,8 @@ func (d *Document) ParseTime() (parseTime int, err error) {
 	return d.monitorData.parseTime, nil
 }
 
+// Load means Read plus Parse times
+// Error if document didn't activated the monitoring
 func (d *Document) LoadTime() (loadTime int, err error) {
 	if d.IsMonitored() == false {
 		return 0, &NotMonitoredError{"No loadTime: current document is not monitored"}
