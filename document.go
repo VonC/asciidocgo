@@ -9,11 +9,14 @@ type monitorData struct{}
 
 // Check if a Document is supposed to be monitored
 func (d *Document) IsMonitored() bool {
-	return false
+	return (d.monitorData != nil)
 }
 
+// Setup a monitor for the document
+// (or does nothing if the monitor already exists).
+// Returns self, for easy composition
 func (d *Document) Monitor() *Document {
-	if d.monitorData != nil {
+	if d.monitorData == nil {
 		d.monitorData = new(monitorData)
 	}
 	return d
