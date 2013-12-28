@@ -52,4 +52,10 @@ func TestDocumentMonitor(t *testing.T) {
 			So(time, ShouldBeZeroValue)
 		}
 	})
+	Convey("Load tile equals read time + parse time", t, func() {
+		loadTime, _ := dm.LoadTime()
+		readTime, _ := dm.ReadTime()
+		parseTime, _ := dm.ParseTime()
+		So(loadTime, ShouldEqual, readTime+parseTime)
+	})
 }
