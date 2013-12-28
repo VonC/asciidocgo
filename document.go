@@ -71,3 +71,14 @@ func (d *Document) RenderTime() (renderTime int, err error) {
 	}
 	return d.monitorData.renderTime, nil
 }
+
+// LoadRender means Load plus Render times
+// Error if document didn't activated the monitoring
+func (d *Document) LoadRenderTime() (loadRenderTime int, err error) {
+	if d.IsMonitored() == false {
+		return 0, &NotMonitoredError{"No loadTime: current document is not monitored"}
+	}
+	loadTime, _ := d.LoadTime()
+	renderTime, _ := d.RenderTime()
+	return loadTime + renderTime, nil
+}

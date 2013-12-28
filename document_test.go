@@ -9,7 +9,7 @@ import (
 var dm = new(Document).Monitor()
 var dnm = new(Document)
 var notMonitoredError = &NotMonitoredError{"test"}
-var monitorFNames = []string{"ReadTime", "ParseTime", "LoadTime", "RenderTime"}
+var monitorFNames = []string{"ReadTime", "ParseTime", "LoadTime", "RenderTime", "LoadRenderTime"}
 
 func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
@@ -52,10 +52,16 @@ func TestDocumentMonitor(t *testing.T) {
 			So(time, ShouldBeZeroValue)
 		}
 	})
-	Convey("Load tile equals read time + parse time", t, func() {
+	Convey("Load time equals read time + parse time", t, func() {
 		loadTime, _ := dm.LoadTime()
 		readTime, _ := dm.ReadTime()
 		parseTime, _ := dm.ParseTime()
 		So(loadTime, ShouldEqual, readTime+parseTime)
+	})
+	Convey("LoadRender time equals load time + render time", t, func() {
+		loadRenderTime, _ := dm.LoadRenderTime()
+		loadTime, _ := dm.LoadTime()
+		renderTime, _ := dm.ReadTime()
+		So(loadRenderTime, ShouldEqual, loadTime+renderTime)
 	})
 }
