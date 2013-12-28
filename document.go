@@ -92,3 +92,14 @@ func (d *Document) WriteTime() (writeTime int, err error) {
 	}
 	return d.monitorData.writeTime, nil
 }
+
+// Total means LoadRender plus Write times
+// Error if document didn't activated the monitoring
+func (d *Document) TotalTime() (totalTime int, err error) {
+	if d.IsMonitored() == false {
+		return 0, &NotMonitoredError{"No loadTime: current document is not monitored"}
+	}
+	loadRenderTime, _ := d.LoadRenderTime()
+	writeTime, _ := d.WriteTime()
+	return loadRenderTime + writeTime, nil
+}
