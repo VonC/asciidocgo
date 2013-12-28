@@ -21,10 +21,15 @@ func TestDocumentMonitor(t *testing.T) {
 		})
 	})
 	Convey("A non-monitored Document should return error when accessing times", t, func() {
-		_, err := dnm.ReadTime()
-		So(err, ShouldNotBeNil)
-		So(err, ShouldHaveSameTypeAs, notMonitoredError)
-		So(err.Error(), ShouldContainSubstring, "not monitored")
+		dtype := reflect.ValueOf(dnm)
+		for _, fname := range monitorFNames {
+			dfunc := dtype.MethodByName(fname)
+			ret := dfunc.Call([]reflect.Value{})
+			err := ret[1].Interface().(error)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldHaveSameTypeAs, notMonitoredError)
+			So(err.Error(), ShouldContainSubstring, "not monitored")
+		}
 	})
 	Convey("A monitored empty Document should return 0 when accessing times", t, func() {
 		dtype := reflect.ValueOf(dm)
