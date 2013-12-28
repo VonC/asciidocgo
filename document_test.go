@@ -10,5 +10,8 @@ func TestDocument(t *testing.T) {
 		Convey("By default, a Document is not monitored", func() {
 			So(new(Document).IsMonitored(), ShouldBeFalse)
 		})
+		Convey("A monitored Document is monitored", func() {
+			So(new(Document).Monitor().IsMonitored(), ShouldBeTrue)
+		})
 	})
 }
