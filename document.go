@@ -1,11 +1,15 @@
 package asciidocgo
 
+import "errors"
+
 // Asciidoc Document, onced loaded from an IO, string or array
 type Document struct {
 	monitorData *monitorData
 }
 
-type monitorData struct{}
+type monitorData struct {
+	readTime int
+}
 
 // Check if a Document is supposed to be monitored
 func (d *Document) IsMonitored() bool {
@@ -20,4 +24,11 @@ func (d *Document) Monitor() *Document {
 		d.monitorData = new(monitorData)
 	}
 	return d
+}
+
+func (d *Document) ReadTime() (readTime int, err error) {
+	if d.IsMonitored() == false {
+		return 0, errors.New("z")
+	}
+	return d.monitorData.readTime, nil
 }
