@@ -9,6 +9,7 @@ type monitorData struct {
 	readTime   int
 	parseTime  int
 	renderTime int
+	writeTime  int
 }
 
 // Error returned when accessing times on a Document not monitored
@@ -81,4 +82,13 @@ func (d *Document) LoadRenderTime() (loadRenderTime int, err error) {
 	loadTime, _ := d.LoadTime()
 	renderTime, _ := d.RenderTime()
 	return loadTime + renderTime, nil
+}
+
+// Time to write the document once rendered
+// Error if document didn't activated the monitoring
+func (d *Document) WriteTime() (writeTime int, err error) {
+	if d.IsMonitored() == false {
+		return 0, &NotMonitoredError{"No ploadTime: current document is not monitored"}
+	}
+	return d.monitorData.writeTime, nil
 }
