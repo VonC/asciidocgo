@@ -1,7 +1,5 @@
 package asciidocgo
 
-import "errors"
-
 // Asciidoc Document, onced loaded from an IO, string or array
 type Document struct {
 	monitorData *monitorData
@@ -10,6 +8,14 @@ type Document struct {
 type monitorData struct {
 	readTime int
 }
+
+// Error returned when accessing times on a Document not monitored
+type NotMonitoredError struct {
+	msg string // description of error
+}
+
+// Print description of a non-monitored error
+func (e *NotMonitoredError) Error() string { return e.msg }
 
 // Check if a Document is supposed to be monitored
 func (d *Document) IsMonitored() bool {
@@ -28,7 +34,7 @@ func (d *Document) Monitor() *Document {
 
 func (d *Document) ReadTime() (readTime int, err error) {
 	if d.IsMonitored() == false {
-		return 0, errors.New("z")
+		return 0, &NotMonitoredError{"No readTime: current document is not monitored"}
 	}
 	return d.monitorData.readTime, nil
 }

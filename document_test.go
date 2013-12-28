@@ -7,6 +7,7 @@ import (
 
 var dm = new(Document).Monitor()
 var dnm = new(Document)
+var notMonitoredError = &NotMonitoredError{"test"}
 
 func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
@@ -20,5 +21,7 @@ func TestDocumentMonitor(t *testing.T) {
 	Convey("A non-monitored Document should return error when accessing times", t, func() {
 		_, err := dnm.ReadTime()
 		So(err, ShouldNotBeNil)
+		So(err, ShouldHaveSameTypeAs, notMonitoredError)
+		So(err.Error(), ShouldContainSubstring, "not monitored")
 	})
 }
