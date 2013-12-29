@@ -35,6 +35,22 @@ func (d *Document) Monitor() *Document {
 	return d
 }
 
+/*
+Initialize an Asciidoc object.
+- data: The Array of Strings holding the Asciidoc source document. (default: [])
+- options - A Hash of options to control processing, such as setting the safe mode (:safe), suppressing the header/footer (:header_footer) and attribute overrides (:attributes)
+(default: {})
+
+Examples
+
+    data = File.readlines(filename)
+    doc  = Asciidoctor::Document.new(data)
+    puts doc.render
+*/
+func NewDocument() *Document {
+
+}
+
 // Time to read the document from IO source
 // Error if document didn't activated the monitoring
 func (d *Document) ReadTime() (readTime int, err error) {
