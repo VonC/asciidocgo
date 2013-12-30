@@ -72,6 +72,15 @@ func TestDocumentMonitor(t *testing.T) {
 	})
 }
 
-func TestDocumentInitialize(t *testing.T) {
+func TestDocumentInitialization(t *testing.T) {
 
+	Convey("A Document can be initialized", t, func() {
+
+		Convey("By default, a Document has no data, no options", func() {
+			So(&Document{}, ShouldNotBeNil)
+		})
+		Convey("A Document take an array of strings as data, and a map as options", func() {
+			So(NewDocument([]string{}, map[string]string{}), ShouldNotBeNil)
+		})
+	})
 }

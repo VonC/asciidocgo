@@ -3,6 +3,8 @@ package asciidocgo
 // Asciidoc Document, onced loaded from an IO, string or array
 type Document struct {
 	monitorData *monitorData
+	data        []string
+	options     map[string]string
 }
 
 type monitorData struct {
@@ -47,8 +49,8 @@ Examples
     doc  = Asciidoctor::Document.new(data)
     puts doc.render
 */
-func NewDocument() *Document {
-
+func NewDocument(data []string, options map[string]string) *Document {
+	return nil
 }
 
 // Time to read the document from IO source
