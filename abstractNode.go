@@ -7,7 +7,7 @@ in an AsciiDoc document. */
 type abstractNode struct {
 }
 
-func newAbstractNode(data []string, options map[string]string) *abstractNode {
+func newAbstractNode(parent *abstractNode, context context) *abstractNode {
 	abstractNode := &abstractNode{}
 	return abstractNode
 }

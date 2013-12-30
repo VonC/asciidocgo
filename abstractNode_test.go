@@ -13,7 +13,7 @@ func TestAbstractNode(t *testing.T) {
 			So(&abstractNode{}, ShouldNotBeNil)
 		})
 		Convey("An AbstractNode takes a parent and a context", func() {
-			So(newAbstractNode(nil, nil), ShouldNotBeNil)
+			So(newAbstractNode(nil, document), ShouldNotBeNil)
 		})
 	})
 }
