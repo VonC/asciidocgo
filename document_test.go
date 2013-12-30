@@ -8,6 +8,7 @@ import (
 
 var dm = new(Document).Monitor()
 var dnm = new(Document)
+var dnmini = NewDocument([]string{}, map[string]string{})
 var notMonitoredError = &NotMonitoredError{"test"}
 var monitorFNames = []string{"ReadTime", "ParseTime", "LoadTime", "RenderTime", "LoadRenderTime", "WriteTime", "TotalTime"}
 
@@ -15,6 +16,7 @@ func TestDocumentMonitor(t *testing.T) {
 	Convey("A Document can be monitored", t, func() {
 		Convey("By default, a Document is not monitored", func() {
 			So(dnm.IsMonitored(), ShouldBeFalse)
+			So(dnmini.IsMonitored(), ShouldBeFalse)
 		})
 		Convey("A monitored Document is monitored", func() {
 			So(dm.IsMonitored(), ShouldBeTrue)

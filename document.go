@@ -50,7 +50,8 @@ Examples
     puts doc.render
 */
 func NewDocument(data []string, options map[string]string) *Document {
-	return nil
+	document := &Document{nil, data, options}
+	return document
 }
 
 // Time to read the document from IO source
