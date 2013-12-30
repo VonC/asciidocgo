@@ -15,6 +15,8 @@ func newAbstractNode(parent *abstractNode, context context) *abstractNode {
 	if context == document {
 		abstractNode.parent = nil
 		abstractNode.document = parent
+	} else if parent != nil {
+		abstractNode.document = parent.Document()
 	}
 	return abstractNode
 }
