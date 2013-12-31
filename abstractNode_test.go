@@ -50,4 +50,12 @@ func TestAbstractNode(t *testing.T) {
 		So(an.Parent(), ShouldEqual, parent)
 		So(an.Document(), ShouldEqual, parent.Document())
 	})
+
+	Convey("An abstractNode can retrieve an attribute", t, func() {
+
+		Convey("If inherited, it is the attribute if there, or the document attribute, or default value", func() {
+		})
+		Convey("If not inherited, it is the attribute if there, or default value", func() {
+		})
+	})
 }

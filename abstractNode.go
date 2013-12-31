@@ -48,3 +48,22 @@ func (an *abstractNode) SetParent(parent *abstractNode) {
 	an.parent = parent
 	an.document = parent.Document()
 }
+
+/* Get the value for the specified attribute.
+
+First look in the attributes on this node and return the value
+of the attribute if found.
+Otherwise, if this node is a child of the Document node, look in
+the attributes of the Document node and return the value of the attribute
+if found.
+Otherwise, return the default value, which defaults to nil.
+
+- name: the String or Symbol name of the attribute to lookup
+- default_value: the Object value to return if the attribute is not found
+(default: nil)
+- inherit: a Boolean indicating whether to check for the attribute on
+the AsciiDoctor::Document if not found on this node (default: false)
+
+Return the value of the attribute or the default value if the attribute is
+not found in the attributes of this node or the document node
+*/
