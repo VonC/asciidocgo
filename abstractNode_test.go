@@ -53,9 +53,41 @@ func TestAbstractNode(t *testing.T) {
 
 	Convey("An abstractNode can retrieve an attribute", t, func() {
 
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("key", "val1", true)
+		parent := newAbstractNode(parentDocument, document)
+		an := newAbstractNode(nil, document)
 		Convey("If inherited, it is the attribute if there, or the document attribute, or default value", func() {
+			So(an.Attr("key", nil, true), ShouldBeNil)
+			an.setAttr("key", "val", false)
+			So(an.Attr("key", nil, true), ShouldEqual, "val")
+			an.SetParent(parent)
+			So(an.Attr("key", nil, true), ShouldEqual, "val")
+			delete(an.attributes, "key")
+			So(an.Attr("key", nil, true), ShouldEqual, "val1")
+			// an should have for parent a child, which has an as a document
+			// then an.document would be "parent".document, meaning an, when
+			// setting an.setParent(child)
+			an.document = an
+			an.setAttr("key", "val", false)
+			So(an.Attr("key", nil, true), ShouldEqual, "val")
 		})
 		Convey("If not inherited, it is the attribute if there, or default value", func() {
+			an.SetParent(parent)
+			So(an.Document(), ShouldEqual, parentDocument)
+			So(an.Document(), ShouldEqual, parent.Document())
+			So(parentDocument.Attr("key", nil, false), ShouldEqual, "val1")
+			So(an.Attr("key", nil, false), ShouldEqual, "val")
+		})
+	})
+	Convey("An abstractNode can set an attribute", t, func() {
+		an := newAbstractNode(nil, document)
+		an.setAttr("key", "val", true)
+		So(an.Attr("key", nil, true), ShouldEqual, "val")
+		Convey("If not override and already present, the value should not change", func() {
+			res := an.setAttr("key", "val1", false)
+			So(an.Attr("key", nil, true), ShouldEqual, "val")
+			So(res, ShouldBeFalse)
 		})
 	})
 }

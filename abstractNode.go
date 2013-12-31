@@ -67,3 +67,36 @@ the AsciiDoctor::Document if not found on this node (default: false)
 Return the value of the attribute or the default value if the attribute is
 not found in the attributes of this node or the document node
 */
+func (an *abstractNode) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
+	if an == an.document {
+		inherit = false
+	}
+	if an.attributes[name] != nil {
+		return an.attributes[name]
+	}
+	if inherit {
+		if an.document != nil && an.document.attributes[name] != nil {
+			return an.document.attributes[name]
+		}
+	}
+	return defaultValue
+}
+
+/* Assign the value to the specified key in this block's attributes hash.
+
+- key: The attribute key (or name)
+- val: The value to assign to the key
+
+returns a flag indicating whether the assignment was performed
+*/
+func (an *abstractNode) setAttr(name string, val interface{}, override bool) bool {
+	if override {
+		an.attributes[name] = val
+		return true
+	}
+	if _, hasName := an.attributes[name]; !hasName {
+		an.attributes[name] = val
+		return true
+	}
+	return false
+}
