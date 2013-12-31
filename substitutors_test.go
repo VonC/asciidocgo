@@ -12,5 +12,10 @@ func TestSubstitutor(t *testing.T) {
 		Convey("By default, a substitutors can be created", func() {
 			So(&substitutors{}, ShouldNotBeNil)
 		})
+
+		Convey("A substitutors has an empty passthroughs array", func() {
+			s := substitutors{}
+			So(len(s.passthroughs), ShouldEqual, 0)
+		})
 	})
 }
