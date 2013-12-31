@@ -9,10 +9,11 @@ type abstractNode struct {
 	context    context
 	document   *abstractNode
 	attributes map[string]string
+	*substitutors
 }
 
 func newAbstractNode(parent *abstractNode, context context) *abstractNode {
-	abstractNode := &abstractNode{parent, context, nil, map[string]string{}}
+	abstractNode := &abstractNode{parent, context, nil, map[string]string{}, &substitutors{}}
 	if context == document {
 		abstractNode.parent = nil
 		abstractNode.document = parent

@@ -23,7 +23,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Document(), ShouldEqual, parent)
 		})
 		Convey("If context is not document, then parent is parent and document is parent document", func() {
-			parent := &abstractNode{nil, document, &abstractNode{}, nil}
+			parent := &abstractNode{nil, document, &abstractNode{}, nil, &substitutors{}}
 			an := newAbstractNode(parent, section)
 			So(an.Context(), ShouldEqual, section)
 			So(an.Parent(), ShouldEqual, parent)
