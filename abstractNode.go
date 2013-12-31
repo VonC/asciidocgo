@@ -8,12 +8,12 @@ type abstractNode struct {
 	parent     *abstractNode
 	context    context
 	document   *abstractNode
-	attributes map[string]string
+	attributes map[string]interface{}
 	*substitutors
 }
 
 func newAbstractNode(parent *abstractNode, context context) *abstractNode {
-	abstractNode := &abstractNode{parent, context, nil, map[string]string{}, &substitutors{}}
+	abstractNode := &abstractNode{parent, context, nil, make(map[string]interface{}), &substitutors{}}
 	if context == document {
 		abstractNode.parent = nil
 		abstractNode.document = parent
@@ -38,7 +38,7 @@ func (an *abstractNode) Context() context {
 	return an.context
 }
 
-func (an *abstractNode) Attributes() map[string]string {
+func (an *abstractNode) Attributes() map[string]interface{} {
 	return an.attributes
 }
 
