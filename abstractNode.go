@@ -5,13 +5,14 @@ a node of AsciiDoc content.
 The state and methods on this class are comment to all content segments
 in an AsciiDoc document. */
 type abstractNode struct {
-	parent   *abstractNode
-	context  context
-	document *abstractNode
+	parent     *abstractNode
+	context    context
+	document   *abstractNode
+	attributes map[string]string
 }
 
 func newAbstractNode(parent *abstractNode, context context) *abstractNode {
-	abstractNode := &abstractNode{parent, context, nil}
+	abstractNode := &abstractNode{parent, context, nil, map[string]string{}}
 	if context == document {
 		abstractNode.parent = nil
 		abstractNode.document = parent
@@ -34,4 +35,8 @@ func (an *abstractNode) Document() *abstractNode {
 // Get the Symbol context for this node
 func (an *abstractNode) Context() context {
 	return an.context
+}
+
+func (an *abstractNode) Attributes() map[string]string {
+	return an.attributes
 }

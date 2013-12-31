@@ -23,7 +23,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Document(), ShouldEqual, parent)
 		})
 		Convey("If context is not document, then parent is parent and document is parent document", func() {
-			parent := &abstractNode{nil, document, &abstractNode{}}
+			parent := &abstractNode{nil, document, &abstractNode{}, nil}
 			an := newAbstractNode(parent, section)
 			So(an.Context(), ShouldEqual, section)
 			So(an.Parent(), ShouldEqual, parent)
@@ -34,6 +34,11 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Context(), ShouldEqual, section)
 			So(an.Parent(), ShouldBeNil)
 			So(an.Document(), ShouldBeNil)
+		})
+
+		Convey("An abstractNode has an empty attributes map", func() {
+			an := newAbstractNode(nil, section)
+			So(len(an.Attributes()), ShouldEqual, 0)
 		})
 	})
 }
