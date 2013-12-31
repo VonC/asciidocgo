@@ -41,3 +41,10 @@ func (an *abstractNode) Context() context {
 func (an *abstractNode) Attributes() map[string]string {
 	return an.attributes
 }
+
+// Associate this Block with a new parent Block
+// parent: The Block to set as the parent of this Block
+func (an *abstractNode) SetParent(parent *abstractNode) {
+	an.parent = parent
+	an.document = parent.Document()
+}

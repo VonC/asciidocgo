@@ -41,4 +41,13 @@ func TestAbstractNode(t *testing.T) {
 			So(len(an.Attributes()), ShouldEqual, 0)
 		})
 	})
+
+	Convey("An abstractNode can be associated to a parent", t, func() {
+		an := newAbstractNode(nil, section)
+		documentParent := &abstractNode{}
+		parent := &abstractNode{nil, document, documentParent, nil, &substitutors{}}
+		an.SetParent(parent)
+		So(an.Parent(), ShouldEqual, parent)
+		So(an.Document(), ShouldEqual, parent.Document())
+	})
 }
