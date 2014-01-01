@@ -120,3 +120,19 @@ func (an *abstractNode) SetOption(option string) {
 	}
 	an.attributes[option+"-option"] = true
 }
+
+/*  A convenience method to check if the specified option attribute is enabled
+on the current node.
+
+Check if the option is enabled.
+This method simply checks to see if the `%name%-option` attribute is defined
+on the current node.
+
+- name: the String or Symbol name of the option
+
+return a Boolean indicating whether the option has been specified
+*/
+func (an *abstractNode) Option(option string) bool {
+	_, res := an.attributes[option+"-option"]
+	return res
+}

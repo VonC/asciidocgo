@@ -104,4 +104,15 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Attr("opt2-option", nil, false), ShouldEqual, true)
 		})
 	})
+
+	Convey("An abstractNode can get an option attribute", t, func() {
+		an := newAbstractNode(nil, document)
+		Convey("Zero option means Option returns false", func() {
+			So(an.Option("opt1"), ShouldBeFalse)
+			an.SetOption("opt1")
+		})
+		Convey("One option means Option returns true", func() {
+			So(an.Option("opt1"), ShouldBeTrue)
+		})
+	})
 }
