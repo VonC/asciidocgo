@@ -150,3 +150,23 @@ func (an *abstractNode) Update(attrs map[string]interface{}) {
 		an.attributes[key] = value
 	}
 }
+
+// A convenience method that checks if the specified role is present
+// in the list of roles on this node
+func (an *abstractNode) HasRole(role interface{}) bool {
+	if role == nil {
+		if _, hasRole := an.attributes["role"]; hasRole {
+			return true
+		}
+		if an.Document() != nil {
+			if _, hasRole := an.Document().attributes["role"]; hasRole {
+				return true
+			}
+		}
+		return false
+	}
+	if anAttr := an.Attr("role", nil, true); anAttr == role {
+		return true
+	}
+	return false
+}

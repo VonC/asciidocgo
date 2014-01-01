@@ -136,4 +136,25 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Attr("key3", nil, false), ShouldEqual, "val3")
 		})
 	})
+	Convey("An abstractNode attributes can check for a role", t, func() {
+		an := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("role", "roleFromParentDocument", true)
+		parent := newAbstractNode(parentDocument, document)
+		Convey("A role can be checked, whatever its value is", func() {
+			So(an.HasRole(nil), ShouldBeFalse)
+			So(parentDocument.HasRole(nil), ShouldBeTrue)
+			an.SetParent(parent)
+			So(an.HasRole(nil), ShouldBeTrue)
+		})
+		Convey("A role can be checked against an expected value", func() {
+			an := newAbstractNode(nil, document)
+			an.SetParent(parent)
+			So(an.HasRole("roleFromAN"), ShouldBeFalse)
+			So(an.HasRole("roleFromParentDocument"), ShouldBeTrue)
+			an.setAttr("role", "roleFromAN", true)
+			So(an.HasRole("roleFromAN"), ShouldBeTrue)
+			So(an.HasRole("roleFromParentDocument"), ShouldBeFalse)
+		})
+	})
 }
