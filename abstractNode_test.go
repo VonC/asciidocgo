@@ -213,4 +213,29 @@ func TestAbstractNode(t *testing.T) {
 			So(len(an.RoleNames()), ShouldEqual, 5)
 		})
 	})
+
+	Convey("An abstractNode attributes can check for a reftext", t, func() {
+		an := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
+		parent := newAbstractNode(parentDocument, document)
+		Convey("A reftext can be checked on the document", func() {
+			So(an.HasReftext(), ShouldBeFalse)
+			So(parentDocument.HasReftext(), ShouldBeTrue)
+			an.SetParent(parent)
+			So(an.HasReftext(), ShouldBeTrue)
+		})
+		Convey("A reftext can be checked directly on the abstractNode", func() {
+			an := newAbstractNode(nil, document)
+			parentDocument := newAbstractNode(nil, document)
+			parent := newAbstractNode(parentDocument, document)
+			So(an.HasReftext(), ShouldBeFalse)
+			an.SetParent(parent)
+			So(an.HasReftext(), ShouldBeFalse)
+			an.setAttr("reftext", "reftextFromAN", true)
+			So(an.HasReftext(), ShouldBeTrue)
+			So(an.Document().HasReftext(), ShouldBeFalse)
+		})
+	})
+
 }

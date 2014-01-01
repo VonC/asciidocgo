@@ -207,3 +207,9 @@ func (an *abstractNode) RoleNames() []string {
 	rolesString := roles.(string)
 	return strings.Split(rolesString, " ")
 }
+
+// A convenience method that checks if the reftext attribute is specified
+func (an *abstractNode) HasReftext() bool {
+	reftext := an.Attr("reftext", nil, true)
+	return (reftext != nil)
+}
