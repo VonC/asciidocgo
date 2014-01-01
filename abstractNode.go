@@ -1,5 +1,7 @@
 package asciidocgo
 
+import "strings"
+
 /* An abstract base class that provides state and methods for managing
 a node of AsciiDoc content.
 The state and methods on this class are comment to all content segments
@@ -167,6 +169,26 @@ func (an *abstractNode) HasRole(role interface{}) bool {
 	}
 	if anAttr := an.Attr("role", nil, true); anAttr == role {
 		return true
+	}
+	return false
+}
+
+// A convenience method that checks if the specified role is present
+// in the list of roles on this node
+func (an *abstractNode) HasARole(name string) bool {
+	if name == "" {
+		return false
+	}
+	roles := an.Attr("role", nil, true)
+	if roles == nil {
+		return false
+	}
+	rolesString := roles.(string)
+	rolesArray := strings.Split(rolesString, " ")
+	for _, role := range rolesArray {
+		if name == role {
+			return true
+		}
 	}
 	return false
 }

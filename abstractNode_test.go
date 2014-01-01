@@ -157,4 +157,27 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasRole("roleFromParentDocument"), ShouldBeFalse)
 		})
 	})
+	Convey("An abstractNode attributes can check for a role name", t, func() {
+		an := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("role", "role1FromParentDocument role2FromParentDocument role3FromParentDocument", true)
+		parent := newAbstractNode(parentDocument, document)
+
+		Convey("A role name can be checked on the document", func() {
+			So(an.HasARole("role3FromAN"), ShouldBeFalse)
+			So(an.HasARole("role2FromParentDocument"), ShouldBeFalse)
+			an.SetParent(parent)
+			So(an.Document(), ShouldEqual, parentDocument)
+			//So(an.Document().Attr("role", nil, true), ShouldEqual, "test")
+			So(an.HasARole("role2FromParentDocument"), ShouldBeTrue)
+			So(an.HasARole("role4FromParentDocument"), ShouldBeFalse)
+		})
+		Convey("A role name can be checked on the abstractNode itself", func() {
+			an.setAttr("role", "role1FromAN role2FromAN role3FromAN", true)
+			So(an.HasARole("role3FromAN"), ShouldBeTrue)
+		})
+		Convey("An empty role name is always false=", func() {
+			So(an.HasARole(""), ShouldBeFalse)
+		})
+	})
 }
