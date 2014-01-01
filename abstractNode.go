@@ -197,3 +197,13 @@ func (an *abstractNode) HasARole(name string) bool {
 func (an *abstractNode) Role() interface{} {
 	return an.Attr("role", nil, true)
 }
+
+// A convenience method that returns the role names as an Array
+func (an *abstractNode) RoleNames() []string {
+	roles := an.Attr("role", nil, true)
+	if roles == nil {
+		return []string{}
+	}
+	rolesString := roles.(string)
+	return strings.Split(rolesString, " ")
+}
