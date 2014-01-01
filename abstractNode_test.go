@@ -180,4 +180,20 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasARole(""), ShouldBeFalse)
 		})
 	})
+	Convey("An abstractNode attributes can access role", t, func() {
+		an := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("role", "roleFromParentDocument", true)
+		parent := newAbstractNode(parentDocument, document)
+		Convey("A role can be access from an document, when an has no role", func() {
+			So(an.Role(), ShouldBeNil)
+			So(parentDocument.Role(), ShouldEqual, "roleFromParentDocument")
+			an.SetParent(parent)
+			So(an.Role(), ShouldEqual, "roleFromParentDocument")
+		})
+		Convey("A role can be access from an itself", func() {
+			an.setAttr("role", "roleFromAN", true)
+			So(an.Role(), ShouldEqual, "roleFromAN")
+		})
+	})
 }

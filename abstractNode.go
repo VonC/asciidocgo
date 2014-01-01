@@ -192,3 +192,8 @@ func (an *abstractNode) HasARole(name string) bool {
 	}
 	return false
 }
+
+// A convenience method that returns the value of the role attribute
+func (an *abstractNode) Role() interface{} {
+	return an.Attr("role", nil, true)
+}
