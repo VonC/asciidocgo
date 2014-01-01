@@ -90,4 +90,18 @@ func TestAbstractNode(t *testing.T) {
 			So(res, ShouldBeFalse)
 		})
 	})
+
+	Convey("An abstractNode can set an option attribute", t, func() {
+		an := newAbstractNode(nil, document)
+		Convey("First option means options attributes has len 1", func() {
+			an.SetOption("opt1")
+			So(len(an.attributes["options"].(map[string]bool)), ShouldEqual, 1)
+			So(an.Attr("opt1-option", nil, false), ShouldEqual, true)
+		})
+		Convey("Second option means options attributes has len 2", func() {
+			an.SetOption("opt2")
+			So(len(an.attributes["options"].(map[string]bool)), ShouldEqual, 2)
+			So(an.Attr("opt2-option", nil, false), ShouldEqual, true)
+		})
+	})
 }

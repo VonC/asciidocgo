@@ -100,3 +100,23 @@ func (an *abstractNode) setAttr(name string, val interface{}, override bool) boo
 	}
 	return false
 }
+
+/* Enable a specified option attribute on the current node.
+
+This method defines the `%name%-option` attribute on the current node.
+
+- name: the String or Symbol name of the option
+*/
+func (an *abstractNode) SetOption(option string) {
+	val := an.attributes["options"]
+	if val == nil {
+		valmap := make(map[string]bool)
+		an.attributes["options"] = valmap
+		val = valmap
+	}
+	valmap := val.(map[string]bool)
+	if _, hasOption := valmap[option]; !hasOption {
+		valmap[option] = true
+	}
+	an.attributes[option+"-option"] = true
+}
