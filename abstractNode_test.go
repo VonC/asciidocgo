@@ -238,4 +238,20 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
+	Convey("An abstractNode attributes can access reftext", t, func() {
+		an := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
+		parent := newAbstractNode(parentDocument, document)
+		Convey("A reftext can be access from an document, when an has no reftext", func() {
+			So(an.Reftext(), ShouldBeNil)
+			So(parentDocument.Reftext(), ShouldEqual, "reftextFromParentDocument")
+			an.SetParent(parent)
+			So(an.Reftext(), ShouldEqual, "reftextFromParentDocument")
+		})
+		Convey("A reftext can be access from an itself", func() {
+			an.setAttr("reftext", "reftextFromAN", true)
+			So(an.Reftext(), ShouldEqual, "reftextFromAN")
+		})
+	})
 }

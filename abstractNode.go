@@ -213,3 +213,8 @@ func (an *abstractNode) HasReftext() bool {
 	reftext := an.Attr("reftext", nil, true)
 	return (reftext != nil)
 }
+
+// A convenience method that returns the value of the reftext attribute
+func (an *abstractNode) Reftext() interface{} {
+	return an.Attr("reftext", nil, true)
+}
