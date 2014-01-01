@@ -136,3 +136,17 @@ func (an *abstractNode) Option(option string) bool {
 	_, res := an.attributes[option+"-option"]
 	return res
 }
+
+/* Update the attributes of this node with the new values
+in the attributes argument.
+
+If an attribute already exists with the same key,
+it's value will be overridden.
+
+- attributes: A Hash of attributes to assign to this node.
+*/
+func (an *abstractNode) Update(attrs map[string]interface{}) {
+	for key, value := range attrs {
+		an.attributes[key] = value
+	}
+}
