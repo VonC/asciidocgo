@@ -1,6 +1,9 @@
 package asciidocgo
 
-import "strings"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 /* An abstract base class that provides state and methods for managing
 a node of AsciiDoc content.
@@ -217,4 +220,17 @@ func (an *abstractNode) HasReftext() bool {
 // A convenience method that returns the value of the reftext attribute
 func (an *abstractNode) Reftext() interface{} {
 	return an.Attr("reftext", nil, true)
+}
+
+// Returns a forward slash if the attribute htmlsyntax has the value "xml".
+func (an *abstractNode) ShortTagSlash() *rune {
+	if an.Document() == nil {
+		return nil
+	}
+	if an.Document().Attr("htmlsyntax", nil, false) == "xml" {
+		r, _ := utf8.DecodeLastRuneInString("/")
+		return &r
+	} else {
+		return nil
+	}
 }

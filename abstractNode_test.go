@@ -1,6 +1,8 @@
 package asciidocgo
 
 import (
+	"strconv"
+	"strings"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -252,6 +254,24 @@ func TestAbstractNode(t *testing.T) {
 		Convey("A reftext can be access from an itself", func() {
 			an.setAttr("reftext", "reftextFromAN", true)
 			So(an.Reftext(), ShouldEqual, "reftextFromAN")
+		})
+	})
+
+	Convey("An abstractNode attributes can check for Slash Usage", t, func() {
+		an := newAbstractNode(nil, section)
+		parentDocument := newAbstractNode(nil, document)
+		Convey("A abstractNode without document won't use slash", func() {
+			So(an.ShortTagSlash(), ShouldBeNil)
+		})
+		Convey("A abstractNode with document htmlsyntax set to not xml won't use slash", func() {
+			parentDocument.setAttr("htmlsyntax", "notxml", true)
+			parent := newAbstractNode(parentDocument, document)
+			an.SetParent(parent)
+			So(an.ShortTagSlash(), ShouldBeNil)
+		})
+		Convey("A abstractNode with document htmlsyntax set to not xml will use slash", func() {
+			parentDocument.setAttr("htmlsyntax", "xml", true)
+			So(strings.Trim(strconv.QuoteRune(*an.ShortTagSlash()), "'"), ShouldEqual, "/")
 		})
 	})
 }
