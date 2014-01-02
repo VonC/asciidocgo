@@ -234,3 +234,30 @@ func (an *abstractNode) ShortTagSlash() *rune {
 		return nil
 	}
 }
+
+/* Construct a URI reference to the target media.
+
+If the target media is a URI reference, then leave it untouched.
+
+The target media is resolved relative to the directory retrieved from
+the specified attribute key, if provided.
+
+The return value can be safely used in a media tag (img, audio, video).
+
+target        - A String reference to the target media
+asset_dir_key - The String attribute key used to lookup the directory where
+
+Returns A String reference for the target media
+*/
+func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
+	if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
+		return target
+	} else {
+		if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
+			// normalize_web_path(target, @document.attr(asset_dir_key))
+			return ""
+		}
+	}
+	// normalize_web_path(target)
+	return ""
+}

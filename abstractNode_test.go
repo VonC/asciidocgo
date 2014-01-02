@@ -274,4 +274,14 @@ func TestAbstractNode(t *testing.T) {
 			So(strings.Trim(strconv.QuoteRune(*an.ShortTagSlash()), "'"), ShouldEqual, "/")
 		})
 	})
+	Convey("An abstractNode attributes can build media uri", t, func() {
+		an := newAbstractNode(nil, section)
+		target := ""
+		Convey("If the target media is a URI reference, then leave it untouched.", func() {
+			target = "data:info"
+			// So(REGEXP[":uri_sniff"].String(), ShouldEqual, "^[a-zA-Z][a-zA-Z0-9.+-]*:/{0,2}.*")
+			// So(REGEXP[":uri_sniff"].MatchString(target), ShouldBeTrue)
+			So(an.MediaUri(target, "dummy"), ShouldEqual, target)
+		})
+	})
 }
