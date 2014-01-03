@@ -91,9 +91,53 @@ func (an *abstractNode) Attr(name string, defaultValue interface{}, inherit bool
 	return defaultValue
 }
 
-// A convenience method that checks if the specified role is present
-// in the list of roles on this node
-func (an *abstractNode) HasAttr(name string) bool {
+/*
+Check if the attribute is defined, optionally performing a comparison of
+its value if expected is not nil
+
+Check if the attribute is defined.
+First look in the attributes on this node.
+If not found, and this node is a child of the Document node,
+look in the attributes of the Document node.
+If the attribute is found and a comparison value is specified (not nil),
+return whether the two values match.
+Otherwise, return whether the attribute was found.
+
+name    - the String or Symbol name of the attribute to lookup
+expect  - the expected Object value of the attribute (default: nil)
+inherit - a Boolean indicating whether to check for the attribute on the
+          AsciiDoctor::Document if not found on this node (default: false)
+
+return a Boolean indicating whether the attribute exists and, if a
+comparison value is specified, whether the value of the attribute matches
+the comparison value
+*/
+func (an *abstractNode) HasAttr(name string, expect interface{}, inherit bool) bool {
+	if an == an.document {
+		inherit = false
+	}
+	if expect == nil {
+		if _, hasAttr := an.attributes[name]; hasAttr {
+			return true
+		}
+		if inherit {
+			if an.document != nil {
+				if _, hasAttr := an.document.attributes[name]; hasAttr {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	if an.attributes[name] != nil {
+		return (expect == an.attributes[name])
+	}
+	if inherit {
+		if an.document != nil && an.document.attributes[name] != nil {
+			return (expect == an.document.attributes[name])
+		}
+	}
+	return false
 }
 
 /* Assign the value to the specified key in this block's attributes hash.

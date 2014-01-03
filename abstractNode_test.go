@@ -82,6 +82,36 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Attr("key", nil, false), ShouldEqual, "val")
 		})
 	})
+
+	Convey("An abstractNode can check for an attribute", t, func() {
+		parentDocument := newAbstractNode(nil, document)
+		parentDocument.setAttr("key1", "val1", true)
+		parent := newAbstractNode(parentDocument, document)
+		an := newAbstractNode(nil, document)
+
+		Convey("If expect nil, check if key is there", func() {
+			So(an.HasAttr("key1", nil, false), ShouldBeFalse)
+			an.SetParent(parent)
+			So(an.Document(), ShouldEqual, parentDocument)
+			So(an.HasAttr("key1", nil, false), ShouldBeFalse)
+			So(an.HasAttr("key1", nil, true), ShouldBeTrue)
+			an.SetParent(nil)
+			So(an.HasAttr("key1", nil, false), ShouldBeFalse)
+			an.setAttr("key1", nil, true)
+			So(an.HasAttr("key1", nil, false), ShouldBeTrue)
+		})
+		Convey("If expect not nil, check if key is there and the value matches", func() {
+			an.SetParent(parent)
+			So(an.HasAttr("key1", "val1", false), ShouldBeFalse)
+			So(an.HasAttr("key1", "val1", true), ShouldBeTrue)
+			an.setAttr("key1", "val1", true)
+			an.SetParent(nil)
+			So(an.HasAttr("key1", "val1", false), ShouldBeTrue)
+			an.document = an
+			So(an.HasAttr("key1", "val1", true), ShouldBeTrue)
+		})
+	})
+
 	Convey("An abstractNode can set an attribute", t, func() {
 		an := newAbstractNode(nil, document)
 		an.setAttr("key", "val", true)
