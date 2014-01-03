@@ -102,9 +102,9 @@ var REGEXP_STRING = map[string]string{
 	":uri_sniff": fmt.Sprintf("^[%v][%v.+-]*:/{0,2}.*", CC_ALPHA, CC_ALNUM),
 }
 
-func iniREGEXP() map[string]*regexp.Regexp {
+func iniREGEXP(regexps map[string]string) map[string]*regexp.Regexp {
 	res := map[string]*regexp.Regexp{}
-	for key, regexpString := range REGEXP_STRING {
+	for key, regexpString := range regexps {
 		regexp, err := regexp.Compile(regexpString)
 		if err != nil {
 			panic(fmt.Sprintf("iniREGEXP should compile all REGEXP_STRING like %v: %v", regexpString, err))
@@ -123,4 +123,4 @@ between square brackets, ignoring escaped closing brackets
 	Matches:
 	[enclosed text here] or [enclosed [text\] here]
 */
-var REGEXP = iniREGEXP()
+var REGEXP = iniREGEXP(REGEXP_STRING)

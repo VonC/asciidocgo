@@ -1,8 +1,8 @@
 package asciidocgo
 
 import (
-	"testing"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func TestAsciidocgo(t *testing.T) {
@@ -21,5 +21,15 @@ func TestAsciidocgo(t *testing.T) {
 		Convey("A nil Reader must returns a nil Document", func() {
 			So(Load(nil), ShouldBeNil)
 		})
+	})
+	Convey("Asciidocgo should panic on bad regexpes", t, func() {
+		recovered := false
+		defer func() {
+			recover()
+			recovered = true
+		}()
+		regexps := map[string]string{"a": "a", "b": ")"}
+		iniREGEXP(regexps)
+		So(recovered, ShouldBeTrue)
 	})
 }
