@@ -299,10 +299,14 @@ The return value can be safely used in a media tag (img, audio, video).
 
 target        - A String reference to the target media
 asset_dir_key - The String attribute key used to lookup the directory where
+(default: 'imagesdir')
 
 Returns A String reference for the target media
 */
 func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
+	if assetDirKey == "" {
+		assetDirKey = "imagesdir"
+	}
 	if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
 		return target
 	} else {

@@ -311,7 +311,16 @@ func TestAbstractNode(t *testing.T) {
 			target = "data:info"
 			// So(REGEXP[":uri_sniff"].String(), ShouldEqual, "^[a-zA-Z][a-zA-Z0-9.+-]*:/{0,2}.*")
 			// So(REGEXP[":uri_sniff"].MatchString(target), ShouldBeTrue)
-			So(an.MediaUri(target, "dummy"), ShouldEqual, target)
+			So(an.MediaUri(target, ""), ShouldEqual, target)
 		})
+		Convey("If the assetDirKey attribute is not there, normalize the target.", func() {
+		})
+		Convey("If the assetDirKey attribute is there, normalize the target with it.", func() {
+			an.setAttr("imagesdir", nil, true)
+			target = "data"
+			So(an.MediaUri(target, ""), ShouldEqual, "")
+			So(an.MediaUri(target, "dummy"), ShouldEqual, "")
+		})
+
 	})
 }
