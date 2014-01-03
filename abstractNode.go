@@ -87,6 +87,11 @@ func (an *abstractNode) Attr(name string, defaultValue interface{}, inherit bool
 	return defaultValue
 }
 
+// A convenience method that checks if the specified role is present
+// in the list of roles on this node
+func (an *abstractNode) HasAttr(name string) bool {
+}
+
 /* Assign the value to the specified key in this block's attributes hash.
 
 - key: The attribute key (or name)
@@ -137,7 +142,7 @@ on the current node.
 
 return a Boolean indicating whether the option has been specified
 */
-func (an *abstractNode) Option(option string) bool {
+func (an *abstractNode) HasOption(option string) bool {
 	_, res := an.attributes[option+"-option"]
 	return res
 }
