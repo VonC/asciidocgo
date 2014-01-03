@@ -51,7 +51,11 @@ func (an *abstractNode) Attributes() map[string]interface{} {
 // parent: The Block to set as the parent of this Block
 func (an *abstractNode) SetParent(parent *abstractNode) {
 	an.parent = parent
-	an.document = parent.Document()
+	if parent != nil {
+		an.document = parent.Document()
+	} else {
+		an.document = nil
+	}
 }
 
 /* Get the value for the specified attribute.
