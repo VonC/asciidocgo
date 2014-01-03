@@ -1,10 +1,10 @@
 package asciidocgo
 
 import (
+	. "github.com/smartystreets/goconvey/convey"
 	"strconv"
 	"strings"
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestAbstractNode(t *testing.T) {
@@ -110,11 +110,11 @@ func TestAbstractNode(t *testing.T) {
 	Convey("An abstractNode can get an option attribute", t, func() {
 		an := newAbstractNode(nil, document)
 		Convey("Zero option means Option returns false", func() {
-			So(an.Option("opt1"), ShouldBeFalse)
+			So(an.HasOption("opt1"), ShouldBeFalse)
 			an.SetOption("opt1")
 		})
 		Convey("One option means Option returns true", func() {
-			So(an.Option("opt1"), ShouldBeTrue)
+			So(an.HasOption("opt1"), ShouldBeTrue)
 		})
 	})
 
