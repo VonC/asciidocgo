@@ -1,5 +1,11 @@
 package asciidocgo
 
+import (
+	"errors"
+	"os"
+	"path/filepath"
+)
+
 /*
 Handles all operations for resolving, cleaning and joining paths.
 This class includes operations for handling both web paths (request URIs) and
@@ -101,3 +107,58 @@ Examples:
     end
     => Start path /etc is outside of jail: /path/to/docs'
 */
+type PathResolver struct {
+	fileSeparator byte
+	workingDir    string
+}
+
+func (pr *PathResolver) FileSeparator() byte {
+	return pr.fileSeparator
+}
+func (pr *PathResolver) WorkingDir() string {
+	return pr.workingDir
+}
+
+/* Construct a new instance of PathResolver, optionally specifying
+the file separator (to override the system default) and
+the working directory (to override the present working directory).
+The working directory will be expanded to an absolute path inside the constructor.
+file_separator - the String file separator to use for path operations
+(optional, default: File::FILE_SEPARATOR)
+working_dir    - the String working directory (optional, default: Dir.pwd)
+*/
+func newPathResolver(fileSeparator byte, workingDir string) *PathResolver {
+	if fileSeparator == 0 {
+		fileSeparator = os.PathSeparator
+	}
+	if workingDir == "" || workingDir == "panic on os.Getwd" {
+		pwd, err := os.Getwd()
+		if err != nil || workingDir == "panic on os.Getwd" {
+			if workingDir == "panic on os.Getwd" {
+				err = errors.New("test on bad os.Getwd")
+			}
+			panic(err)
+		}
+		workingDir = pwd
+	} else {
+		if isRoot(workingDir) == false {
+			wd, err := filepath.Abs(workingDir)
+			if err != nil || workingDir == "panic on filepath.Abs" {
+				if workingDir == "panic on filepath.Abs" {
+					err = errors.New("test on bad filepath.Abs")
+				}
+				panic(err)
+			}
+			workingDir = wd
+		}
+	}
+	return &PathResolver{fileSeparator, workingDir}
+}
+
+/*Check if the specified path is an absolute root path
+his operation correctly handles both posix and windows paths.
+returns a Boolean indicating whether the path is an absolute root path
+*/
+func isRoot(path string) bool {
+	return filepath.IsAbs(path)
+}
