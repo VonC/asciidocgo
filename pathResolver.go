@@ -141,7 +141,7 @@ func newPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 		}
 		workingDir = pwd
 	} else {
-		if isRoot(workingDir) == false {
+		if IsRoot(workingDir) == false {
 			wd, err := filepath.Abs(workingDir)
 			if err != nil || workingDir == "panic on filepath.Abs" {
 				if workingDir == "panic on filepath.Abs" {
@@ -159,6 +159,6 @@ func newPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 his operation correctly handles both posix and windows paths.
 returns a Boolean indicating whether the path is an absolute root path
 */
-func isRoot(path string) bool {
+func IsRoot(path string) bool {
 	return filepath.IsAbs(path)
 }
