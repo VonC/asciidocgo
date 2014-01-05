@@ -56,4 +56,10 @@ func TestPathResolver(t *testing.T) {
 		So(IsWebRoot("\\a\\b/c"), ShouldBeFalse)
 		So(IsWebRoot("/a/b/c"), ShouldBeTrue)
 	})
+
+	Convey("A pathResolver can replace backslash by slash", t, func() {
+		So(Posixfy(""), ShouldEqual, "")
+		So(Posixfy("a/b/c"), ShouldEqual, "a/b/c")
+		So(Posixfy("a\\b\\c"), ShouldEqual, "a/b/c")
+	})
 }

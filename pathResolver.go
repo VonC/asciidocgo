@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 /*
@@ -168,4 +169,11 @@ func IsRoot(path string) bool {
 Returns a Boolean indicating whether the path is an absolute (root) web path*/
 func IsWebRoot(apath string) bool {
 	return path.IsAbs(apath)
+}
+
+/*Normalize path by converting any backslashes to forward slashes
+Returns a String path with any backslashes replaced with
+forward slashes*/
+func Posixfy(path string) string {
+	return strings.Replace(path, "\\", "/", -1)
 }
