@@ -3,6 +3,7 @@ package asciidocgo
 import (
 	"errors"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -161,4 +162,10 @@ returns a Boolean indicating whether the path is an absolute root path
 */
 func IsRoot(path string) bool {
 	return filepath.IsAbs(path)
+}
+
+/*Determine if the path is an absolute (root) web path.
+Returns a Boolean indicating whether the path is an absolute (root) web path*/
+func IsWebRoot(apath string) bool {
+	return path.IsAbs(apath)
 }

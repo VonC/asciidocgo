@@ -49,4 +49,11 @@ func TestPathResolver(t *testing.T) {
 			_ = newPathResolver(0, "panic on filepath.Abs")
 		})
 	})
+
+	Convey("A pathResolver can test for a web path", t, func() {
+		So(IsWebRoot(""), ShouldBeFalse)
+		So(IsWebRoot("a"), ShouldBeFalse)
+		So(IsWebRoot("\\a\\b/c"), ShouldBeFalse)
+		So(IsWebRoot("/a/b/c"), ShouldBeTrue)
+	})
 }
