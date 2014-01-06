@@ -62,4 +62,11 @@ func TestPathResolver(t *testing.T) {
 		So(Posixfy("a/b/c"), ShouldEqual, "a/b/c")
 		So(Posixfy("a\\b\\c"), ShouldEqual, "a/b/c")
 	})
+
+	Convey("A pathResolver can partition a path", t, func() {
+		pathSegments, root, posixPath := PartitionPath("", false)
+		So(len(pathSegments), ShouldEqual, 0)
+		So(root, ShouldEqual, "")
+		So(posixPath, ShouldEqual, "")
+	})
 }

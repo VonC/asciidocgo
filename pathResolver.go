@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -176,4 +177,38 @@ Returns a String path with any backslashes replaced with
 forward slashes*/
 func Posixfy(path string) string {
 	return strings.Replace(path, "\\", "/", -1)
+}
+
+/*Partition the path into path segments and remove any empty segments
+or segments that are self references (.).
+The path is split on either posix or windows file separators.
+returns a 3-item Array containing the Array of String path segments,
+the path root, if the path is absolute, and the posix version of the path.
+*/
+func PartitionPath(path string, webPath bool) (pathSegments []string, root string, posixPath string) {
+	posixPath = Posixfy(path)
+	isRoot := false
+	if webPath {
+		isRoot = IsWebRoot(posixPath)
+	} else {
+		isRoot = IsRoot(posixPath)
+	}
+	reg, _ := regexp.Compile("/+")
+	posixPathCleaned := reg.ReplaceAllString(posixPath, "/")
+	pathSegmentsWithDots := strings.Split(posixPathCleaned, "/")
+	if pathSegmentsWithDots[0] == "." {
+		root = "."
+	} else {
+		root = ""
+	}
+	pathSegments = []string{}
+	for k := 0; k < len(pathSegmentsWithDots); k++ {
+		if pathSegmentsWithDots[k] != "." {
+			pathSegments = append(pathSegments, pathSegmentsWithDots[k])
+		}
+	}
+	if isRoot {
+		root, pathSegments = pathSegments[0], pathSegments[1:len(pathSegments)-1]
+	}
+	return pathSegments, root, posixPath
 }
