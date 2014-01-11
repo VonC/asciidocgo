@@ -202,9 +202,11 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 		root = ""
 	}
 	pathSegments = []string{}
-	for k := 0; k < len(pathSegmentsWithDots); k++ {
-		if pathSegmentsWithDots[k] != "." {
-			pathSegments = append(pathSegments, pathSegmentsWithDots[k])
+	if len(pathSegmentsWithDots) > 1 || pathSegmentsWithDots[0] != "" {
+		for k := 0; k < len(pathSegmentsWithDots); k++ {
+			if pathSegmentsWithDots[k] != "." {
+				pathSegments = append(pathSegments, pathSegmentsWithDots[k])
+			}
 		}
 	}
 	if isRoot {

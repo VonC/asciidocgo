@@ -87,5 +87,32 @@ func TestPathResolver(t *testing.T) {
 		So(len(pathSegments), ShouldEqual, 0)
 		So(root, ShouldEqual, "")
 		So(posixPath, ShouldEqual, "")
+
+		Convey("A Path starting with dot has a dot root", func() {
+			pathSegments, root, posixPath := PartitionPath(".", false)
+			So(len(pathSegments), ShouldEqual, 0)
+			So(root, ShouldEqual, ".")
+			So(posixPath, ShouldEqual, ".")
+
+			pathSegments, root, posixPath = PartitionPath(".\\a/b", false)
+			So(len(pathSegments), ShouldEqual, 2)
+			So(root, ShouldEqual, ".")
+			So(posixPath, ShouldEqual, "./a/b")
+
+		})
+		Convey("A Partition removes self-reference path", func() {
+			pathSegments, root, posixPath := PartitionPath("a\\b/./c", false)
+			So(len(pathSegments), ShouldEqual, 3)
+			So(root, ShouldEqual, "")
+			So(posixPath, ShouldEqual, "a/b/./c")
+			pathSegments, root, posixPath = PartitionPath("C:/a\\b/./c", false)
+			So(len(pathSegments), ShouldEqual, 2)
+			So(root, ShouldEqual, "C:")
+			So(posixPath, ShouldEqual, "C:/a/b/./c")
+			pathSegments, root, posixPath = PartitionPath("/a\\b/./c", true)
+			So(len(pathSegments), ShouldEqual, 2)
+			So(root, ShouldEqual, "")
+			So(posixPath, ShouldEqual, "/a/b/./c")
+		})
 	})
 }
