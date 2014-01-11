@@ -72,6 +72,16 @@ func TestPathResolver(t *testing.T) {
 		})
 	})
 
+	Convey("A pathResolver can test for web root", t, func() {
+		Convey("A Path starting with / is web root", func() {
+			So(IsWebRoot(""), ShouldBeFalse)
+			So(IsWebRoot("C:\\"), ShouldBeFalse)
+			So(IsWebRoot("\\"), ShouldBeFalse)
+			So(IsWebRoot("/"), ShouldBeTrue)
+			So(IsWebRoot("/a/b/"), ShouldBeTrue)
+		})
+	})
+
 	Convey("A pathResolver can partition a path", t, func() {
 		pathSegments, root, posixPath := PartitionPath("", false)
 		So(len(pathSegments), ShouldEqual, 0)
