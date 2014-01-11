@@ -63,6 +63,15 @@ func TestPathResolver(t *testing.T) {
 		So(Posixfy("a\\b\\c"), ShouldEqual, "a/b/c")
 	})
 
+	Convey("A pathResolver can test for root", t, func() {
+		Convey("A Path starting with C:/ is root", func() {
+			So(IsRoot(""), ShouldBeFalse)
+			So(IsRoot("C:\\"), ShouldBeTrue)
+			So(IsRoot("C:/"), ShouldBeTrue)
+			So(IsRoot("C:\\a/b/"), ShouldBeTrue)
+		})
+	})
+
 	Convey("A pathResolver can partition a path", t, func() {
 		pathSegments, root, posixPath := PartitionPath("", false)
 		So(len(pathSegments), ShouldEqual, 0)

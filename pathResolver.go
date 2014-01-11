@@ -162,8 +162,8 @@ func newPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 his operation correctly handles both posix and windows paths.
 returns a Boolean indicating whether the path is an absolute root path
 */
-func IsRoot(path string) bool {
-	return filepath.IsAbs(path)
+func IsRoot(apath string) bool {
+	return filepath.IsAbs(apath)
 }
 
 /*Determine if the path is an absolute (root) web path.
