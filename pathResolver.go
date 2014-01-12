@@ -214,3 +214,27 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 	}
 	return pathSegments, root, posixPath
 }
+
+/*
+Resolve a system path from the target and start paths.
+If a jail path is specified, enforce that the resolved directory
+is contained within the jail path.
+If a jail path is not provided, the resolved path may be any location
+on the system.
+If the resolved path is absolute, use it as is.
+If the resolved path is relative, resolve it relative to the working_dir
+specified in the constructor.
+target - the String target path
+start  - the String start (i.e., parent) path
+jail   - the String jail path to confine the resolved path
+opts   - an optional Hash of options to control processing (default: {}):
+  * :recover is used to control whether the processor should auto-recover
+    when an illegal path is encountered
+  * :target_name is used in messages to refer to the path being resolved
+returns a String path that joins the target path with the start path with
+any parent references resolved and self references removed and enforces
+that the resolved path be contained within the jail, if provided
+*/
+func SystemPath(target, start, jail string, recover bool, targetName string) string {
+	return ""
+}

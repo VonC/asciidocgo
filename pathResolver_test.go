@@ -114,5 +114,64 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
+
+		Convey("A Partition can resolve a system path from the target and start paths", func() {
+			Convey("A system path with no start resolves from the root", func() {
+				So(SystemPath("images", "", "", false, ""), ShouldEqual, "")
+				So(SystemPath("../images", "", "", false, ""), ShouldEqual, "")
+				So(SystemPath("/etc/images", "", "", false, ""), ShouldEqual, "")
+			})
+			/*
+				resolver.system_path('images')
+				    => '/path/to/docs/images'
+
+				    resolver.system_path('../images')
+				    => '/path/to/images'
+
+				    resolver.system_path('/etc/images')
+				    => '/etc/images'
+
+				    resolver.system_path('images', '/etc')
+				    => '/etc/images'
+
+				    resolver.system_path('', '/etc/images')
+				    => '/etc/images'
+
+				    resolver.system_path(nil, nil, '/path/to/docs')
+				    => '/path/to/docs'
+
+				    resolver.system_path('..', nil, '/path/to/docs')
+				    => '/path/to/docs'
+
+				    resolver.system_path('../../../css', nil, '/path/to/docs')
+				    => '/path/to/docs/css'
+
+				    resolver.system_path('../../../css', '../../..', '/path/to/docs')
+				    => '/path/to/docs/css'
+
+				    resolver.system_path('..', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+				    => 'C:/data/docs'
+
+				    resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+				    => 'C:/data/docs/css'
+
+				    begin
+				      resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
+				    rescue SecurityError => e
+				      puts e.message
+				    end
+				    => 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
+
+				    resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
+				    => '/path/to/docs/images'
+
+				    begin
+				      resolver.system_path('images', '/etc', '/path/to/docs')
+				    rescue SecurityError => e
+				      puts e.message
+				    end
+				    => Start path /etc is outside of jail: /path/to/docs'
+			*/
+		})
 	})
 }
