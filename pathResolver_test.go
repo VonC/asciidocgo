@@ -116,6 +116,15 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("A Partition can resolve a system path from the target and start paths", func() {
+			Convey("A Non-absolute jail path should panic", func() {
+				recovered := false
+				defer func() {
+					recover()
+					recovered = true
+					So(recovered, ShouldBeTrue)
+				}()
+				_ = SystemPath("a", "b", "c", false, "")
+			})
 			Convey("A system path with no start resolves from the root", func() {
 				So(SystemPath("images", "", "", false, ""), ShouldEqual, "")
 				So(SystemPath("../images", "", "", false, ""), ShouldEqual, "")
