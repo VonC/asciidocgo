@@ -91,7 +91,7 @@ func TestPathResolver(t *testing.T) {
 			So(ExpandPath(""), ShouldEqual, "")
 		})
 		Convey("non-empty path returns an posix path", func() {
-			SkipSo(ExpandPath("c:\\a/.\\b/../c"), ShouldEqual, "c:/a/b/../c")
+			So(ExpandPath("c:\\a/.\\b/../c"), ShouldEqual, "c:/a/b/../c")
 		})
 	})
 
