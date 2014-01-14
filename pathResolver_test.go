@@ -119,9 +119,10 @@ func TestPathResolver(t *testing.T) {
 			Convey("A Non-absolute jail path should panic", func() {
 				recovered := false
 				defer func() {
-					recover()
+					r := recover()
 					recovered = true
 					So(recovered, ShouldBeTrue)
+					So(r, ShouldEqual, "Jail is not an absolute path: c")
 				}()
 				_ = SystemPath("a", "b", "c", false, "")
 			})

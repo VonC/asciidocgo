@@ -2,6 +2,7 @@ package asciidocgo
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -237,7 +238,7 @@ that the resolved path be contained within the jail, if provided
 */
 func SystemPath(target, start, jail string, recover bool, targetName string) string {
 	if jail != "" && !IsRoot(jail) {
-		panic(fmt.SPrintf("Jail is not an absolute path: %v", jail))
+		panic(fmt.Sprintf("Jail is not an absolute path: %v", jail))
 	}
 	return ""
 }
