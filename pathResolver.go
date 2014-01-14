@@ -131,7 +131,7 @@ file_separator - the String file separator to use for path operations
 (optional, default: File::FILE_SEPARATOR)
 working_dir    - the String working directory (optional, default: Dir.pwd)
 */
-func newPathResolver(fileSeparator byte, workingDir string) *PathResolver {
+func NewPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 	if fileSeparator == 0 {
 		fileSeparator = os.PathSeparator
 	}

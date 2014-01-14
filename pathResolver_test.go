@@ -11,12 +11,12 @@ func TestPathResolver(t *testing.T) {
 	Convey("A pathResolver can be initialized", t, func() {
 
 		Convey("By default, a pathResolver can be created", func() {
-			So(newPathResolver(0, ""), ShouldNotBeNil)
+			So(NewPathResolver(0, ""), ShouldNotBeNil)
 		})
 		Convey("By default, a pathResolver has a system path separator", func() {
-			So(newPathResolver(0, "").FileSeparator(), ShouldEqual, os.PathSeparator)
-			So(newPathResolver('/', "").FileSeparator(), ShouldNotEqual, os.PathSeparator)
-			So(newPathResolver('/', "").FileSeparator(), ShouldEqual, '/')
+			So(NewPathResolver(0, "").FileSeparator(), ShouldEqual, os.PathSeparator)
+			So(NewPathResolver('/', "").FileSeparator(), ShouldNotEqual, os.PathSeparator)
+			So(NewPathResolver('/', "").FileSeparator(), ShouldEqual, '/')
 		})
 
 		Convey("By default, a pathResolver has a current working path", func() {
@@ -24,10 +24,10 @@ func TestPathResolver(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			So(newPathResolver(0, "").WorkingDir(), ShouldEqual, pwd)
-			So(newPathResolver(0, "C:\\").WorkingDir(), ShouldEqual, "C:\\")
-			So(newPathResolver(0, "test").WorkingDir(), ShouldEqual, pwd+string(os.PathSeparator)+"test")
-			//So(newPathResolver(0, "panicnoroot").WorkingDir(), ShouldEqual, pwd)
+			So(NewPathResolver(0, "").WorkingDir(), ShouldEqual, pwd)
+			So(NewPathResolver(0, "C:\\").WorkingDir(), ShouldEqual, "C:\\")
+			So(NewPathResolver(0, "test").WorkingDir(), ShouldEqual, pwd+string(os.PathSeparator)+"test")
+			//So(NewPathResolver(0, "panicnoroot").WorkingDir(), ShouldEqual, pwd)
 
 		})
 		Convey("A pathResolver should not panic on getting pwd", func() {
@@ -37,7 +37,7 @@ func TestPathResolver(t *testing.T) {
 				recovered = true
 				So(recovered, ShouldBeTrue)
 			}()
-			_ = newPathResolver(0, "panic on os.Getwd")
+			_ = NewPathResolver(0, "panic on os.Getwd")
 		})
 		Convey("A pathResolver should not panic on filepath.Abs", func() {
 			recovered := false
@@ -46,7 +46,7 @@ func TestPathResolver(t *testing.T) {
 				recovered = true
 				So(recovered, ShouldBeTrue)
 			}()
-			_ = newPathResolver(0, "panic on filepath.Abs")
+			_ = NewPathResolver(0, "panic on filepath.Abs")
 		})
 	})
 
