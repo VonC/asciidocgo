@@ -116,6 +116,7 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("A Partition can resolve a system path from the target and start paths", func() {
+			pr := NewPathResolver(0, "C:/a/working/dir")
 			Convey("A Non-absolute jail path should panic", func() {
 				recovered := false
 				defer func() {
@@ -124,12 +125,13 @@ func TestPathResolver(t *testing.T) {
 					So(recovered, ShouldBeTrue)
 					So(r, ShouldEqual, "Jail is not an absolute path: c")
 				}()
-				_ = SystemPath("a", "b", "c", false, "")
+				_ = pr.SystemPath("a", "b", "c", false, "")
 			})
 			Convey("A system path with no start resolves from the root", func() {
-				So(SystemPath("images", "", "", false, ""), ShouldEqual, "")
-				So(SystemPath("../images", "", "", false, ""), ShouldEqual, "")
-				So(SystemPath("/etc/images", "", "", false, ""), ShouldEqual, "")
+				So(pr.SystemPath("images", "", "", false, ""), ShouldEqual, "")
+				So(pr.SystemPath("../images", "", "", false, ""), ShouldEqual, "")
+				So(pr.SystemPath("/etc/images", "", "", false, ""), ShouldEqual, "")
+
 			})
 			/*
 				resolver.system_path('images')

@@ -236,7 +236,7 @@ returns a String path that joins the target path with the start path with
 any parent references resolved and self references removed and enforces
 that the resolved path be contained within the jail, if provided
 */
-func SystemPath(target, start, jail string, recover bool, targetName string) string {
+func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, targetName string) string {
 	if jail != "" && !IsRoot(jail) {
 		panic(fmt.Sprintf("Jail is not an absolute path: %v", jail))
 	}
