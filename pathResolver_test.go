@@ -82,6 +82,22 @@ func TestPathResolver(t *testing.T) {
 		})
 	})
 
+	Convey("A pathResolver can join a path", t, func() {
+		Convey("No segment and empty root returns an empty string", func() {
+			So(JoinPath(nil, ""), ShouldEqual, "")
+		})
+		Convey("Segments with no root returns an slash-separated segments", func() {
+			So(JoinPath([]string{"a"}, ""), ShouldEqual, "a")
+			So(JoinPath([]string{"a", "b"}, ""), ShouldEqual, "a/b")
+			So(JoinPath([]string{"a", "b", "c"}, ""), ShouldEqual, "a/b/c")
+		})
+		Convey("Segments with root returns an root plus slash-separated segments", func() {
+			So(JoinPath([]string{"a"}, "c:"), ShouldEqual, "c:/a")
+			So(JoinPath([]string{"a", "b"}, "d:"), ShouldEqual, "d:/a/b")
+			So(JoinPath([]string{"a", "b", "c"}, "e:"), ShouldEqual, "e:/a/b/c")
+		})
+	})
+
 	Convey("A pathResolver can partition a path", t, func() {
 		pathSegments, root, posixPath := PartitionPath("", false)
 		So(len(pathSegments), ShouldEqual, 0)

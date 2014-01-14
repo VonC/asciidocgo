@@ -216,6 +216,30 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 	return pathSegments, root, posixPath
 }
 
+/* Join the segments using the posix file separator.
+Use the root, if specified, to construct an absolute path.
+Otherwise join the segments as a relative path.
+segments - a String Array of path segments
+root     - a String path root (optional, default: nil)
+returns a String path formed by joining the segments
+using the posix file separator and prepending the root, if specified.
+*/
+func JoinPath(segments []string, root string) string {
+	res := ""
+	if segments != nil {
+		for i := 0; i < len(segments); i++ {
+			res = res + segments[i]
+			if i < len(segments)-1 {
+				res = res + "/"
+			}
+		}
+	}
+	if root != "" {
+		res = root + "/" + res
+	}
+	return res
+}
+
 /*
 Resolve a system path from the target and start paths.
 If a jail path is specified, enforce that the resolved directory
