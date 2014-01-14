@@ -69,6 +69,8 @@ func TestPathResolver(t *testing.T) {
 			So(IsRoot("C:\\"), ShouldBeTrue)
 			So(IsRoot("C:/"), ShouldBeTrue)
 			So(IsRoot("C:\\a/b/"), ShouldBeTrue)
+			So(IsRoot("c:/a/b/../c"), ShouldBeTrue)
+			So(IsRoot("c:\\a/b/../c"), ShouldBeTrue)
 		})
 	})
 
@@ -128,8 +130,9 @@ func TestPathResolver(t *testing.T) {
 			So(len(pathSegments), ShouldEqual, 4)
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b/../c")
-			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", true)
-			So(len(pathSegments), ShouldEqual, 5)
+
+			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", false)
+			So(len(pathSegments), ShouldEqual, 4)
 			So(root, ShouldEqual, "c:")
 			So(posixPath, ShouldEqual, "c:/a/b/../c")
 		})

@@ -225,7 +225,7 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 		}
 	}
 	if isRoot {
-		root, pathSegments = pathSegments[0], pathSegments[1:len(pathSegments)-1]
+		root, pathSegments = pathSegments[0], pathSegments[1:len(pathSegments)]
 	}
 	return pathSegments, root, posixPath
 }
