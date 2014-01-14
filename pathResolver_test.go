@@ -123,6 +123,16 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
+		Convey("A Partition keep '..' paths", func() {
+			pathSegments, root, posixPath = PartitionPath("a\\b/../c", true)
+			So(len(pathSegments), ShouldEqual, 4)
+			So(root, ShouldEqual, "")
+			So(posixPath, ShouldEqual, "a/b/../c")
+			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", true)
+			So(len(pathSegments), ShouldEqual, 5)
+			So(root, ShouldEqual, "c:")
+			So(posixPath, ShouldEqual, "c:/a/b/../c")
+		})
 	})
 
 	Convey("A pathResolver can join a path", t, func() {
