@@ -180,6 +180,20 @@ func Posixfy(path string) string {
 	return strings.Replace(path, "\\", "/", -1)
 }
 
+/* Expand the path by resolving any parent references (..)
+and cleaning self references (.).
+The result will be relative if the path is relative and
+absolute if the path is absolute.
+The file separator used  in the expanded path is the one specified
+when the class was constructed.
+path - the String path to expand
+returns a String path with any parent or self references resolved.
+*/
+func ExpandPath(path string) string {
+	pathSegments, pathRoot, _ := PartitionPath(path, false)
+	return JoinPath(pathSegments, pathRoot)
+}
+
 /*Partition the path into path segments and remove any empty segments
 or segments that are self references (.).
 The path is split on either posix or windows file separators.

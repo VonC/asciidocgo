@@ -82,6 +82,15 @@ func TestPathResolver(t *testing.T) {
 		})
 	})
 
+	Convey("A pathResolver can expand a path", t, func() {
+		Convey("empty path returns an empty string", func() {
+			So(ExpandPath(""), ShouldEqual, "")
+		})
+		Convey("non-empty path returns an posix path", func() {
+			SkipSo(ExpandPath("c:\\a/.\\b/../c"), ShouldEqual, "c:/a/b/../c")
+		})
+	})
+
 	Convey("A pathResolver can partition a path", t, func() {
 		pathSegments, root, posixPath := PartitionPath("", false)
 		So(len(pathSegments), ShouldEqual, 0)
