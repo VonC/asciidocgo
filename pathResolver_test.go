@@ -81,6 +81,8 @@ func TestPathResolver(t *testing.T) {
 			So(IsWebRoot("\\"), ShouldBeFalse)
 			So(IsWebRoot("/"), ShouldBeTrue)
 			So(IsWebRoot("/a/b/"), ShouldBeTrue)
+			So(IsWebRoot("/a\\b/./c"), ShouldBeTrue)
+			So(IsWebRoot("/a/b/./c"), ShouldBeTrue)
 		})
 	})
 
@@ -116,13 +118,15 @@ func TestPathResolver(t *testing.T) {
 			So(len(pathSegments), ShouldEqual, 3)
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b/./c")
+
 			pathSegments, root, posixPath = PartitionPath("C:/a\\b/./c", false)
-			So(len(pathSegments), ShouldEqual, 2)
+			So(len(pathSegments), ShouldEqual, 3)
 			So(root, ShouldEqual, "C:")
 			So(posixPath, ShouldEqual, "C:/a/b/./c")
+
 			pathSegments, root, posixPath = PartitionPath("/a\\b/./c", true)
 			So(len(pathSegments), ShouldEqual, 2)
-			So(root, ShouldEqual, "")
+			So(root, ShouldEqual, "/a")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
 		Convey("A Partition keep '..' paths", func() {
@@ -130,6 +134,11 @@ func TestPathResolver(t *testing.T) {
 			So(len(pathSegments), ShouldEqual, 4)
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b/../c")
+
+			pathSegments, root, posixPath = PartitionPath("\\a\\b/../c", true)
+			So(len(pathSegments), ShouldEqual, 3)
+			So(root, ShouldEqual, "/a")
+			So(posixPath, ShouldEqual, "/a/b/../c")
 
 			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", false)
 			So(len(pathSegments), ShouldEqual, 4)
