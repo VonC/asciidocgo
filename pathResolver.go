@@ -288,8 +288,13 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 				return pr.WorkingDir()
 			}
 		} else if IsRoot(start) {
-			return ""
+			if jail == "" {
+				return ExpandPath(start)
+			}
 		}
+		// else
+		//  return system_path(start, jail, jail)
+		//end
 	}
 	return ""
 }

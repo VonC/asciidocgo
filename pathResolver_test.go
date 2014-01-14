@@ -183,8 +183,8 @@ func TestPathResolver(t *testing.T) {
 		Convey("Empty target segment and empty start and empty jail means working dir", func() {
 			So(pr.SystemPath("", "", "", false, ""), ShouldEqual, "C:/a/working/dir")
 		})
-		Convey("Empty target segment and non-empty start means expanded start path", func() {
-			SkipSo(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "s")
+		Convey("Empty target segment, non-empty start and empty jail means expanded start path", func() {
+			So(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "C:/start/../b")
 		})
 		/*
 			resolver.system_path('images')
