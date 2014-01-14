@@ -82,22 +82,6 @@ func TestPathResolver(t *testing.T) {
 		})
 	})
 
-	Convey("A pathResolver can join a path", t, func() {
-		Convey("No segment and empty root returns an empty string", func() {
-			So(JoinPath(nil, ""), ShouldEqual, "")
-		})
-		Convey("Segments with no root returns an slash-separated segments", func() {
-			So(JoinPath([]string{"a"}, ""), ShouldEqual, "a")
-			So(JoinPath([]string{"a", "b"}, ""), ShouldEqual, "a/b")
-			So(JoinPath([]string{"a", "b", "c"}, ""), ShouldEqual, "a/b/c")
-		})
-		Convey("Segments with root returns an root plus slash-separated segments", func() {
-			So(JoinPath([]string{"a"}, "c:"), ShouldEqual, "c:/a")
-			So(JoinPath([]string{"a", "b"}, "d:"), ShouldEqual, "d:/a/b")
-			So(JoinPath([]string{"a", "b", "c"}, "e:"), ShouldEqual, "e:/a/b/c")
-		})
-	})
-
 	Convey("A pathResolver can partition a path", t, func() {
 		pathSegments, root, posixPath := PartitionPath("", false)
 		So(len(pathSegments), ShouldEqual, 0)
@@ -130,81 +114,97 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
+	})
 
-		Convey("A Partition can resolve a system path from the target and start paths", func() {
-			pr := NewPathResolver(0, "C:/a/working/dir")
-			Convey("A Non-absolute jail path should panic", func() {
-				recovered := false
-				defer func() {
-					r := recover()
-					recovered = true
-					So(recovered, ShouldBeTrue)
-					So(r, ShouldEqual, "Jail is not an absolute path: c")
-				}()
-				_ = pr.SystemPath("a", "b", "c", false, "")
-			})
-			Convey("A system path with no start resolves from the root", func() {
-				So(pr.SystemPath("images", "", "", false, ""), ShouldEqual, "")
-				So(pr.SystemPath("../images", "", "", false, ""), ShouldEqual, "")
-				So(pr.SystemPath("/etc/images", "", "", false, ""), ShouldEqual, "")
-			})
-			Convey("Empty target segment and empty start and empty jail means working dir", func() {
-				So(pr.SystemPath("", "", "", false, ""), ShouldEqual, "C:/a/working/dir")
-			})
-			Convey("Empty target segment and non-empty start means expanded start path", func() {
-				SkipSo(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "s")
-			})
-			/*
-				resolver.system_path('images')
-				    => '/path/to/docs/images'
-
-				    resolver.system_path('../images')
-				    => '/path/to/images'
-
-				    resolver.system_path('/etc/images')
-				    => '/etc/images'
-
-				    resolver.system_path('images', '/etc')
-				    => '/etc/images'
-
-				    resolver.system_path('', '/etc/images')
-				    => '/etc/images'
-
-				    resolver.system_path(nil, nil, '/path/to/docs')
-				    => '/path/to/docs'
-
-				    resolver.system_path('..', nil, '/path/to/docs')
-				    => '/path/to/docs'
-
-				    resolver.system_path('../../../css', nil, '/path/to/docs')
-				    => '/path/to/docs/css'
-
-				    resolver.system_path('../../../css', '../../..', '/path/to/docs')
-				    => '/path/to/docs/css'
-
-				    resolver.system_path('..', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
-				    => 'C:/data/docs'
-
-				    resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
-				    => 'C:/data/docs/css'
-
-				    begin
-				      resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
-				    rescue SecurityError => e
-				      puts e.message
-				    end
-				    => 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
-
-				    resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
-				    => '/path/to/docs/images'
-
-				    begin
-				      resolver.system_path('images', '/etc', '/path/to/docs')
-				    rescue SecurityError => e
-				      puts e.message
-				    end
-				    => Start path /etc is outside of jail: /path/to/docs'
-			*/
+	Convey("A pathResolver can join a path", t, func() {
+		Convey("No segment and empty root returns an empty string", func() {
+			So(JoinPath(nil, ""), ShouldEqual, "")
 		})
+		Convey("Segments with no root returns an slash-separated segments", func() {
+			So(JoinPath([]string{"a"}, ""), ShouldEqual, "a")
+			So(JoinPath([]string{"a", "b"}, ""), ShouldEqual, "a/b")
+			So(JoinPath([]string{"a", "b", "c"}, ""), ShouldEqual, "a/b/c")
+		})
+		Convey("Segments with root returns an root plus slash-separated segments", func() {
+			So(JoinPath([]string{"a"}, "c:"), ShouldEqual, "c:/a")
+			So(JoinPath([]string{"a", "b"}, "d:"), ShouldEqual, "d:/a/b")
+			So(JoinPath([]string{"a", "b", "c"}, "e:"), ShouldEqual, "e:/a/b/c")
+		})
+	})
+
+	Convey("A Partition can resolve a system path from the target and start paths", t, func() {
+		pr := NewPathResolver(0, "C:/a/working/dir")
+		Convey("A Non-absolute jail path should panic", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "Jail is not an absolute path: c")
+			}()
+			_ = pr.SystemPath("a", "b", "c", false, "")
+		})
+		Convey("A system path with no start resolves from the root", func() {
+			So(pr.SystemPath("images", "", "", false, ""), ShouldEqual, "")
+			So(pr.SystemPath("../images", "", "", false, ""), ShouldEqual, "")
+			So(pr.SystemPath("/etc/images", "", "", false, ""), ShouldEqual, "")
+		})
+		Convey("Empty target segment and empty start and empty jail means working dir", func() {
+			So(pr.SystemPath("", "", "", false, ""), ShouldEqual, "C:/a/working/dir")
+		})
+		Convey("Empty target segment and non-empty start means expanded start path", func() {
+			SkipSo(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "s")
+		})
+		/*
+			resolver.system_path('images')
+			    => '/path/to/docs/images'
+
+			    resolver.system_path('../images')
+			    => '/path/to/images'
+
+			    resolver.system_path('/etc/images')
+			    => '/etc/images'
+
+			    resolver.system_path('images', '/etc')
+			    => '/etc/images'
+
+			    resolver.system_path('', '/etc/images')
+			    => '/etc/images'
+
+			    resolver.system_path(nil, nil, '/path/to/docs')
+			    => '/path/to/docs'
+
+			    resolver.system_path('..', nil, '/path/to/docs')
+			    => '/path/to/docs'
+
+			    resolver.system_path('../../../css', nil, '/path/to/docs')
+			    => '/path/to/docs/css'
+
+			    resolver.system_path('../../../css', '../../..', '/path/to/docs')
+			    => '/path/to/docs/css'
+
+			    resolver.system_path('..', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+			    => 'C:/data/docs'
+
+			    resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+			    => 'C:/data/docs/css'
+
+			    begin
+			      resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
+			    rescue SecurityError => e
+			      puts e.message
+			    end
+			    => 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
+
+			    resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
+			    => '/path/to/docs/images'
+
+			    begin
+			      resolver.system_path('images', '/etc', '/path/to/docs')
+			    rescue SecurityError => e
+			      puts e.message
+			    end
+			    => Start path /etc is outside of jail: /path/to/docs'
+		*/
 	})
 }
