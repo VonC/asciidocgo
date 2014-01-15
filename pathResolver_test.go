@@ -187,6 +187,13 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "C:/start/../b")
 		})
 		Convey("Empty target segment, non-empty non-root start means susyem path start", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "should not happen yet")
+			}()
 			SkipSo(pr.SystemPath("", "start/../b", "", false, ""), ShouldEqual, "start/../b")
 			SkipSo(pr.SystemPath("", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
 		})

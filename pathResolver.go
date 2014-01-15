@@ -291,10 +291,9 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 			if jail == "" {
 				return ExpandPath(start)
 			}
+		} else {
+			panic("should not happen yet")
 		}
-		// else
-		//  return system_path(start, jail, jail)
-		//end
 	}
 	return ""
 }
