@@ -197,6 +197,11 @@ func TestPathResolver(t *testing.T) {
 			SkipSo(pr.SystemPath("", "start/../b", "", false, ""), ShouldEqual, "start/../b")
 			SkipSo(pr.SystemPath("", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
 		})
+		Convey("Non-Empty target segments starting with jail (or empty jail) returns target", func() {
+			So(pr.SystemPath("C:/start/b", "", "", false, ""), ShouldEqual, "C:/start/b")
+			So(pr.SystemPath("C:/start/b", "C:\\start", "", false, ""), ShouldEqual, "C:/start/b")
+			So(pr.SystemPath("C:/start/b", "C:\\start/", "", false, ""), ShouldEqual, "C:/start/b")
+		})
 
 		/*
 			resolver.system_path('images')
