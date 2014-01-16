@@ -324,6 +324,14 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		// TODO start = system_path(start, jail, jail)
 		panic("should not happen yet (start)")
 	}
+
+	// both jail and start have been posixfied at this point
+	if jail == start {
+		jailSegments, jailRoot, _ := PartitionPath(jail, false)
+		startSegments := make([]string, len(jailSegments))
+		copy(startSegments, jailSegments)
+	}
+
 	return start
 	return ""
 }
