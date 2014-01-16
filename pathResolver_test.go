@@ -216,6 +216,10 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("a/b1", "", "C:/c/d", false, ""), ShouldEqual, "C:/c/d")
 		})
 
+		Convey("Non-Empty root start means posixfied start", func() {
+			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:/c/d", false, ""), ShouldEqual, "C:/a/b/c")
+		})
+
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'

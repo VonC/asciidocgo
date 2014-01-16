@@ -317,6 +317,8 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		} else {
 			start = jail
 		}
+	} else if IsRoot(start) {
+		start = Posixfy(start)
 	}
 	return start
 	return ""
