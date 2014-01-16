@@ -220,6 +220,16 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:/c/d", false, ""), ShouldEqual, "C:/a/b/c")
 		})
 
+		Convey("Non Empty target segment, non-empty non-root start means sustem path start with jail", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "should not happen yet (start)")
+			}()
+			SkipSo(pr.SystemPath("a/b2", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
+		})
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'

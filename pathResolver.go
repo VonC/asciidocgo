@@ -295,6 +295,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 				return ExpandPath(start)
 			}
 		} else {
+			// TODO return system_path(start, jail, jail)
 			panic("should not happen yet")
 		}
 	}
@@ -319,6 +320,9 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		}
 	} else if IsRoot(start) {
 		start = Posixfy(start)
+	} else {
+		// TODO start = system_path(start, jail, jail)
+		panic("should not happen yet (start)")
 	}
 	return start
 	return ""
