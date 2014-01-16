@@ -144,6 +144,11 @@ func TestPathResolver(t *testing.T) {
 			So(len(pathSegments), ShouldEqual, 4)
 			So(root, ShouldEqual, "c:")
 			So(posixPath, ShouldEqual, "c:/a/b/../c")
+
+			pathSegments, root, posixPath = PartitionPath("a/b", false)
+			So(len(pathSegments), ShouldEqual, 2)
+			So(root, ShouldEqual, "")
+			So(posixPath, ShouldEqual, "a/b")
 		})
 	})
 
@@ -202,6 +207,13 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("C:/start/b", "", "", false, ""), ShouldEqual, "C:/start/b")
 			So(pr.SystemPath("C:/start/b", "C:\\start", "", false, ""), ShouldEqual, "C:/start/b")
 			So(pr.SystemPath("C:/start/b", "C:\\start/", "", false, ""), ShouldEqual, "C:/start/b")
+		})
+
+		Convey("Empty start and jail means start is working dir", func() {
+			So(pr.SystemPath("a/b1", "", "", false, ""), ShouldEqual, "C:/a/working/dir")
+		})
+		Convey("Empty start and non-empty jail means start is jail", func() {
+			So(pr.SystemPath("a/b1", "", "C:/c/d", false, ""), ShouldEqual, "C:/c/d")
 		})
 
 		/*

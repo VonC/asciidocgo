@@ -283,6 +283,9 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 	}
 	targetSegments, targetRoot, _ := PartitionPath(target, false)
 	if len(targetSegments) == 0 {
+		if target == "a/b1" {
+			panic(fmt.Sprintf("should not happen yet %v => %v", targetSegments, targetRoot))
+		}
 		if start == "" {
 			if jail == "" {
 				return pr.WorkingDir()
@@ -296,13 +299,25 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		}
 	}
 
-	if targetRoot != "." {
+	if targetRoot != "" && targetRoot != "." {
 		resolvedTarget := JoinPath(targetSegments, targetRoot)
 		// if target is absolute and a sub-directory of jail, or
 		// a jail is not in place, let it slide
+		if target == "a/b1" {
+			panic(fmt.Sprintf("should not happen yet %v => %v", resolvedTarget, targetRoot))
+		}
 		if jail == "" || strings.HasPrefix(resolvedTarget, jail) {
 			return resolvedTarget
 		}
 	}
+
+	if start == "" {
+		if jail == "" {
+			start = pr.WorkingDir()
+		} else {
+			start = jail
+		}
+	}
+	return start
 	return ""
 }
