@@ -298,15 +298,14 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("", "C:/etc/images", "", false, ""), ShouldEqual, "C:/etc/images")
 		})
 
+		Convey("empty target and empty start returns jail", func() {
+			// resolver.system_path(nil, nil, '/path/to/docs')
+			// => '/path/to/docs'
+			So(pr.SystemPath("", "", "C:/etc/images", false, ""), ShouldEqual, "C:/etc/images")
+		})
+
 	})
 	/*
-
-
-	   resolver.system_path('', '/etc/images')
-	   => '/etc/images'
-
-	   resolver.system_path(nil, nil, '/path/to/docs')
-	   => '/path/to/docs'
 
 	   resolver.system_path('..', nil, '/path/to/docs')
 	   => '/path/to/docs'
