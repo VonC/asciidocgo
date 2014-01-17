@@ -286,11 +286,18 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("C:/etc/images", "", "", false, ""), ShouldEqual, "C:/etc/images")
 		})
 
-		Convey("non-empty targetis appended to non-empty start", func() {
+		Convey("non-empty target is appended to non-empty start", func() {
 			// resolver.system_path('images', '/etc')
 			// => '/etc/images'
-			So(pr.SystemPath("images", "C:/etc", "", false, ""), ShouldEqual, "C:/etc/images2s")
+			So(pr.SystemPath("images", "C:/etc", "", false, ""), ShouldEqual, "C:/etc/images")
 		})
+
+		Convey("empty target returns non-empty start", func() {
+			// resolver.system_path('', '/etc/images')
+			// => '/etc/images'
+			So(pr.SystemPath("", "C:/etc/images", "", false, ""), ShouldEqual, "C:/etc/images")
+		})
+
 	})
 	/*
 
