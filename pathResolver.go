@@ -353,5 +353,29 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		return fmt.Sprintf("jail='%v', jailRoot='%v', jailSegments '%v', startRoot='%v', startSegments '%v'", jail, jailRoot, jailSegments, startRoot, startSegments)
 	}
 
-	return ""
+	resolvedSegments := make([]string, len(startSegments))
+	copy(resolvedSegments, startSegments)
+	warned := false
+
+	for _, segment := range targetSegments {
+		if segment == ".." {
+			lr := len(resolvedSegments)
+			if jail != "" {
+				if lr > len(jailSegments) {
+					resolvedSegments = resolvedSegments[:lr-1]
+				} else if !recover {
+					panic(fmt.Sprintf("target '%v' refers to location outside jail: '%v' (disallowed in safe mode)", target, jail))
+				} else if !warned {
+					fmt.Errorf("asciidoctor: WARNING: target '%v' has illegal reference to ancestor of jail, auto-recovering", target)
+					warned = true
+				}
+			} else {
+				resolvedSegments = resolvedSegments[:lr-1]
+			}
+		} else {
+			resolvedSegments = append(resolvedSegments, segment)
+		}
+	}
+
+	return JoinPath(resolvedSegments, jailRoot)
 }
