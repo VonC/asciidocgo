@@ -226,15 +226,8 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:/c/d", false, ""), ShouldEqual, "C:/a/b/c")
 		})
 
-		Convey("Non Empty target segment, non-empty non-root start means sustem path start with jail", func() {
-			recovered := false
-			defer func() {
-				r := recover()
-				recovered = true
-				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "should not happen yet (start)")
-			}()
-			SkipSo(pr.SystemPath("a/b2", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
+		Convey("Non Empty target segment, non-empty non-root start means system path start with jail", func() {
+			So(pr.SystemPath("a/b2", "start/../b", "C:\\", false, ""), ShouldEqual, "C:/b/a/b2")
 		})
 
 		Convey("Same jail and start means posixfied start", func() {
@@ -248,7 +241,7 @@ func TestPathResolver(t *testing.T) {
 				r := recover()
 				recovered = true
 				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "start 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
+				So(r, ShouldEqual, "path 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
 			}()
 			_ = pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\e/b/c", false, "")
 		})
@@ -333,18 +326,33 @@ func TestPathResolver(t *testing.T) {
 			// => 'C:/data/docs/css'
 			So(pr.SystemPath("..\\..\\css", "C:\\data\\docs\\assets", "C:\\data\\docs", true, ""), ShouldEqual, "C:/data/docs/css")
 		})
+
+		Convey("Different jail and start means panic if start doesn't include jail", func() {
+			/*
+					begin
+				     resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
+						rescue SecurityError => e
+						puts e.message
+					end
+					=> 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
+
+			*/
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "path '../../../../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
+			}()
+			_ = pr.SystemPath("../../../css", "../../..", "C:\\path/to/docs", false, "")
+		})
 	})
 	/*
 
 
 
 
-	   begin
-	     resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
-	   rescue SecurityError => e
-	     puts e.message
-	   end
-	   => 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
+
 
 	   resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
 	   => '/path/to/docs/images'
