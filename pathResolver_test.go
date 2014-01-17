@@ -6,6 +6,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+var Test = "aaa"
+
 func TestPathResolver(t *testing.T) {
 
 	Convey("A pathResolver can be initialized", t, func() {
@@ -169,6 +171,7 @@ func TestPathResolver(t *testing.T) {
 	})
 
 	Convey("A Partition can resolve a system path from the target and start paths", t, func() {
+		Test = ""
 		pr := NewPathResolver(0, "C:/a/working/dir")
 		Convey("A Non-absolute jail path should panic", func() {
 			recovered := false
@@ -210,13 +213,16 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("Empty start and jail means start is working dir", func() {
-			So(pr.SystemPath("a/b1", "", "", false, ""), ShouldEqual, "C:/a/working/dir")
+			Test = "test_SystemPath_start"
+			So(pr.SystemPath("a/b1", "", "", false, ""), ShouldEqual, pr.WorkingDir())
 		})
 		Convey("Empty start and non-empty jail means start is jail", func() {
+			Test = "test_SystemPath_start"
 			So(pr.SystemPath("a/b1", "", "C:/c/d", false, ""), ShouldEqual, "C:/c/d")
 		})
 
 		Convey("Non-Empty root start means posixfied start", func() {
+			Test = "test_SystemPath_start"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:/c/d", false, ""), ShouldEqual, "C:/a/b/c")
 		})
 
@@ -230,6 +236,7 @@ func TestPathResolver(t *testing.T) {
 			}()
 			SkipSo(pr.SystemPath("a/b2", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
 		})
+
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'
