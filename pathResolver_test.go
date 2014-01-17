@@ -309,12 +309,14 @@ func TestPathResolver(t *testing.T) {
 			// => '/path/to/docs'
 			So(pr.SystemPath("..", "", "C:/etc/images", true, ""), ShouldEqual, "C:/etc/images")
 		})
+
+		Convey("dot_dot path target and empty start, returns non-empty jail plus path", func() {
+			// resolver.system_path('../../../css', nil, '/path/to/docs')
+			// => '/path/to/docs/css'
+			So(pr.SystemPath("../../../css", "", "C:/etc/to/images", true, ""), ShouldEqual, "C:/etc/to/images/css")
+		})
 	})
 	/*
-
-
-	   resolver.system_path('../../../css', nil, '/path/to/docs')
-	   => '/path/to/docs/css'
 
 	   resolver.system_path('../../../css', '../../..', '/path/to/docs')
 	   => '/path/to/docs/css'
