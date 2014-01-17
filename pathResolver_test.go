@@ -327,13 +327,17 @@ func TestPathResolver(t *testing.T) {
 			//=> 'C:/data/docs'
 			So(pr.SystemPath("..", "C:\\data\\docs\\assets", "C:\\data\\docs", true, ""), ShouldEqual, "C:/data/docs")
 		})
+
+		Convey("dot_dot path target, start including jail returns start+target", func() {
+			// resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+			// => 'C:/data/docs/css'
+			So(pr.SystemPath("..\\..\\css", "C:\\data\\docs\\assets", "C:\\data\\docs", true, ""), ShouldEqual, "C:/data/docs/css")
+		})
 	})
 	/*
 
 
 
-	   resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
-	   => 'C:/data/docs/css'
 
 	   begin
 	     resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
