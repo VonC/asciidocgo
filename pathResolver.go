@@ -281,6 +281,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 	if jail != "" && !IsRoot(jail) {
 		panic(fmt.Sprintf("Jail is not an absolute path: %v", jail))
 	}
+	jail = Posixfy(jail)
 	targetSegments, targetRoot, _ := PartitionPath(target, false)
 	if len(targetSegments) == 0 {
 		if target == "a/b1" {
@@ -327,13 +328,20 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 	if Test == "test_SystemPath_start" {
 		return start
 	}
-	/*
-		// both jail and start have been posixfied at this point
-		if jail == start {
-			jailSegments, jailRoot, _ := PartitionPath(jail, false)
-			startSegments := make([]string, len(jailSegments))
-			copy(startSegments, jailSegments)
-		}
-	*/
-	return Test + "b"
+
+	jailSegments := []string{}
+	jailRoot := ""
+	startSegments := []string{}
+	// both jail and start have been posixfied at this point
+	if jail == start {
+		jailSegments, jailRoot, _ = PartitionPath(jail, false)
+		startSegments = make([]string, len(jailSegments))
+		copy(startSegments, jailSegments)
+	}
+
+	if Test == "test_SystemPath_segments" {
+		return fmt.Sprintf("jail='%v', jailRoot='%v', jailSegments '%v', startSegments '%v'", jail, jailRoot, jailSegments, startSegments)
+	}
+
+	return ""
 }

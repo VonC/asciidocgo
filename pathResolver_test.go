@@ -237,6 +237,10 @@ func TestPathResolver(t *testing.T) {
 			SkipSo(pr.SystemPath("a/b2", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
 		})
 
+		Convey("Same jail and start means posixfied start", func() {
+			Test = "test_SystemPath_segments"
+			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startSegments '[a b c]'")
+		})
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'
