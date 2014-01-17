@@ -321,11 +321,16 @@ func TestPathResolver(t *testing.T) {
 			// => '/path/to/docs/css'
 			So(pr.SystemPath("../../../css", "", "C:/etc/to/images", true, ""), ShouldEqual, "C:/etc/to/images/css")
 		})
+
+		Convey("dot_dot path target, different start and jail returns jail", func() {
+			// resolver.system_path('..', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
+			//=> 'C:/data/docs'
+			So(pr.SystemPath("..", "C:\\data\\docs\\assets", "C:\\data\\docs", true, ""), ShouldEqual, "C:/data/docs")
+		})
 	})
 	/*
 
-	   resolver.system_path('..', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
-	   => 'C:/data/docs'
+
 
 	   resolver.system_path('..\\..\\css', 'C:\\data\\docs\\assets', 'C:\\data\\docs')
 	   => 'C:/data/docs/css'
