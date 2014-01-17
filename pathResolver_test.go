@@ -258,6 +258,11 @@ func TestPathResolver(t *testing.T) {
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c/e/f", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startRoot='C:', startSegments '[a b c e f]'")
 		})
 
+		Convey("Start with empty jail", func() {
+			Test = "test_SystemPath_segments"
+			So(pr.SystemPath("a/b1", "C:\\a/b\\c/e/f", "", false, ""), ShouldEqual, "jail='', jailRoot='C:', jailSegments '[]', startRoot='C:', startSegments '[a b c e f]'")
+		})
+
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'

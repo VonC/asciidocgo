@@ -344,6 +344,9 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		}
 		startSegments, startRoot, _ = PartitionPath(start, false)
 		jailSegments, jailRoot, _ = PartitionPath(jail, false)
+	} else {
+		startSegments, startRoot, _ = PartitionPath(start, false)
+		jailRoot = startRoot
 	}
 
 	if Test == "test_SystemPath_segments" {
