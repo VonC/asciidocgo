@@ -332,6 +332,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 	jailSegments := []string{}
 	jailRoot := ""
 	startSegments := []string{}
+	startRoot := ""
 	// both jail and start have been posixfied at this point
 	if jail == start {
 		jailSegments, jailRoot, _ = PartitionPath(jail, false)
@@ -341,10 +342,12 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		if !strings.HasPrefix(start, jail) {
 			panic(fmt.Sprintf("start '%v' is outside of jail: '%v' (disallowed in safe mode)", start, jail))
 		}
+		startSegments, startRoot, _ = PartitionPath(start, false)
+		jailSegments, jailRoot, _ = PartitionPath(jail, false)
 	}
 
 	if Test == "test_SystemPath_segments" {
-		return fmt.Sprintf("jail='%v', jailRoot='%v', jailSegments '%v', startSegments '%v'", jail, jailRoot, jailSegments, startSegments)
+		return fmt.Sprintf("jail='%v', jailRoot='%v', jailSegments '%v', startRoot='%v', startSegments '%v'", jail, jailRoot, jailSegments, startRoot, startSegments)
 	}
 
 	return ""

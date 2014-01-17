@@ -239,7 +239,7 @@ func TestPathResolver(t *testing.T) {
 
 		Convey("Same jail and start means posixfied start", func() {
 			Test = "test_SystemPath_segments"
-			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startSegments '[a b c]'")
+			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startRoot='', startSegments '[a b c]'")
 		})
 
 		Convey("Different jail and start means panic if start doesn't include jail", func() {
@@ -251,6 +251,11 @@ func TestPathResolver(t *testing.T) {
 				So(r, ShouldEqual, "start 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
 			}()
 			_ = pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\e/b/c", false, "")
+		})
+
+		Convey("Start must includes jail", func() {
+			Test = "test_SystemPath_segments"
+			So(pr.SystemPath("a/b1", "C:\\a/b\\c/e/f", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startRoot='C:', startSegments '[a b c e f]'")
 		})
 
 		/*
