@@ -337,6 +337,10 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 		jailSegments, jailRoot, _ = PartitionPath(jail, false)
 		startSegments = make([]string, len(jailSegments))
 		copy(startSegments, jailSegments)
+	} else if jail != "" {
+		if !strings.HasPrefix(start, jail) {
+			panic(fmt.Sprintf("start '%v' is outside of jail: '%v' (disallowed in safe mode)", start, jail))
+		}
 	}
 
 	if Test == "test_SystemPath_segments" {

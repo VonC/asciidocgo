@@ -241,6 +241,18 @@ func TestPathResolver(t *testing.T) {
 			Test = "test_SystemPath_segments"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startSegments '[a b c]'")
 		})
+
+		Convey("Different jail and start means panic if start doesn't include jail", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "start 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
+			}()
+			_ = pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\e/b/c", false, "")
+		})
+
 		/*
 			resolver.system_path('images')
 			    => '/path/to/docs/images'
