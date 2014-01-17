@@ -273,14 +273,21 @@ func TestPathResolver(t *testing.T) {
 			// => '/path/to/docs/images'
 			So(pr.SystemPath("images", "", "", false, ""), ShouldEqual, "C:/a/working/dir/images")
 		})
+
+		Convey("dot-dot target current working dir back one folder up", func() {
+			// resolver.system_path('../images')
+			// => '/path/to/images'
+			So(pr.SystemPath("../images", "", "", false, ""), ShouldEqual, "C:/a/working/images")
+		})
+
+		Convey("dot-dot target current working dir back one folder up", func() {
+			// resolver.system_path('/etc/images')
+			// => '/etc/images'
+			So(pr.SystemPath("C:/etc/images", "", "", false, ""), ShouldEqual, "C:/etc/images")
+		})
+
 	})
 	/*
-
-	   resolver.system_path('../images')
-	   => '/path/to/images'
-
-	   resolver.system_path('/etc/images')
-	   => '/etc/images'
 
 	   resolver.system_path('images', '/etc')
 	   => '/etc/images'
