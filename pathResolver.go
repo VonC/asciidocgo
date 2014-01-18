@@ -219,7 +219,7 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 	pathSegments = []string{}
 	if len(pathSegmentsWithDots) > 1 || pathSegmentsWithDots[0] != "" {
 		for k := 0; k < len(pathSegmentsWithDots); k++ {
-			if pathSegmentsWithDots[k] != "." {
+			if pathSegmentsWithDots[k] != "." && pathSegmentsWithDots[k] != "" {
 				pathSegments = append(pathSegments, pathSegmentsWithDots[k])
 			}
 		}
@@ -296,8 +296,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 				return ExpandPath(start)
 			}
 		} else {
-			// TODO return system_path(start, jail, jail)
-			panic("should not happen yet")
+			return pr.SystemPath(start, jail, jail, recover, targetName)
 		}
 	}
 

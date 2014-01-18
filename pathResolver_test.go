@@ -128,7 +128,7 @@ func TestPathResolver(t *testing.T) {
 
 			pathSegments, root, posixPath = PartitionPath("/a\\b/./c", true)
 			So(len(pathSegments), ShouldEqual, 2)
-			So(root, ShouldEqual, "/a")
+			So(root, ShouldEqual, "a")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
 		Convey("A Partition keep '..' paths", func() {
@@ -139,7 +139,7 @@ func TestPathResolver(t *testing.T) {
 
 			pathSegments, root, posixPath = PartitionPath("\\a\\b/../c", true)
 			So(len(pathSegments), ShouldEqual, 3)
-			So(root, ShouldEqual, "/a")
+			So(root, ShouldEqual, "a")
 			So(posixPath, ShouldEqual, "/a/b/../c")
 
 			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", false)
