@@ -235,7 +235,7 @@ func TestPathResolver(t *testing.T) {
 				r := recover()
 				recovered = true
 				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "path 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
+				So(r, ShouldEqual, "Start path 'C:/a/b/c' is outside of jail: 'C:/e/b/c' (disallowed in safe mode)")
 			}()
 			_ = pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\e/b/c", false, "")
 		})
@@ -336,51 +336,35 @@ func TestPathResolver(t *testing.T) {
 				r := recover()
 				recovered = true
 				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "path '../../../../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
+				So(r, ShouldEqual, "path '../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
 			}()
 			_ = pr.SystemPath("../../../css", "../../..", "C:\\path/to/docs", false, "")
 		})
-	})
 
-	Convey("A Partition can resolve a system path from the target and start paths (Unit Tests)", t, func() {
+		Convey("target, including jail but empty start returns target", func() {
+			// resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
+			//	=> '/path/to/docs/images'
+			So(pr.SystemPath("C:/path/to/docs/images", "", "C:/path/to/docs", false, ""), ShouldEqual, "C:/path/to/docs/images")
+		})
 
-		Test = ""
-		pr := NewPathResolver(0, "C:/a/working/dir")
-		Convey("Different jail and start means panic if start doesn't include jail", func() {
+		Convey("start outside of jail means panic", func() {
 			/*
-					begin
-				     resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
-						rescue SecurityError => e
-						puts e.message
-					end
-					=> 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
 
+				begin
+				  resolver.system_path('images', '/etc', '/path/to/docs')
+				  rescue SecurityError => e
+				    puts e.message
+				  end
+				=> Start path /etc is outside of jail: /path/to/docs'
 			*/
 			recovered := false
 			defer func() {
 				r := recover()
 				recovered = true
 				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "path '../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
+				So(r, ShouldEqual, "Start path 'C:/etc' is outside of jail: 'C:/path/to/docs' (disallowed in safe mode)")
 			}()
-			_ = pr.SystemPath("../../../css", "../../..", "C:\\path/to/docs", false, "")
+			_ = pr.SystemPath("images", "C:/etc", "C:/path/to/docs", false, "")
 		})
 	})
-	/*
-
-
-
-
-
-
-	   resolver.system_path('/path/to/docs/images', nil, '/path/to/docs')
-	   => '/path/to/docs/images'
-
-	   begin
-	     resolver.system_path('images', '/etc', '/path/to/docs')
-	   rescue SecurityError => e
-	     puts e.message
-	   end
-	   => Start path /etc is outside of jail: /path/to/docs'
-	*/
 }

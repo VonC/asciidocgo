@@ -338,7 +338,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 		copy(startSegments, jailSegments)
 	} else if jail != "" {
 		if !strings.HasPrefix(start, jail) {
-			panic(fmt.Sprintf("path '%v' is outside of jail: '%v' (disallowed in safe mode)", start, jail))
+			panic(fmt.Sprintf("Start path '%v' is outside of jail: '%v' (disallowed in safe mode)", start, jail))
 		}
 		startSegments, startRoot, _ = PartitionPath(start, false)
 		jailSegments, jailRoot, _ = PartitionPath(jail, false)
