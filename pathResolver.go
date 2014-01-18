@@ -277,7 +277,7 @@ returns a String path that joins the target path with the start path with
 any parent references resolved and self references removed and enforces
 that the resolved path be contained within the jail, if provided
 */
-func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, targetName string) string {
+func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, targetName string) string {
 	if jail != "" && !IsRoot(jail) {
 		panic(fmt.Sprintf("Jail is not an absolute path: %v", jail))
 	}
@@ -296,7 +296,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 				return ExpandPath(start)
 			}
 		} else {
-			return pr.SystemPath(start, jail, jail, recover, targetName)
+			return pr.SystemPath(start, jail, jail, canrecover, targetName)
 		}
 	}
 
@@ -321,7 +321,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 	} else if IsRoot(start) {
 		start = Posixfy(start)
 	} else {
-		start = pr.SystemPath(start, jail, jail, recover, targetName)
+		start = pr.SystemPath(start, jail, jail, true, targetName)
 	}
 	if Test == "test_SystemPath_start" {
 		return start
@@ -361,7 +361,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, recover bool, tar
 			if jail != "" {
 				if lr > len(jailSegments) {
 					resolvedSegments = resolvedSegments[:lr-1]
-				} else if !recover {
+				} else if !canrecover {
 					panic(fmt.Sprintf("path '%v' refers to location outside jail: '%v' (disallowed in safe mode)", target, jail))
 				} else if !warned {
 					fmt.Errorf("asciidoctor: WARNING: target '%v' has illegal reference to ancestor of jail, auto-recovering", target)

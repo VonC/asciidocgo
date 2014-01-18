@@ -195,16 +195,10 @@ func TestPathResolver(t *testing.T) {
 		Convey("Empty target segment, non-empty root start and empty jail means expanded start path", func() {
 			So(pr.SystemPath("", "C:\\start/../b", "", false, ""), ShouldEqual, "C:/start/../b")
 		})
-		Convey("Empty target segment, non-empty non-root start means susyem path start", func() {
-			recovered := false
-			defer func() {
-				r := recover()
-				recovered = true
-				So(recovered, ShouldBeTrue)
-				So(r, ShouldEqual, "should not happen yet")
-			}()
-			SkipSo(pr.SystemPath("", "start/../b", "", false, ""), ShouldEqual, "start/../b")
-			SkipSo(pr.SystemPath("", "start/../b", "C:\\", false, ""), ShouldEqual, "start/../b")
+		Convey("Empty target segment, non-empty non-root start means system path start", func() {
+			So(pr.SystemPath("", "start/../b", "", false, ""), ShouldEqual, "C:/a/working/dir/b")
+			So(pr.SystemPath("", "start/../b", "C:\\", false, ""), ShouldEqual, "C:/b")
+			So(pr.SystemPath("start/../b", "C:\\", "C:\\", false, ""), ShouldEqual, "C:/b")
 		})
 		Convey("Non-Empty target segments starting with jail (or empty jail) returns target", func() {
 			So(pr.SystemPath("C:/start/b", "", "", false, ""), ShouldEqual, "C:/start/b")
@@ -343,6 +337,31 @@ func TestPathResolver(t *testing.T) {
 				recovered = true
 				So(recovered, ShouldBeTrue)
 				So(r, ShouldEqual, "path '../../../../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
+			}()
+			_ = pr.SystemPath("../../../css", "../../..", "C:\\path/to/docs", false, "")
+		})
+	})
+
+	Convey("A Partition can resolve a system path from the target and start paths (Unit Tests)", t, func() {
+
+		Test = ""
+		pr := NewPathResolver(0, "C:/a/working/dir")
+		Convey("Different jail and start means panic if start doesn't include jail", func() {
+			/*
+					begin
+				     resolver.system_path('../../../css', '../../..', '/path/to/docs', :recover => false)
+						rescue SecurityError => e
+						puts e.message
+					end
+					=> 'path ../../../../../../css refers to location outside jail: /path/to/docs (disallowed in safe mode)'
+
+			*/
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "path '../../../css' refers to location outside jail: 'C:/path/to/docs' (disallowed in safe mode)")
 			}()
 			_ = pr.SystemPath("../../../css", "../../..", "C:\\path/to/docs", false, "")
 		})
