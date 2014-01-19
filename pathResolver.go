@@ -114,6 +114,8 @@ Examples:
 type PathResolver struct {
 	fileSeparator byte
 	workingDir    string
+	isWebPath     bool
+	isWinPath     bool
 }
 
 func (pr *PathResolver) FileSeparator() byte {
@@ -144,19 +146,18 @@ func NewPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 			panic(err)
 		}
 		workingDir = pwd
-	} else {
-		if IsRoot(workingDir) == false {
-			wd, err := filepath.Abs(workingDir)
-			if err != nil || workingDir == "panic on filepath.Abs" {
-				if workingDir == "panic on filepath.Abs" {
-					err = errors.New("test on bad filepath.Abs")
-				}
-				panic(err)
-			}
-			workingDir = wd
-		}
 	}
-	return &PathResolver{fileSeparator, workingDir}
+	wd, err := filepath.Abs(workingDir)
+	if err != nil || workingDir == "panic on filepath.Abs" {
+		if workingDir == "panic on filepath.Abs" {
+			err = errors.New("test on bad filepath.Abs")
+		}
+		panic(err)
+	}
+	workingDir = wd
+	isWinPath := IsRoot(workingDir)
+	isWebPath := IsWebRoot(workingDir)
+	return &PathResolver{fileSeparator, workingDir, isWebPath, isWinPath}
 }
 
 /*Check if the specified path is an absolute root path
@@ -292,7 +293,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 	if len(targetSegments) == 0 {
 		if start == "" {
 			if jail == "" {
-				return pr.WorkingDir()
+				return Posixfy(pr.WorkingDir())
 			}
 		} else if IsRoot(start) {
 			if jail == "" {
