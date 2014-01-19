@@ -219,7 +219,7 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 	pathSegments = []string{}
 	if len(pathSegmentsWithDots) > 1 || pathSegmentsWithDots[0] != "" {
 		for k := 0; k < len(pathSegmentsWithDots); k++ {
-			if pathSegmentsWithDots[k] != "." && pathSegmentsWithDots[k] != "" {
+			if pathSegmentsWithDots[k] != "." && (pathSegmentsWithDots[k] != "" || k == 0) {
 				pathSegments = append(pathSegments, pathSegmentsWithDots[k])
 			}
 		}
@@ -284,9 +284,6 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 	jail = Posixfy(jail)
 	targetSegments, targetRoot, _ := PartitionPath(target, false)
 	if len(targetSegments) == 0 {
-		if target == "a/b1" {
-			panic(fmt.Sprintf("should not happen yet %v => %v", targetSegments, targetRoot))
-		}
 		if start == "" {
 			if jail == "" {
 				return pr.WorkingDir()
@@ -304,9 +301,6 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 		resolvedTarget := JoinPath(targetSegments, targetRoot)
 		// if target is absolute and a sub-directory of jail, or
 		// a jail is not in place, let it slide
-		if target == "a/b1" {
-			panic(fmt.Sprintf("should not happen yet %v => %v", resolvedTarget, targetRoot))
-		}
 		if jail == "" || strings.HasPrefix(resolvedTarget, jail) {
 			return resolvedTarget
 		}
