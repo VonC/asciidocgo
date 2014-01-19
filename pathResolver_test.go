@@ -394,5 +394,10 @@ func TestPathResolver(t *testing.T) {
 		Convey("Empty target and start returns empty web path", func() {
 			So(WebPath("", ""), ShouldEqual, "")
 		})
+
+		Convey("target and start with http means non-empty uriPrefix", func() {
+			Test = "test_Webath_uriPrefix"
+			So(WebPath("b/c", "http://a"), ShouldEqual, "target='a/b/c', uriPrefix='http://'")
+		})
 	})
 }

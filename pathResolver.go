@@ -388,5 +388,20 @@ the start path with any parent references resolved
 and self references removed
 */
 func WebPath(target, start string) string {
+	target = Posixfy(target)
+	start = Posixfy(start)
+	uriPrefix := ""
+
+	if !IsWebRoot(target) && start != "" {
+		target = start + "/" + target
+		if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
+			res := REGEXP[":uri_sniff"].FindStringSubmatchIndex(target)
+			uriPrefix = target[:res[0]]
+			target = target[res[0]:]
+		}
+	}
+	if Test == "test_Webath_uriPrefix" {
+		return fmt.Sprintf("target='%v', uriPrefix='%v'", target, uriPrefix)
+	}
 	return ""
 }
