@@ -387,4 +387,12 @@ func TestPathResolver(t *testing.T) {
 			_ = pr.SystemPath("images", "C:/etc", "C:/path/to/docs", false, "")
 		})
 	})
+
+	Convey("A Partition can resolve a web path from the target and start paths (internal tests)", t, func() {
+		Test = ""
+
+		Convey("Empty target and start returns empty web path", func() {
+			So(WebPath("", ""), ShouldEqual, "")
+		})
+	})
 }

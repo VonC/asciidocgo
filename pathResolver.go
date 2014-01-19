@@ -378,3 +378,15 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 
 	return JoinPath(resolvedSegments, jailRoot)
 }
+
+/* Resolve a web path from the target and start paths.
+The main function of this operation is to resolve any parent references
+and remove any self references.
+start  - the String start (i.e., parent) path
+returns a String path that joins the target path with
+the start path with any parent references resolved
+and self references removed
+*/
+func WebPath(target, start string) string {
+	return ""
+}
