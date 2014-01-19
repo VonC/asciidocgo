@@ -205,8 +205,14 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 	isRoot := false
 	if webPath {
 		isRoot = IsWebRoot(posixPath)
+		if !isRoot && IsRoot(posixPath) {
+			panic(fmt.Sprintf("path '%v' is a root path, but not a web root path", path))
+		}
 	} else {
 		isRoot = IsRoot(posixPath)
+		if !isRoot && IsWebRoot(posixPath) {
+			panic(fmt.Sprintf("path '%v' is a root path, but not a windows root path", path))
+		}
 	}
 	reg, _ := regexp.Compile("/+")
 	posixPathCleaned := reg.ReplaceAllString(posixPath, "/")

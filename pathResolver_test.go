@@ -151,6 +151,27 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b")
 		})
+
+		Convey("A Windows root path should panic if partitioned as web", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "path 'C:\\a/b' is a root path, but not a web root path")
+			}()
+			pathSegments, root, posixPath = PartitionPath("C:\\a/b", true)
+		})
+		Convey("A Web root path should panic if partitioned as windows", func() {
+			recovered := false
+			defer func() {
+				r := recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+				So(r, ShouldEqual, "path '/a/b' is a root path, but not a windows root path")
+			}()
+			pathSegments, root, posixPath = PartitionPath("/a/b", false)
+		})
 	})
 
 	Convey("A pathResolver can join a path", t, func() {
