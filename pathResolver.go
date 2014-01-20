@@ -394,10 +394,11 @@ func WebPath(target, start string) string {
 
 	if !IsWebRoot(target) && start != "" {
 		target = start + "/" + target
-		if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
-			res := REGEXP[":uri_sniff"].FindStringSubmatchIndex(target)
-			uriPrefix = target[:res[0]]
-			target = target[res[0]:]
+		if strings.Contains(target, ":") {
+			if res := REGEXP[":uri_sniff"].FindStringSubmatchIndex(target); len(res) == 4 {
+				uriPrefix = target[:res[3]]
+				target = target[res[3]:]
+			}
 		}
 	}
 	if Test == "test_Webath_uriPrefix" {

@@ -99,7 +99,7 @@ var REGEXP_STRING = map[string]string{
 	//	https://domain
 	//	data:info
 	//	:uri_sniff        => %r{^[#{CC_ALPHA}][#{CC_ALNUM}.+-]*:/{0,2}},
-	":uri_sniff": fmt.Sprintf("^[%v][%v.+-]*:/{0,2}.*", CC_ALPHA, CC_ALNUM),
+	":uri_sniff": fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_ALPHA, CC_ALNUM),
 }
 
 func iniREGEXP(regexps map[string]string) map[string]*regexp.Regexp {
