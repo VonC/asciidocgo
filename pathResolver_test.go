@@ -407,4 +407,34 @@ func TestPathResolver(t *testing.T) {
 			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(1)'[c]', targetRoot='/b'")
 		})
 	})
+
+	Convey("A Partition can resolve a web path from the target and start paths (unit tests)", t, func() {
+		Test = ""
+
+		Convey("Empty target and start returns empty web path", func() {
+			So(WebPath("", ""), ShouldEqual, "")
+		})
+	})
 }
+
+/*#     resolver.web_path('images')
+#     => 'images'
+#
+#     resolver.web_path('./images')
+#     => './images'
+#
+#     resolver.web_path('/images')
+#     => '/images'
+#
+#     resolver.web_path('./images/../assets/images')
+#     => './assets/images'
+#
+#     resolver.web_path('/../images')
+#     => '/images'
+#
+#     resolver.web_path('images', 'assets')
+#     => 'assets/images'
+#
+#     resolver.web_path('tiger.png', '../assets/images')
+#     => '../assets/images/tiger.png'
+#*/
