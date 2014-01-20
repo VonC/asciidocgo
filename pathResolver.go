@@ -408,5 +408,26 @@ func WebPath(target, start string) string {
 	if Test == "test_Webath_partitionTarget" {
 		return fmt.Sprintf("targetSegments=(%v)'%v', targetRoot='%v'", len(targetSegments), targetSegments, targetRoot)
 	}
-	return ""
+	accum := []string{}
+	for _, segment := range targetSegments {
+		if segment == ".." {
+			if len(accum) == 0 {
+				if targetRoot == "" || targetRoot == "." {
+					accum = append(accum, segment)
+				}
+			} else if accum[len(accum)-1] == ".." {
+				accum = append(accum, segment)
+			} else {
+				accum = accum[:len(accum)-1]
+			}
+		} else {
+			accum = append(accum, segment)
+		}
+	}
+	resolvedSegments := accum
+
+	if uriPrefix == "" {
+		return JoinPath(resolvedSegments, targetRoot)
+	}
+	return uriPrefix + JoinPath(resolvedSegments, targetRoot)
 }
