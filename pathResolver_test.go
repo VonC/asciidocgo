@@ -411,18 +411,20 @@ func TestPathResolver(t *testing.T) {
 	Convey("A Partition can resolve a web path from the target and start paths (unit tests)", t, func() {
 		Test = ""
 
-		Convey("Empty target and start returns empty web path", func() {
-			So(WebPath("", ""), ShouldEqual, "")
+		Convey("Simple target and empty start returns simple target", func() {
+			/* resolver.web_path('images')
+			=> 'images'*/
+			So(WebPath("images", ""), ShouldEqual, "images")
+		})
+		Convey("Simple dot target and empty start returns simple dot target", func() {
+			/* resolver.web_path('./images')
+			=> './images'*/
+			So(WebPath("./images", ""), ShouldEqual, "./images")
 		})
 	})
 }
 
-/*#     resolver.web_path('images')
-#     => 'images'
-#
-#     resolver.web_path('./images')
-#     => './images'
-#
+/*#
 #     resolver.web_path('/images')
 #     => '/images'
 #
