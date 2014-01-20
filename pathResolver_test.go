@@ -399,5 +399,12 @@ func TestPathResolver(t *testing.T) {
 			Test = "test_Webath_uriPrefix"
 			So(WebPath("b/c", "http://a"), ShouldEqual, "target='a/b/c', uriPrefix='http://'")
 		})
+
+		Convey("target and start with http means non-empty target segments", func() {
+			Test = "test_Webath_partitionTarget"
+			So(WebPath("b/c", "http://a"), ShouldEqual, "targetSegments=(3)'[a b c]', targetRoot=''")
+			So(WebPath("b/c", "/a//"), ShouldEqual, "targetSegments=(2)'[b c]', targetRoot='/a'")
+			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(1)'[c]', targetRoot='/b'")
+		})
 	})
 }

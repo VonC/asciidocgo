@@ -404,5 +404,9 @@ func WebPath(target, start string) string {
 	if Test == "test_Webath_uriPrefix" {
 		return fmt.Sprintf("target='%v', uriPrefix='%v'", target, uriPrefix)
 	}
+	targetSegments, targetRoot, _ := PartitionPath(target, true)
+	if Test == "test_Webath_partitionTarget" {
+		return fmt.Sprintf("targetSegments=(%v)'%v', targetRoot='%v'", len(targetSegments), targetSegments, targetRoot)
+	}
 	return ""
 }
