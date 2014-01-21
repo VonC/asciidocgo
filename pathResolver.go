@@ -259,7 +259,11 @@ func JoinPath(segments []string, root string) string {
 		}
 	}
 	if root != "" {
-		res = root + "/" + res
+		if len(segments) > 0 {
+			res = root + "/" + res
+		} else {
+			res = root
+		}
 	}
 	return res
 }
