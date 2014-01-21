@@ -455,15 +455,23 @@ func TestPathResolver(t *testing.T) {
 			/* resolver.web_path('/../images')
 			   => '/../images' */
 			So(WebPath("/../images", ""), ShouldEqual, "/../images")
+			So(WebPath("/../../images", ""), ShouldEqual, "/../../images")
+			So(WebPath("a/../../images", ""), ShouldEqual, "../images")
+			So(WebPath("a/../b/../images", ""), ShouldEqual, "images")
+			So(WebPath("a/../b/../../images", ""), ShouldEqual, "../images")
+		})
+
+		Convey("Target with start returns start plus target", func() {
+			/* resolver.web_path('images', 'assets')
+			   => 'assets/images' */
+			So(WebPath("images", "assets"), ShouldEqual, "assets/images")
+			So(WebPath("images", "http://assets"), ShouldEqual, "http://assets/images")
+		})
+
+		Convey("Target with start with dots returns start plus target", func() {
+			/* resolver.web_path('tiger.png', '../assets/images')
+			   => '../assets/images/tiger.png' */
+			So(WebPath("tiger.png", "../assets/images"), ShouldEqual, "../assets/images/tiger.png")
 		})
 	})
 }
-
-/*
-#
-#     resolver.web_path('images', 'assets')
-#     => 'assets/images'
-#
-#     resolver.web_path('tiger.png', '../assets/images')
-#     => '../assets/images/tiger.png'
-#*/
