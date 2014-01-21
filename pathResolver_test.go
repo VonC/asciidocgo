@@ -198,6 +198,8 @@ func TestPathResolver(t *testing.T) {
 			So(JoinPath([]string{"a"}, "c:"), ShouldEqual, "c:/a")
 			So(JoinPath([]string{"a", "b"}, "d:"), ShouldEqual, "d:/a/b")
 			So(JoinPath([]string{"a", "b", "c"}, "e:"), ShouldEqual, "e:/a/b/c")
+			So(JoinPath([]string{}, "e:"), ShouldEqual, "e:")
+			So(JoinPath(nil, "e:"), ShouldEqual, "e:")
 		})
 	})
 
