@@ -231,11 +231,14 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 			}
 		}
 	}
+	if Test == "test_PartitionPath_segments" {
+		return pathSegments, root, fmt.Sprintf("pathSegments=(%v)'%v'- root='%v'(%v), posixPath='%v'", len(pathSegments), pathSegments, root, isRoot, posixPath)
+	}
 	if isRoot {
 		root, pathSegments = pathSegments[0], pathSegments[1:len(pathSegments)]
-		if root == "" {
-			root, pathSegments = "/"+pathSegments[0], pathSegments[1:len(pathSegments)]
-		}
+	}
+	if Test == "test_PartitionPath_rootSegments" {
+		return pathSegments, root, fmt.Sprintf("pathSegments=(%v)'%v'- root='%v'(%v), posixPath='%v'", len(pathSegments), pathSegments, root, isRoot, posixPath)
 	}
 	return pathSegments, root, posixPath
 }

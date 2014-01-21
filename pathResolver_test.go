@@ -126,8 +126,8 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "C:")
 			So(posixPath, ShouldEqual, "C:/a/b/./c")
 			pathSegments, root, posixPath = PartitionPath("/a\\b/./c", true)
-			So(len(pathSegments), ShouldEqual, 2)
-			So(root, ShouldEqual, "/a")
+			So(len(pathSegments), ShouldEqual, 3)
+			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "/a/b/./c")
 		})
 		Convey("A Partition keep '..' paths", func() {
@@ -137,8 +137,8 @@ func TestPathResolver(t *testing.T) {
 			So(posixPath, ShouldEqual, "a/b/../c")
 
 			pathSegments, root, posixPath = PartitionPath("\\a\\b/../c", true)
-			So(len(pathSegments), ShouldEqual, 3)
-			So(root, ShouldEqual, "/a")
+			So(len(pathSegments), ShouldEqual, 4)
+			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "/a/b/../c")
 
 			pathSegments, root, posixPath = PartitionPath("c:\\a\\b/../c", false)
@@ -150,6 +150,17 @@ func TestPathResolver(t *testing.T) {
 			So(len(pathSegments), ShouldEqual, 2)
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b")
+
+			Test = "test_PartitionPath_segments"
+			pathSegments, root, posixPath = PartitionPath("/../images", true)
+			So(posixPath, ShouldEqual, "pathSegments=(3)'[ .. images]'- root=''(true), posixPath='/../images'")
+			Test = ""
+
+			Test = "test_PartitionPath_rootSegments"
+			pathSegments, root, posixPath = PartitionPath("/../images", true)
+			So(posixPath, ShouldEqual, "pathSegments=(2)'[.. images]'- root=''(true), posixPath='/../images'")
+			Test = ""
+
 		})
 
 		Convey("A Windows root path should panic if partitioned as web", func() {
