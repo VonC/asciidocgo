@@ -398,8 +398,9 @@ func WebPath(target, start string) string {
 	target = Posixfy(target)
 	start = Posixfy(start)
 	uriPrefix := ""
+	isWebroot := IsWebRoot(target)
 
-	if !IsWebRoot(target) && start != "" {
+	if !isWebroot && start != "" {
 		target = start + "/" + target
 		if strings.Contains(target, ":") {
 			if res := REGEXP[":uri_sniff"].FindStringSubmatchIndex(target); len(res) == 4 {
@@ -433,8 +434,12 @@ func WebPath(target, start string) string {
 	}
 	resolvedSegments := accum
 
-	if uriPrefix == "" {
-		return JoinPath(resolvedSegments, targetRoot)
+	joinPath := JoinPath(resolvedSegments, targetRoot)
+	if uriPrefix != "" {
+		return uriPrefix + joinPath
 	}
-	return uriPrefix + JoinPath(resolvedSegments, targetRoot)
+	if isWebroot {
+		return "/" + joinPath
+	}
+	return joinPath
 }

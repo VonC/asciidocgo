@@ -399,7 +399,7 @@ func TestPathResolver(t *testing.T) {
 		})
 	})
 
-	Convey("A Partition can resolve a web path from the target and start paths (internal tests)", t, func() {
+	Convey("A PathResolver can compute a web path from the target and start paths (internal tests)", t, func() {
 		Test = ""
 
 		Convey("Empty target and start returns empty web path", func() {
@@ -410,18 +410,20 @@ func TestPathResolver(t *testing.T) {
 			Test = "test_Webath_uriPrefix"
 			So(WebPath("b/c", "http://a"), ShouldEqual, "target='a/b/c', uriPrefix='http://'")
 			So(WebPath("/images", ""), ShouldEqual, "target='/images', uriPrefix=''")
+			So(WebPath("/../images", ""), ShouldEqual, "target='/../images', uriPrefix=''")
 		})
 
 		Convey("target and start with http means non-empty target segments", func() {
 			Test = "test_Webath_partitionTarget"
 			So(WebPath("b/c", "http://a"), ShouldEqual, "targetSegments=(3)'[a b c]', targetRoot=''")
-			So(WebPath("b/c", "/a//"), ShouldEqual, "targetSegments=(2)'[b c]', targetRoot='/a'")
-			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(1)'[c]', targetRoot='/b'")
-			So(WebPath("/images", ""), ShouldEqual, "targetSegments=(0)'[]', targetRoot='/images'")
+			So(WebPath("b/c", "/a//"), ShouldEqual, "targetSegments=(3)'[a b c]', targetRoot=''")
+			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(2)'[b c]', targetRoot=''")
+			So(WebPath("/images", ""), ShouldEqual, "targetSegments=(1)'[images]', targetRoot=''")
+			So(WebPath("/../images", ""), ShouldEqual, "targetSegments=(2)'[.. images]', targetRoot=''")
 		})
 	})
 
-	Convey("A Partition can resolve a web path from the target and start paths (unit tests)", t, func() {
+	Convey("A PathResolver can compute a web path from the target and start paths (unit tests)", t, func() {
 		Test = ""
 
 		Convey("Simple target and empty start returns simple target", func() {
@@ -440,16 +442,22 @@ func TestPathResolver(t *testing.T) {
 			=> '/images'*/
 			So(WebPath("/images", ""), ShouldEqual, "/images")
 		})
+
+		Convey("Target with dot and dots and empty start returns resolved target", func() {
+			/* resolver.web_path('./images/../assets/images')
+			=> './assets/images'*/
+			So(WebPath("./images/../assets/images", ""), ShouldEqual, "./assets/images")
+		})
+
+		Convey("Target with dots and empty start returns resolved target", func() {
+			/* resolver.web_path('/../images')
+			   => '/../images' */
+			So(WebPath("/../images", ""), ShouldEqual, "/../images")
+		})
 	})
 }
 
-/*#
-#
-#     resolver.web_path('./images/../assets/images')
-#     => './assets/images'
-#
-#     resolver.web_path('/../images')
-#     => '/images'
+/*
 #
 #     resolver.web_path('images', 'assets')
 #     => 'assets/images'
