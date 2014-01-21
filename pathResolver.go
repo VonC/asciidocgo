@@ -443,3 +443,24 @@ func WebPath(target, start string) string {
 	}
 	return joinPath
 }
+
+/*
+Calculate the relative path to this absolute filename from
+the specified base directory.
+If either the filename or the base_directory are not absolute paths,
+no work is done.
+filename       - An absolute file name as a String
+base_directory - An absolute base directory as a String
+Return the relative path String of the filename calculated
+from the base directory
+*/
+func (pr *PathResolver) RelativePath(filename, baseDirectory string) string {
+	if IsRoot(filename) && IsRoot(baseDirectory) {
+		offset := baseDirectory
+		if strings.HasSuffix(baseDirectory, string(pr.FileSeparator())) {
+			offset = baseDirectory[:len(baseDirectory)-1]
+		}
+		filename = filename[len(offset)+1:]
+	}
+	return filename
+}

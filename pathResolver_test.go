@@ -474,4 +474,18 @@ func TestPathResolver(t *testing.T) {
 			So(WebPath("tiger.png", "../assets/images"), ShouldEqual, "../assets/images/tiger.png")
 		})
 	})
+	Convey("A PathResolver can compute relative path out of two absolute paths", t, func() {
+
+		pr := NewPathResolver(0, "C:/a/working/dir")
+
+		Convey("2 absolute paths, one begins with the other", func() {
+			So(pr.RelativePath("C:\\a/b\\c/d", "C:\\a\\b\\"), ShouldEqual, "c/d")
+			So(pr.RelativePath("C:\\z/b\\c/d", "C:\\a\\b\\"), ShouldEqual, "c/d")
+			So(pr.RelativePath("C:\\z/b\\c/d", "a\\b\\"), ShouldEqual, "C:\\z/b\\c/d")
+			//So(pr.RelativePath("C:\\z", "C:\\a\\b\\"), ShouldEqual, "c/d")
+			//So(pr.RelativePath("", "C:\\a\\b\\"), ShouldEqual, "c/d")
+		})
+		Test = ""
+	})
+
 }
