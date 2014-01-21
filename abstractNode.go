@@ -309,12 +309,17 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 	}
 	if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
 		return target
-	} else {
-		if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
-			// normalize_web_path(target, @document.attr(asset_dir_key))
-			return ""
-		}
+	} else if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
+		return normalizeWebPath(target, an.Document().Attr(asset_dir_key))
 	}
-	// normalize_web_path(target)
-	return ""
+	return normalizeWebPath(target, "")
+}
+
+/* Normalize the web page using the PathResolver.
+target - the String target path
+start  - the String start (i.e, parent) path (optional, default: nil)
+returns the resolved String path */
+func normalizeWebPath(target, start string) string {
+	res := WebPath(target, start)
+	return res
 }
