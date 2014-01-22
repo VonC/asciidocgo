@@ -288,6 +288,32 @@ func (an *abstractNode) ShortTagSlash() *rune {
 	}
 }
 
+/* Construct a reference or data URI to an icon image
+for the specified icon name.
+
+If the 'icon' attribute is set on this block, the name is ignored
+and the value of this attribute is used as the  target image path.
+Otherwise, construct a target image path by concatenating the value
+of the 'iconsdir' attribute, the icon name and the value of the
+'icontype' attribute (defaulting to 'png').
+
+The target image path is then passed through the #image_uri() method.
+If the 'data-uri' attribute is set on the document, the image will be
+safely converted to a data URI.
+
+The return value of this method can be safely used in an image tag.
+Returns A String reference or data URI for an icon image */
+
+func (an *abstractNode) IconUri(name string) string {
+	if an.HasAttr("icon", nil, false) {
+		return ""
+		//an.ImageUri(an.Attr("icon", nil, false).(string), "")
+	} else {
+		return ""
+		//an.ImageUri(name+an.Attr("icontype", "png", false), "iconsdir")
+	}
+}
+
 /* Construct a URI reference to the target media.
 
 If the target media is a URI reference, then leave it untouched.
