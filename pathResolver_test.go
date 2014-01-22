@@ -413,6 +413,7 @@ func TestPathResolver(t *testing.T) {
 			So(WebPath("b/c", "http://a"), ShouldEqual, "target='a/b/c', uriPrefix='http://'")
 			So(WebPath("/images", ""), ShouldEqual, "target='/images', uriPrefix=''")
 			So(WebPath("/../images", ""), ShouldEqual, "target='/../images', uriPrefix=''")
+			So(WebPath("images", "/assets"), ShouldEqual, "target='/assets/images', uriPrefix=''")
 		})
 
 		Convey("target and start with http means non-empty target segments", func() {
@@ -422,6 +423,7 @@ func TestPathResolver(t *testing.T) {
 			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(2)'[b c]', targetRoot=''")
 			So(WebPath("/images", ""), ShouldEqual, "targetSegments=(1)'[images]', targetRoot=''")
 			So(WebPath("/../images", ""), ShouldEqual, "targetSegments=(2)'[.. images]', targetRoot=''")
+			So(WebPath("images", "/assets"), ShouldEqual, "targetSegments=(2)'[assets images]', targetRoot=''")
 		})
 	})
 
@@ -453,7 +455,7 @@ func TestPathResolver(t *testing.T) {
 
 		Convey("Target with dots and empty start returns resolved target", func() {
 			/* resolver.web_path('/../images')
-			   => '/../images' */
+			   => '/../images' (not /images/ as commented. BUG?) */
 			So(WebPath("/../images", ""), ShouldEqual, "/../images")
 			So(WebPath("/../../images", ""), ShouldEqual, "/../../images")
 			So(WebPath("a/../../images", ""), ShouldEqual, "../images")
@@ -465,6 +467,7 @@ func TestPathResolver(t *testing.T) {
 			/* resolver.web_path('images', 'assets')
 			   => 'assets/images' */
 			So(WebPath("images", "assets"), ShouldEqual, "assets/images")
+			So(WebPath("images", "/assets"), ShouldEqual, "/assets/images")
 			So(WebPath("images", "http://assets"), ShouldEqual, "http://assets/images")
 		})
 

@@ -409,6 +409,8 @@ func WebPath(target, start string) string {
 			}
 		}
 	}
+	// BUG? slash seems to be lost in https://github.com/asciidoctor/asciidoctor/blob/ab1e0b9c45e5138394b089dac205fb6d854e15e6/lib/asciidoctor/path_resolver.rb#L352-L366
+	isWebroot = IsWebRoot(target)
 	if Test == "test_Webath_uriPrefix" {
 		return fmt.Sprintf("target='%v', uriPrefix='%v'", target, uriPrefix)
 	}
