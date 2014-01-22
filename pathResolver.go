@@ -114,8 +114,6 @@ Examples:
 type PathResolver struct {
 	fileSeparator byte
 	workingDir    string
-	isWebPath     bool
-	isWinPath     bool
 }
 
 func (pr *PathResolver) FileSeparator() byte {
@@ -155,9 +153,7 @@ func NewPathResolver(fileSeparator byte, workingDir string) *PathResolver {
 		panic(err)
 	}
 	workingDir = wd
-	isWinPath := IsRoot(workingDir)
-	isWebPath := IsWebRoot(workingDir)
-	return &PathResolver{fileSeparator, workingDir, isWebPath, isWinPath}
+	return &PathResolver{fileSeparator, workingDir}
 }
 
 /*Check if the specified path is an absolute root path
