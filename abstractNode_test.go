@@ -1,10 +1,10 @@
 package asciidocgo
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"strconv"
 	"strings"
 	"testing"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestAbstractNode(t *testing.T) {
@@ -316,10 +316,11 @@ func TestAbstractNode(t *testing.T) {
 		Convey("If the assetDirKey attribute is not there, normalize the target.", func() {
 		})
 		Convey("If the assetDirKey attribute is there, normalize the target with it.", func() {
-			an.setAttr("imagesdir", nil, true)
+			an.setAttr("imagesdir", "/images", true)
 			target = "data"
-			So(an.MediaUri(target, ""), ShouldEqual, "")
-			So(an.MediaUri(target, "dummy"), ShouldEqual, "")
+			So(an.MediaUri(target, ""), ShouldEqual, "/images/data")
+			So(an.MediaUri(target, "dummy"), ShouldEqual, target)
+			So(an.MediaUri("http://a/b", ""), ShouldEqual, "http://a/b")
 		})
 
 	})

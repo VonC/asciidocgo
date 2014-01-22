@@ -310,7 +310,9 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 	if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
 		return target
 	} else if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
-		return normalizeWebPath(target, an.Document().Attr(asset_dir_key))
+		// normalize_web_path(target, @document.attr(asset_dir_key)) ???
+		// How? (BUG?) @document can be nil.
+		return normalizeWebPath(target, an.Attr(assetDirKey, "", false).(string))
 	}
 	return normalizeWebPath(target, "")
 }
