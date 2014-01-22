@@ -366,6 +366,16 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	if assetDirKey == "" {
 		assetDirKey = "imagesdir"
 	}
+	if strings.Contains(targetImage, ":") && REGEXP[":uri_sniff"].MatchString(targetImage) {
+		return targetImage
+	}
+	// if @document.safe < Asciidoctor::SafeMode::SECURE && @document.attr?('data-uri')
+	// if an.Document().HasAttr("data-uri", "", false)
+	if assetDirKey != "" && an.Document().HasAttr(assetDirKey, "", false) {
+		return normalizeWebPath(targetImage, an.Document().Attr(assetDirKey, "", false).(string))
+	} else {
+		return normalizeWebPath(targetImage, "")
+	}
 	return ""
 }
 

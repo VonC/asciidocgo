@@ -344,10 +344,20 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode attributes can build image uri", t, func() {
-		an := newAbstractNode(nil, section)
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
 		target := ""
 		SkipConvey("TODO ImageUri must be tested", func() {
-			So(an.IconUri(target), ShouldEqual, "")
+			So(an.ImageUri(target, ""), ShouldEqual, "")
+		})
+		Convey("If the data-uri attribute is not there, imageUri with icon", func() {
+			So(an.ImageUri("http://a/b", ""), ShouldEqual, "http://a/b")
+		})
+		Convey("If the assetDirKey attribute is there, imageUri with start", func() {
+			an.Document().Attr("start-uri", "/a/b", false)
+			So(an.ImageUri("c/d", "start-uri"), ShouldEqual, "/a/b/c/d")
+			an.Attr("start-uri", "a/b", false)
+			So(an.ImageUri("c/d", "start-uri"), ShouldEqual, "a/b/c/d")
 		})
 	})
 }
