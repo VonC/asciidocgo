@@ -314,6 +314,8 @@ func TestAbstractNode(t *testing.T) {
 			So(an.MediaUri(target, ""), ShouldEqual, target)
 		})
 		Convey("If the assetDirKey attribute is not there, normalize the target.", func() {
+			target = "data"
+			So(an.MediaUri(target, ""), ShouldEqual, target)
 		})
 		Convey("If the assetDirKey attribute is there, normalize the target with it.", func() {
 			an.setAttr("imagesdir", "/images", true)
