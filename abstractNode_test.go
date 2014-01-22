@@ -330,7 +330,7 @@ func TestAbstractNode(t *testing.T) {
 	Convey("An abstractNode attributes can build icon uri", t, func() {
 		an := newAbstractNode(nil, section)
 		target := ""
-		SkipConvey("TODO imageUri must be tested", func() {
+		SkipConvey("TODO IconUri must be tested", func() {
 		})
 		Convey("If the icon attribute is not there, imageUri with icon", func() {
 			So(an.IconUri(target), ShouldEqual, "")
@@ -339,6 +339,14 @@ func TestAbstractNode(t *testing.T) {
 			an.setAttr("icon", "/icon", true)
 			So(an.IconUri(target), ShouldEqual, "")
 			an.setAttr("icontype", "jpg", true)
+			So(an.IconUri(target), ShouldEqual, "")
+		})
+	})
+
+	Convey("An abstractNode attributes can build image uri", t, func() {
+		an := newAbstractNode(nil, section)
+		target := ""
+		SkipConvey("TODO ImageUri must be tested", func() {
 			So(an.IconUri(target), ShouldEqual, "")
 		})
 	})

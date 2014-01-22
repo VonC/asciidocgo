@@ -362,7 +362,12 @@ asset_dir_key - The String attribute key used to lookup the directory where
 the image is located (default: 'imagesdir')
 
 Returns A String reference or data URI for the target image */
-//def image_uri(target_image, asset_dir_key = 'imagesdir')
+func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
+	if assetDirKey == "" {
+		assetDirKey = "imagesdir"
+	}
+	return ""
+}
 
 /* Normalize the web page using the PathResolver.
 target - the String target path
