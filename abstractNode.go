@@ -343,6 +343,27 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 	return normalizeWebPath(target, "")
 }
 
+/* Construct a URI reference or data URI to the target image.
+
+If the target image is a URI reference, then leave it untouched.
+
+The target image is resolved relative to the directory retrieved from the
+specified attribute key, if provided.
+
+If the 'data-uri' attribute is set on the document, and the safe mode level
+is less than SafeMode::SECURE, the image will be safely converted to
+a data URI by reading it from the same directory. If neither of these conditions
+are satisfied, a relative path (i.e., URL) will be returned.
+
+The return value of this method can be safely used in an image tag.
+
+target_image - A String path to the target image
+asset_dir_key - The String attribute key used to lookup the directory where
+the image is located (default: 'imagesdir')
+
+Returns A String reference or data URI for the target image */
+//def image_uri(target_image, asset_dir_key = 'imagesdir')
+
 /* Normalize the web page using the PathResolver.
 target - the String target path
 start  - the String start (i.e, parent) path (optional, default: nil)
