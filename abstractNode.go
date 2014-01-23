@@ -235,6 +235,7 @@ func (an *abstractNode) HasARole(name string) bool {
 	if name == "" {
 		return false
 	}
+	// inherit = true: check an.Document() as well
 	roles := an.Attr("role", nil, true)
 	if roles == nil {
 		return false
@@ -251,6 +252,7 @@ func (an *abstractNode) HasARole(name string) bool {
 
 // A convenience method that returns the value of the role attribute
 func (an *abstractNode) Role() interface{} {
+	// inherit = true: check an.Document() as well
 	return an.Attr("role", nil, true)
 }
 
@@ -272,6 +274,7 @@ func (an *abstractNode) HasReftext() bool {
 
 // A convenience method that returns the value of the reftext attribute
 func (an *abstractNode) Reftext() interface{} {
+	// inherit = true: check an.Document() as well
 	return an.Attr("reftext", nil, true)
 }
 
@@ -338,7 +341,8 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 	} else if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
 		// normalize_web_path(target, @document.attr(asset_dir_key)) ???
 		// How? (BUG?) @document can be nil.
-		return normalizeWebPath(target, an.Attr(assetDirKey, "", false).(string))
+		// At least, ask attr on an, with inherit true.
+		return normalizeWebPath(target, an.Attr(assetDirKey, "", true).(string))
 	}
 	return normalizeWebPath(target, "")
 }
