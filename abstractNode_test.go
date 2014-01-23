@@ -354,10 +354,18 @@ func TestAbstractNode(t *testing.T) {
 			So(an.ImageUri("http://a/b", ""), ShouldEqual, "http://a/b")
 		})
 		Convey("If the assetDirKey attribute is there, imageUri with start", func() {
-			an.Document().Attr("start-uri", "/a/b", false)
-			So(an.ImageUri("c/d", "start-uri"), ShouldEqual, "/a/b/c/d")
-			an.Attr("start-uri", "a/b", false)
-			So(an.ImageUri("c/d", "start-uri"), ShouldEqual, "a/b/c/d")
+			assetDirKey := "start-uri"
+			an.Document().setAttr("start-uri", "/a/b", true)
+			So(an.Document(), ShouldEqual, parent)
+			So(an.HasAttr("start-uri", nil, true), ShouldBeTrue)
+			So(an.Document().HasAttr(assetDirKey, nil, true), ShouldBeTrue)
+			So(an.Attr(assetDirKey, nil, true).(string), ShouldEqual, "/a/b")
+			So(an.Document().Attr(assetDirKey, nil, true).(string), ShouldEqual, "/a/b")
+			So(an.ImageUri("c/d", assetDirKey), ShouldEqual, "/a/b/c/d")
+			an.Document().setAttr("start-uri", "a/b", true)
+			So(an.Attr(assetDirKey, nil, true).(string), ShouldEqual, "a/b")
+			So(an.ImageUri("c/d", assetDirKey), ShouldEqual, "a/b/c/d")
+			So(an.ImageUri("c/d", assetDirKey+"2"), ShouldEqual, "c/d")
 		})
 	})
 }

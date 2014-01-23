@@ -342,7 +342,7 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 		// normalize_web_path(target, @document.attr(asset_dir_key)) ???
 		// How? (BUG?) @document can be nil.
 		// At least, ask attr on an, with inherit true.
-		return normalizeWebPath(target, an.Attr(assetDirKey, "", true).(string))
+		return normalizeWebPath(target, an.Attr(assetDirKey, nil, true).(string))
 	}
 	return normalizeWebPath(target, "")
 }
@@ -374,13 +374,12 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 		return targetImage
 	}
 	// if @document.safe < Asciidoctor::SafeMode::SECURE && @document.attr?('data-uri')
-	// if an.Document().HasAttr("data-uri", "", false)
-	if assetDirKey != "" && an.Document().HasAttr(assetDirKey, "", false) {
-		return normalizeWebPath(targetImage, an.Document().Attr(assetDirKey, "", false).(string))
+	// if an.Document().HasAttr("data-uri", nil, false)
+	if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
+		return normalizeWebPath(targetImage, an.Document().Attr(assetDirKey, nil, false).(string))
 	} else {
 		return normalizeWebPath(targetImage, "")
 	}
-	return ""
 }
 
 /* Normalize the web page using the PathResolver.
