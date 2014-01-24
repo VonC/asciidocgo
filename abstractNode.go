@@ -12,6 +12,9 @@ type Documentable interface {
 	HasAttr(name string, expect interface{}, inherit bool) bool
 	setAttr(name string, val interface{}, override bool) bool
 	HasReftext() bool
+
+	Safe() safeMode
+	BaseDir() string
 }
 
 /* An abstract base class that provides state and methods for managing
@@ -398,4 +401,14 @@ returns the resolved String path */
 func normalizeWebPath(target, start string) string {
 	res := WebPath(target, start)
 	return res
+}
+
+/* An actual document would have a default safe level of SERVER */
+func (an *abstractNode) Safe() safeMode {
+	return UNSAFE
+}
+
+/* An Actual document would have a base dir */
+func (an *abstractNode) BaseDir() string {
+	return ""
 }
