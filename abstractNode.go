@@ -5,19 +5,28 @@ import (
 	"unicode/utf8"
 )
 
+type Documentable interface {
+	Document() Documentable
+	Attributes() map[string]interface{}
+	Attr(name string, defaultValue interface{}, inherit bool) interface{}
+	HasAttr(name string, expect interface{}, inherit bool) bool
+	setAttr(name string, val interface{}, override bool) bool
+	HasReftext() bool
+}
+
 /* An abstract base class that provides state and methods for managing
 a node of AsciiDoc content.
 The state and methods on this class are comment to all content segments
 in an AsciiDoc document. */
 type abstractNode struct {
-	parent     *abstractNode
+	parent     Documentable
 	context    context
-	document   *abstractNode
+	document   Documentable
 	attributes map[string]interface{}
 	*substitutors
 }
 
-func newAbstractNode(parent *abstractNode, context context) *abstractNode {
+func newAbstractNode(parent Documentable, context context) *abstractNode {
 	abstractNode := &abstractNode{parent, context, nil, make(map[string]interface{}), &substitutors{}}
 	if context == document {
 		abstractNode.parent = nil
@@ -29,12 +38,12 @@ func newAbstractNode(parent *abstractNode, context context) *abstractNode {
 }
 
 //  Get the element which is the parent of this node
-func (an *abstractNode) Parent() *abstractNode {
+func (an *abstractNode) Parent() Documentable {
 	return an.parent
 }
 
 //  Get the Asciidoctor::Document to which this node belongs
-func (an *abstractNode) Document() *abstractNode {
+func (an *abstractNode) Document() Documentable {
 	return an.document
 }
 
@@ -84,8 +93,8 @@ func (an *abstractNode) Attr(name string, defaultValue interface{}, inherit bool
 		return an.attributes[name]
 	}
 	if inherit {
-		if an.document != nil && an.document.attributes[name] != nil {
-			return an.document.attributes[name]
+		if an.document != nil && an.document.Attributes()[name] != nil {
+			return an.document.Attributes()[name]
 		}
 	}
 	return defaultValue
@@ -122,7 +131,7 @@ func (an *abstractNode) HasAttr(name string, expect interface{}, inherit bool) b
 		}
 		if inherit {
 			if an.document != nil {
-				if _, hasAttr := an.document.attributes[name]; hasAttr {
+				if _, hasAttr := an.document.Attributes()[name]; hasAttr {
 					return true
 				}
 			}
@@ -133,8 +142,8 @@ func (an *abstractNode) HasAttr(name string, expect interface{}, inherit bool) b
 		return (expect == an.attributes[name])
 	}
 	if inherit {
-		if an.document != nil && an.document.attributes[name] != nil {
-			return (expect == an.document.attributes[name])
+		if an.document != nil && an.document.Attributes()[name] != nil {
+			return (expect == an.document.Attributes()[name])
 		}
 	}
 	return false
@@ -217,7 +226,7 @@ func (an *abstractNode) HasRole(role interface{}) bool {
 			return true
 		}
 		if an.Document() != nil {
-			if _, hasRole := an.Document().attributes["role"]; hasRole {
+			if _, hasRole := an.Document().Attributes()["role"]; hasRole {
 				return true
 			}
 		}
