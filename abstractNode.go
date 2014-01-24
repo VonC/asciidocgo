@@ -387,6 +387,10 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	}
 	// if @document.safe < Asciidoctor::SafeMode::SECURE && @document.attr?('data-uri')
 	// if an.Document().HasAttr("data-uri", nil, false)
+	if an.Document() != nil && an.Document().Safe() < SECURE && an.Document().HasAttr("data-uri", nil, true) {
+		// generate_data_uri(target_image, asset_dir_key)
+		return ""
+	}
 	if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
 		return normalizeWebPath(targetImage, an.Document().Attr(assetDirKey, nil, false).(string))
 	} else {

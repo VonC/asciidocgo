@@ -367,5 +367,11 @@ func TestAbstractNode(t *testing.T) {
 			So(an.ImageUri("c/d", assetDirKey), ShouldEqual, "a/b/c/d")
 			So(an.ImageUri("c/d", assetDirKey+"2"), ShouldEqual, "c/d")
 		})
+
+		Convey("If the data-uri attribute is on the Document, generate data uri", func() {
+			an.Document().setAttr("data-uri", "http://y/z", true)
+			an.ImageUri("c/d", "")
+			SkipSo(an.ImageUri("c/d", ""), ShouldEqual, "http://y/z/c/d")
+		})
 	})
 }
