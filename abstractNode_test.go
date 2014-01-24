@@ -343,6 +343,14 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
+	Convey("An abstractNode can normalize system paths", t, func() {
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
+		SkipConvey("TODO normalizeSystemPath must be tested", func() {
+			So(an.normalizeSystemPath("", "", "", false, ""), ShouldEqual, "")
+		})
+	})
+
 	Convey("An abstractNode attributes can generate data uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
@@ -351,6 +359,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.generateDataUri("a/b", ""), ShouldEqual, "")
 		})
 	})
+
 	Convey("An abstractNode attributes can build image uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)

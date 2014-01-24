@@ -450,6 +450,36 @@ func normalizeWebPath(target, start string) string {
 	return res
 }
 
+/* Resolve and normalize a secure path from the target and
+start paths using the PathResolver.
+
+See PathResolver::system_path(target, start, jail, opts) for details.
+
+The most important functionality in this method is to prevent resolving a
+path outside of the jail (which defaults to the directory of the source
+file, stored in the base_dir instance variable on Document) if the document
+safe level is set to SafeMode::SAFE or greater (a condition which is true
+by default).
+
+target - the String target path
+start  - the String start (i.e., parent) path
+jail   - the String jail path to confine the resolved path
+opts   - an optional Hash of options to control processing (default: {}):
+          * :recover is used to control whether the processor should auto-recover
+              when an illegal path is encountered
+          * :target_name is used in messages to refer to the path being resolved
+
+raises a SecurityError if a jail is specified and the resolved path is
+outside the jail.
+
+returns a String path resolved from the start and target paths, with any
+parent references resolved and self references removed. If a jail is provided,
+this path will be guaranteed to be contained within the jail. */
+//def normalize_system_path(target, start = nil, jail = nil, opts = {})
+func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecover bool, targetName string) string {
+	return ""
+}
+
 /* An actual document would have a default safe level of SERVER */
 func (an *abstractNode) Safe() safeMode {
 	return UNSAFE
