@@ -346,8 +346,18 @@ func TestAbstractNode(t *testing.T) {
 	Convey("An abstractNode can normalize system paths", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
-		SkipConvey("TODO normalizeSystemPath must be tested", func() {
-			So(an.normalizeSystemPath("", "", "", false, ""), ShouldEqual, "")
+		pr := NewPathResolver(0, "")
+		wd := Posixfy(pr.WorkingDir())
+		Convey("Empty target means working dir", func() {
+			So(an.normalizeSystemPath("", "", "", false, ""), ShouldEqual, Posixfy(pr.WorkingDir()))
+		})
+		Convey("Empty start and jail means working dir", func() {
+			So(an.normalizeSystemPath("a/b", "", "", false, ""), ShouldEqual, wd+"/a/b")
+		})
+		Convey("Empty start and jail and safe document means working dir", func() {
+			Test = "test_normalizeSystemPath_safeDocument"
+			So(an.normalizeSystemPath("a/b", "", "", false, ""), ShouldEqual, wd+"/a/b")
+			Test = ""
 		})
 	})
 

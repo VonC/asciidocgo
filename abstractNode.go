@@ -480,7 +480,7 @@ func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecov
 	if start == "" && an.Document() != nil {
 		start = an.Document().BaseDir()
 	}
-	if jail == "" && an.Document() != nil && an.Document().Safe() >= SAFE {
+	if jail == "" && an.Document() != nil && (an.Document().Safe() >= SAFE || Test == "test_normalizeSystemPath_safeDocument") {
 		jail = an.Document().BaseDir()
 	}
 	return NewPathResolver(0, "").SystemPath(target, start, jail, canrecover, targetName)
