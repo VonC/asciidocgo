@@ -398,6 +398,24 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	}
 }
 
+/* Generate a data URI that can be used to embed an image in the output document
+
+First, and foremost, the target image path is cleaned if the document
+safe mode level is set to at least SafeMode::SAFE
+(a condition which is true by default) to prevent access to ancestor paths
+in the filesystem.
+The image data is then read and converted to Base64.
+Finally, a data URI is built which can be used in an image tag.
+
+target_image - A String path to the target image
+asset_dir_key - The String attribute key used to lookup the directory where
+                the image is located (default: nil)
+
+Returns A String data URI containing the content of the target image*/
+func (an *abstractNode) generateDataUri(target_image, asset_dir_key string) string {
+	return ""
+}
+
 /* Normalize the web page using the PathResolver.
 target - the String target path
 start  - the String start (i.e, parent) path (optional, default: nil)

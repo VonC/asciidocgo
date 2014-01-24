@@ -343,6 +343,14 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
+	Convey("An abstractNode attributes can generate data uri", t, func() {
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
+
+		SkipConvey("TODO generateDataUri must be tested", func() {
+			So(an.generateDataUri("a/b", ""), ShouldEqual, "")
+		})
+	})
 	Convey("An abstractNode attributes can build image uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
