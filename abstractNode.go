@@ -477,7 +477,13 @@ parent references resolved and self references removed. If a jail is provided,
 this path will be guaranteed to be contained within the jail. */
 //def normalize_system_path(target, start = nil, jail = nil, opts = {})
 func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecover bool, targetName string) string {
-	return ""
+	if start == "" && an.Document() != nil {
+		start = an.Document().BaseDir()
+	}
+	if jail == "" && an.Document() != nil && an.Document().Safe() >= SAFE {
+		jail = an.Document().BaseDir()
+	}
+	return NewPathResolver(0, "").SystemPath(target, start, jail, canrecover, targetName)
 }
 
 /* An actual document would have a default safe level of SERVER */
