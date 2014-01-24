@@ -418,25 +418,28 @@ Returns A String data URI containing the content of the target image*/
 func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string {
 	ext := filepath.Ext(targetImage)
 	mimetype := "image/" + ext
+	if len(ext) > 1 {
+		ext = ext[1:]
+	}
 	if ext == "svg" {
 		mimetype = mimetype + "+xml"
 	}
+	//return fmt.Sprintf("ext='%v' for mimetype='%v'", ext, mimetype)
 	imagePath := ""
-	if assetDirKey != "" {
-		imagePath = ""
-		// TODO: image_path = normalize_system_path(target_image, @document.attr(asset_dir_key), nil, :target_name => 'image')
+	if assetDirKey != "" && an.Document() != nil && an.Document().Attr(assetDirKey, nil, true) != nil {
+		// image_path = normalize_system_path(target_image, @document.attr(asset_dir_key), nil, :target_name => 'image')
+		imagePath = an.normalizeSystemPath(targetImage, an.Document().Attr(assetDirKey, nil, true).(string), "", false, "image")
 	} else {
-		imagePath = ""
-		// TODO: image_path = normalize_system_path(target_image)
+		imagePath = an.normalizeSystemPath(targetImage, "", "", false, "")
+	}
+	if Test == "test_generateDataUri_imagePath" {
+		return fmt.Sprintf("imagePath='%v'", imagePath)
 	}
 	if _, err := os.Open(imagePath); err != nil {
 		fmt.Errorf("asciidocgo: WARNING: image to embed not found or not readable: '%v'", imagePath)
 		return "data:" + mimetype + ":base64,"
 		// uncomment to return 1 pixel white dot instead
 		// return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
-	}
-	if Test == "test_generateDataUri_imagePath" {
-		return fmt.Sprintf("imagePath='%v'", imagePath)
 	}
 	return ""
 }

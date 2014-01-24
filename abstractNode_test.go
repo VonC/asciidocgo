@@ -365,9 +365,17 @@ func TestAbstractNode(t *testing.T) {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
 
-		SkipConvey("TODO generateDataUri must be tested", func() {
-			So(an.generateDataUri("a/b", ""), ShouldEqual, "")
+		Convey("Empty target and assetDir means working dir, mening empty data uri", func() {
+			So(an.generateDataUri("", ""), ShouldEqual, "")
 		})
+		Convey("Svg target and empty assetDir means data: with svg+xml mimetype", func() {
+			So(an.generateDataUri("a/b.svg", ""), ShouldEqual, "data:image/.svg+xml:base64,")
+		})
+		Test = "test_generateDataUri_imagePath"
+		Convey("Svg target and non-empty assetDir imagePath", func() {
+			So(an.generateDataUri("a/b.svg", "c:/d"), ShouldEqual, "data:image/.svg+xml:base64,")
+		})
+		Test = ""
 	})
 
 	Convey("An abstractNode attributes can build image uri", t, func() {
