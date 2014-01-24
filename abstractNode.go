@@ -1,6 +1,9 @@
 package asciidocgo
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"unicode/utf8"
 )
@@ -322,10 +325,10 @@ Returns A String reference or data URI for an icon image */
 func (an *abstractNode) IconUri(name string) string {
 	if an.HasAttr("icon", nil, false) {
 		return ""
-		//an.ImageUri(an.Attr("icon", nil, false).(string), "")
+		//TODO: an.ImageUri(an.Attr("icon", nil, false).(string), "")
 	} else {
 		return ""
-		//an.ImageUri(name+an.Attr("icontype", "png", false), "iconsdir")
+		//TODO: an.ImageUri(name+an.Attr("icontype", "png", false), "iconsdir")
 	}
 }
 
@@ -388,7 +391,7 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	// if @document.safe < Asciidoctor::SafeMode::SECURE && @document.attr?('data-uri')
 	// if an.Document().HasAttr("data-uri", nil, false)
 	if an.Document() != nil && an.Document().Safe() < SECURE && an.Document().HasAttr("data-uri", nil, true) {
-		// generate_data_uri(target_image, asset_dir_key)
+		// TODO: generate_data_uri(target_image, asset_dir_key)
 		return ""
 	}
 	if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
@@ -412,7 +415,29 @@ asset_dir_key - The String attribute key used to lookup the directory where
                 the image is located (default: nil)
 
 Returns A String data URI containing the content of the target image*/
-func (an *abstractNode) generateDataUri(target_image, asset_dir_key string) string {
+func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string {
+	ext := filepath.Ext(targetImage)
+	mimetype := "image/" + ext
+	if ext == "svg" {
+		mimetype = mimetype + "+xml"
+	}
+	imagePath := ""
+	if assetDirKey != "" {
+		imagePath = ""
+		// TODO: image_path = normalize_system_path(target_image, @document.attr(asset_dir_key), nil, :target_name => 'image')
+	} else {
+		imagePath = ""
+		// TODO: image_path = normalize_system_path(target_image)
+	}
+	if _, err := os.Open(imagePath); err != nil {
+		fmt.Errorf("asciidocgo: WARNING: image to embed not found or not readable: '%v'", imagePath)
+		return "data:" + mimetype + ":base64,"
+		// uncomment to return 1 pixel white dot instead
+		// return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+	}
+	if Test == "test_generateDataUri_imagePath" {
+		return fmt.Sprintf("imagePath='%v'", imagePath)
+	}
 	return ""
 }
 
