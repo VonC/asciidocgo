@@ -1,7 +1,9 @@
 package asciidocgo
 
 import (
+	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -417,10 +419,10 @@ asset_dir_key - The String attribute key used to lookup the directory where
 Returns A String data URI containing the content of the target image*/
 func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string {
 	ext := filepath.Ext(targetImage)
-	mimetype := "image/" + ext
 	if len(ext) > 1 {
 		ext = ext[1:]
 	}
+	mimetype := "image/" + ext
 	if ext == "svg" {
 		mimetype = mimetype + "+xml"
 	}
@@ -435,13 +437,17 @@ func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string 
 	if Test == "test_generateDataUri_imagePath" {
 		return fmt.Sprintf("imagePath='%v'", imagePath)
 	}
-	if _, err := os.Open(imagePath); err != nil {
-		fmt.Errorf("asciidocgo: WARNING: image to embed not found or not readable: '%v'", imagePath)
-		return "data:" + mimetype + ":base64,"
-		// uncomment to return 1 pixel white dot instead
-		// return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+	if flle, err := os.Open(imagePath); err == nil {
+		defer flle.Close()
+		reader := bufio.NewReader(flle)
+		if content, err := ioutil.ReadAll(reader); err == nil {
+			return string(content)
+		}
 	}
-	return ""
+	fmt.Errorf("asciidocgo: WARNING: image to embed not found or not readable: '%v'", imagePath)
+	return "data:" + mimetype + ":base64,"
+	// uncomment to return 1 pixel white dot instead
+	// return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
 }
 
 /* Normalize the web page using the PathResolver.

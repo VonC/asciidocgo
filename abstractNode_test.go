@@ -367,11 +367,12 @@ func TestAbstractNode(t *testing.T) {
 		pr := NewPathResolver(0, "")
 		wd := Posixfy(pr.WorkingDir())
 
-		Convey("Empty target and assetDir means working dir, meaning empty data uri", func() {
-			So(an.generateDataUri("", ""), ShouldEqual, "")
+		Convey("Empty target and assetDir means working dir, meaning defaut data uri content", func() {
+			So(an.generateDataUri("", ""), ShouldEqual, "data:image/:base64,")
+			So(an.generateDataUri("a/b.exe", ""), ShouldEqual, "data:image/exe:base64,")
 		})
-		Convey("Svg target and empty assetDir means data: with svg+xml mimetype", func() {
-			So(an.generateDataUri("a/b.svg", ""), ShouldEqual, "data:image/.svg+xml:base64,")
+		Convey("Svg non-existing target and empty assetDir means data: with svg+xml mimetype", func() {
+			So(an.generateDataUri("a/b.svg", ""), ShouldEqual, "data:image/svg+xml:base64,")
 		})
 		Convey("Svg target and non-empty assetDir imagePath", func() {
 			Test = "test_generateDataUri_imagePath"
@@ -379,6 +380,9 @@ func TestAbstractNode(t *testing.T) {
 			parent.setAttr("akey", "c:/x", true)
 			So(an.generateDataUri("a/b.svg", "akey"), ShouldEqual, "imagePath='c:/x/a/b.svg'")
 			Test = ""
+		})
+		Convey("Existing target and empty assetDir means data content", func() {
+			So(an.generateDataUri("test/t.txt", ""), ShouldEqual, "test data")
 		})
 	})
 
