@@ -417,4 +417,12 @@ func TestAbstractNode(t *testing.T) {
 			SkipSo(an.ImageUri("c/d", ""), ShouldEqual, "http://y/z/c/d")
 		})
 	})
+	Convey("An abstractNode can read asset", t, func() {
+		Convey("It can warn on an non-existing asset", func() {
+			So(ReadAsset("a/b.txt", true), ShouldEqual, "")
+		})
+		Convey("It read an existing asset", func() {
+			So(ReadAsset("test/t.txt", true), ShouldEqual, "test data")
+		})
+	})
 }

@@ -450,6 +450,32 @@ func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string 
 	// return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
 }
 
+/* Read the contents of the file at the specified path.
+This method assumes that the path is safe to read. It checks
+that the file is readable before attempting to read it.
+path            - the String path from which to read the contents
+warn_on_failure - a Boolean that controls whether a warning is issued if
+                  the file cannot be read
+returns the contents of the file at the specified path, or nil
+if the file does not exist. */
+func ReadAsset(path string, warnOnFailure bool) string {
+	if file, err := os.Open(path); err == nil {
+		defer file.Close()
+		reader := bufio.NewReader(file)
+		if content, err := ioutil.ReadAll(reader); err == nil {
+			res := string(content)
+			// QUESTION should we use strip or rstrip instead of chomp here?
+			// Here: uses a more advanced chomp function
+			res = strings.TrimRight(res, " \r\n")
+			return res
+		}
+	}
+	if warnOnFailure {
+		fmt.Errorf("asciidocgo: WARNING: file does not exist or cannot be read: '%v'", path)
+	}
+	return ""
+}
+
 /* Normalize the web page using the PathResolver.
 target - the String target path
 start  - the String start (i.e, parent) path (optional, default: nil)
