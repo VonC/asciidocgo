@@ -539,7 +539,11 @@ func (an *abstractNode) normalizeAssetPath(assetRef, assetName string, autocorre
 /* Calculate the relative path to this absolute filename
 from the Document#base_dir */
 func (an *abstractNode) relativePath(filename string) string {
-	return ""
+	baseDirectory := ""
+	if an.Document() != nil {
+		baseDirectory = an.Document().BaseDir()
+	}
+	return NewPathResolver(0, "").RelativePath(filename, baseDirectory)
 }
 
 /* An actual document would have a default safe level of SERVER */

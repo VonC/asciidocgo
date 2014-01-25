@@ -436,8 +436,11 @@ func TestAbstractNode(t *testing.T) {
 	Convey("An abstractNode can compute relative path", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
-		Convey("Empty parameters means working directory", func() {
+		Convey("Empty parameters means empty relative path", func() {
 			So(an.relativePath(""), ShouldEqual, "")
+		})
+		Convey("Non-empty filename means filename if document has no basedir", func() {
+			So(an.relativePath("a/b.txt"), ShouldEqual, "a/b.txt")
 		})
 	})
 }
