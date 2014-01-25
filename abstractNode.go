@@ -326,11 +326,13 @@ Returns A String reference or data URI for an icon image */
 
 func (an *abstractNode) IconUri(name string) string {
 	if an.HasAttr("icon", nil, false) {
-		return ""
-		//TODO: an.ImageUri(an.Attr("icon", nil, false).(string), "")
+		return an.ImageUri(an.Attr("icon", nil, false).(string), "")
 	} else {
-		return ""
-		//TODO: an.ImageUri(name+an.Attr("icontype", "png", false), "iconsdir")
+		targetImage := name + "."
+		if an.Document() != nil {
+			targetImage = targetImage + an.Document().Attr("icontype", "png", false).(string)
+		}
+		return an.ImageUri(targetImage, "iconsdir")
 	}
 }
 
