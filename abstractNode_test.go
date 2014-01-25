@@ -421,7 +421,7 @@ func TestAbstractNode(t *testing.T) {
 			So(ReadAsset("test/t.txt", true), ShouldEqual, "test data")
 		})
 	})
-	Convey("An abstractNode attributes can build image uri", t, func() {
+	Convey("An abstractNode can normalize asset path", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
 		pr := NewPathResolver(0, "")

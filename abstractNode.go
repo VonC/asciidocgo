@@ -536,11 +536,7 @@ func (an *abstractNode) normalizeAssetPath(assetRef, assetName string, autocorre
 	return an.normalizeSystemPath(assetRef, start, "", autocorrect, assetName)
 }
 
-/*def normalize_asset_path(asset_ref, asset_name = 'path', autocorrect = true)
-    normalize_system_path(asset_ref, @document.base_dir, nil,
-        :target_name => asset_name, :recover => autocorrect)
-  end
-*/
+
 /* An actual document would have a default safe level of SERVER */
 func (an *abstractNode) Safe() safeMode {
 	return UNSAFE
