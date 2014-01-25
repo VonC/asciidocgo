@@ -342,7 +342,11 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 		copy(startSegments, jailSegments)
 	} else if jail != "" {
 		if !strings.HasPrefix(start, jail) {
-			panic(fmt.Sprintf("Start path '%v' is outside of jail: '%v' (disallowed in safe mode)", start, jail))
+			aTargetName := targetName
+			if targetName == "" {
+				aTargetName = "Start path"
+			}
+			panic(fmt.Sprintf("%v '%v' is outside of jail: '%v' (disallowed in safe mode)", aTargetName, start, jail))
 		}
 		startSegments, startRoot, _ = PartitionPath(start, false)
 		jailSegments, jailRoot, _ = PartitionPath(jail, false)
@@ -363,12 +367,16 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 		if segment == ".." {
 			lr := len(resolvedSegments)
 			if jail != "" {
+				aTargetName := targetName
+				if targetName == "" {
+					aTargetName = "path"
+				}
 				if lr > len(jailSegments) {
 					resolvedSegments = resolvedSegments[:lr-1]
 				} else if !canrecover {
-					panic(fmt.Sprintf("path '%v' refers to location outside jail: '%v' (disallowed in safe mode)", target, jail))
+					panic(fmt.Sprintf("%v '%v' refers to location outside jail: '%v' (disallowed in safe mode)", aTargetName, target, jail))
 				} else if !warned {
-					fmt.Errorf("asciidoctor: WARNING: target '%v' has illegal reference to ancestor of jail, auto-recovering", target)
+					fmt.Errorf("asciidoctor: WARNING: %v '%v' has illegal reference to ancestor of jail, auto-recovering", aTargetName, target)
 					warned = true
 				}
 			} else {
