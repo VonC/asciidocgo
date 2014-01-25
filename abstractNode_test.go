@@ -168,7 +168,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Attr("key3", nil, false), ShouldEqual, "val3")
 		})
 	})
-	Convey("An abstractNode attributes can check for a role", t, func() {
+	Convey("An abstractNode can check for a role", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("role", "roleFromParentDocument", true)
@@ -189,7 +189,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasRole("roleFromParentDocument"), ShouldBeFalse)
 		})
 	})
-	Convey("An abstractNode attributes can check for a role name", t, func() {
+	Convey("An abstractNode can check for a role name", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("role", "role1FromParentDocument role2FromParentDocument role3FromParentDocument", true)
@@ -212,7 +212,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasARole(""), ShouldBeFalse)
 		})
 	})
-	Convey("An abstractNode attributes can access role", t, func() {
+	Convey("An abstractNode can access role", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("role", "roleFromParentDocument", true)
@@ -228,7 +228,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Role(), ShouldEqual, "roleFromAN")
 		})
 	})
-	Convey("An abstractNode attributes can access role names", t, func() {
+	Convey("An abstractNode can access role names", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("role", "role1FromParentDocument role2FromParentDocument role3FromParentDocument", true)
@@ -246,7 +246,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
-	Convey("An abstractNode attributes can check for a reftext", t, func() {
+	Convey("An abstractNode can check for a reftext", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
@@ -270,7 +270,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
-	Convey("An abstractNode attributes can access reftext", t, func() {
+	Convey("An abstractNode can access reftext", t, func() {
 		an := newAbstractNode(nil, document)
 		parentDocument := newAbstractNode(nil, document)
 		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
@@ -287,7 +287,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
-	Convey("An abstractNode attributes can check for Slash Usage", t, func() {
+	Convey("An abstractNode can check for Slash Usage", t, func() {
 		an := newAbstractNode(nil, section)
 		parentDocument := newAbstractNode(nil, document)
 		Convey("A abstractNode without document won't use slash", func() {
@@ -304,7 +304,7 @@ func TestAbstractNode(t *testing.T) {
 			So(strings.Trim(strconv.QuoteRune(*an.ShortTagSlash()), "'"), ShouldEqual, "/")
 		})
 	})
-	Convey("An abstractNode attributes can build media uri", t, func() {
+	Convey("An abstractNode can build media uri", t, func() {
 		an := newAbstractNode(nil, section)
 		target := ""
 		Convey("If the target media is a URI reference, then leave it untouched.", func() {
@@ -327,7 +327,7 @@ func TestAbstractNode(t *testing.T) {
 
 	})
 
-	Convey("An abstractNode attributes can build icon uri", t, func() {
+	Convey("An abstractNode can build icon uri", t, func() {
 		an := newAbstractNode(nil, section)
 		target := ""
 		SkipConvey("TODO IconUri must be tested", func() {
@@ -361,7 +361,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
-	Convey("An abstractNode attributes can generate data uri", t, func() {
+	Convey("An abstractNode can generate data uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
 		pr := NewPathResolver(0, "")
@@ -386,13 +386,9 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 
-	Convey("An abstractNode attributes can build image uri", t, func() {
+	Convey("An abstractNode can build image uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
-		target := ""
-		SkipConvey("TODO ImageUri must be tested", func() {
-			So(an.ImageUri(target, ""), ShouldEqual, "")
-		})
 		Convey("If the data-uri attribute is not there, imageUri with icon", func() {
 			So(an.ImageUri("http://a/b", ""), ShouldEqual, "http://a/b")
 		})
