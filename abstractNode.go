@@ -521,6 +521,19 @@ func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecov
 	return NewPathResolver(0, "").SystemPath(target, start, jail, canrecover, targetName)
 }
 
+/*Normalize the asset file or directory to a concrete and rinsed path
+
+Delegates to normalize_system_path, with the start path set to the value of
+the base_dir instance variable on the Document object. */
+func (an *abstractNode) normalizeAssetPath(assetRef, assetName string, autocorrect bool) string {
+	return ""
+}
+
+/*def normalize_asset_path(asset_ref, asset_name = 'path', autocorrect = true)
+    normalize_system_path(asset_ref, @document.base_dir, nil,
+        :target_name => asset_name, :recover => autocorrect)
+  end
+*/
 /* An actual document would have a default safe level of SERVER */
 func (an *abstractNode) Safe() safeMode {
 	return UNSAFE
