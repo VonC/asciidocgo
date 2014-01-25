@@ -433,4 +433,11 @@ func TestAbstractNode(t *testing.T) {
 			So(an.normalizeAssetPath("a/b", "", false), ShouldEqual, wd+"/a/b")
 		})
 	})
+	Convey("An abstractNode can compute relative path", t, func() {
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
+		Convey("Empty parameters means working directory", func() {
+			So(an.relativePath(""), ShouldEqual, "")
+		})
+	})
 }
