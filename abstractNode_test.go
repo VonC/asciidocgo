@@ -424,8 +424,13 @@ func TestAbstractNode(t *testing.T) {
 	Convey("An abstractNode attributes can build image uri", t, func() {
 		parent := newAbstractNode(nil, section)
 		an := newAbstractNode(parent, document)
-		Convey("Empty parameters means", func() {
-			So(an.normalizeAssetPath("", "", false), ShouldEqual, "")
+		pr := NewPathResolver(0, "")
+		wd := Posixfy(pr.WorkingDir())
+		Convey("Empty parameters means working directory", func() {
+			So(an.normalizeAssetPath("", "", false), ShouldEqual, wd)
+		})
+		Convey("target means working directory + target", func() {
+			So(an.normalizeAssetPath("a/b", "", false), ShouldEqual, wd+"/a/b")
 		})
 	})
 }

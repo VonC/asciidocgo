@@ -526,7 +526,14 @@ func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecov
 Delegates to normalize_system_path, with the start path set to the value of
 the base_dir instance variable on the Document object. */
 func (an *abstractNode) normalizeAssetPath(assetRef, assetName string, autocorrect bool) string {
-	return ""
+	if assetName == "" {
+		assetName = "path"
+	}
+	start := ""
+	if an.Document() != nil {
+		start = an.Document().BaseDir()
+	}
+	return an.normalizeSystemPath(assetRef, start, "", autocorrect, assetName)
 }
 
 /*def normalize_asset_path(asset_ref, asset_name = 'path', autocorrect = true)
