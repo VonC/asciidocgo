@@ -408,9 +408,9 @@ func TestAbstractNode(t *testing.T) {
 		})
 
 		Convey("If the data-uri attribute is on the Document, generate data uri", func() {
-			an.Document().setAttr("data-uri", "http://y/z", true)
+			an.Document().setAttr("data-uri", "anything", true)
 			an.ImageUri("c/d", "")
-			SkipSo(an.ImageUri("c/d", ""), ShouldEqual, "http://y/z/c/d")
+			So(an.ImageUri("c/d.anext", ""), ShouldEqual, "data:image/anext:base64,")
 		})
 	})
 	Convey("An abstractNode can read asset", t, func() {

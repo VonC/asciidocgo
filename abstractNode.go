@@ -390,11 +390,8 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	if strings.Contains(targetImage, ":") && REGEXP[":uri_sniff"].MatchString(targetImage) {
 		return targetImage
 	}
-	// if @document.safe < Asciidoctor::SafeMode::SECURE && @document.attr?('data-uri')
-	// if an.Document().HasAttr("data-uri", nil, false)
 	if an.Document() != nil && an.Document().Safe() < SECURE && an.Document().HasAttr("data-uri", nil, true) {
-		// TODO: generate_data_uri(target_image, asset_dir_key)
-		return ""
+		return an.generateDataUri(targetImage, assetDirKey)
 	}
 	if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
 		return normalizeWebPath(targetImage, an.Document().Attr(assetDirKey, nil, false).(string))
