@@ -437,9 +437,9 @@ func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string 
 	if Test == "test_generateDataUri_imagePath" {
 		return fmt.Sprintf("imagePath='%v'", imagePath)
 	}
-	if flle, err := os.Open(imagePath); err == nil {
-		defer flle.Close()
-		reader := bufio.NewReader(flle)
+	if file, err := os.Open(imagePath); err == nil {
+		defer file.Close()
+		reader := bufio.NewReader(file)
 		if content, err := ioutil.ReadAll(reader); err == nil {
 			return string(content)
 		}
