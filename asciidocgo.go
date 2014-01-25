@@ -118,6 +118,16 @@ const (
 
 var ADMONITION_STYLES utils.Arr = []string{"NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"}
 
+var ORDERED_LIST_KEYWORDS = map[string]rune{
+	"loweralpha": 'a',
+	"lowerroman": 'i',
+	"upperalpha": 'A',
+	"upperroman": 'I',
+	//'lowergreek': 'a'
+	//'arabic': '1'
+	//'decimal': '1'
+}
+
 /* The following pattern, which appears frequently, captures the contents
 between square brackets, ignoring escaped closing brackets
 (closing brackets prefixed with a backslash '\' character)

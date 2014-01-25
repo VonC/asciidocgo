@@ -546,6 +546,23 @@ func (an *abstractNode) relativePath(filename string) string {
 	return NewPathResolver(0, "").RelativePath(filename, baseDirectory)
 }
 
+/* an abstract block would have a style */
+func (an *abstractNode) Style() string {
+	return ""
+}
+
+/* Retrieve the list marker keyword for the specified list type.
+For use in the HTML type attribute.
+list_type - the type of list; default to the @style if not specified
+returns the single-character String keyword that represents
+the marker for the specified list type */
+func (an *abstractNode) listMarkerKeyword(listType string) rune {
+	if listType == "" {
+		listType = an.Style()
+	}
+	return ORDERED_LIST_KEYWORDS[listType]
+}
+
 /* An actual document would have a default safe level of SERVER */
 func (an *abstractNode) Safe() safeMode {
 	return UNSAFE

@@ -443,4 +443,15 @@ func TestAbstractNode(t *testing.T) {
 			So(an.relativePath("a/b.txt"), ShouldEqual, "a/b.txt")
 		})
 	})
+
+	Convey("An abstractNode can access marker keyword", t, func() {
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
+		Convey("Empty parameters means empty style means empty rune", func() {
+			So(an.listMarkerKeyword(""), ShouldEqual, 0)
+		})
+		Convey("Non-empty listType means rune", func() {
+			So(an.listMarkerKeyword("upperalpha"), ShouldEqual, 'A')
+		})
+	})
 }
