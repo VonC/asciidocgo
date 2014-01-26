@@ -20,6 +20,7 @@ type Documentable interface {
 
 	Safe() safeMode
 	BaseDir() string
+	Level() int
 }
 
 /* An abstract base class that provides state and methods for managing
@@ -570,4 +571,9 @@ func (an *abstractNode) Safe() safeMode {
 /* An Actual document would have a base dir */
 func (an *abstractNode) BaseDir() string {
 	return ""
+}
+
+/* An Actual abstract Block would have a level */
+func (an *abstractNode) Level() int {
+	return -1
 }

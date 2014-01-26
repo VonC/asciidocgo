@@ -453,4 +453,10 @@ func TestAbstractNode(t *testing.T) {
 			So(an.listMarkerKeyword("upperalpha"), ShouldEqual, 'A')
 		})
 	})
+
+	Convey("An abstractNode always has a level of -1", t, func() {
+		parent := newAbstractNode(nil, section)
+		an := newAbstractNode(parent, document)
+		So(an.Level(), ShouldEqual, -1)
+	})
 }
