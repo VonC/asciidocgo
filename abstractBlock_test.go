@@ -41,6 +41,11 @@ func TestAbstractBlock(t *testing.T) {
 			ablock := newAbstractBlock(parent, paragraph)
 			So(ablock.Level(), ShouldEqual, 2)
 		})
+		Convey("By default, an AbstractBlock has an empty title", func() {
+			So(ab.title, ShouldEqual, "")
+			ab.setTitle("a title")
+			So(ab.title, ShouldEqual, "a title")
+		})
 	})
 
 }

@@ -9,6 +9,7 @@ type abstractBlock struct {
 	templateName string
 	blocks       []*abstractBlock
 	level        int
+	title        string
 }
 
 func newAbstractBlock(parent Documentable, context context) *abstractBlock {
@@ -19,7 +20,7 @@ func newAbstractBlock(parent Documentable, context context) *abstractBlock {
 	} else if parent != nil && context != section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, ""}
 	return abstractBlock
 }
 
@@ -56,4 +57,9 @@ func (ab *abstractBlock) Level() int {
 }
 func (ab *abstractBlock) SetLevel(l int) {
 	ab.level = l
+}
+
+/* Set the String block title. */
+func (ab *abstractBlock) setTitle(t string) {
+	ab.title = t
 }
