@@ -8,4 +8,19 @@ const (
 	verse
 	verbatim
 	simple
+	unknowncm
 )
+
+func (cm contentModel) String() string {
+	switch cm {
+	case compound:
+		return "compound"
+	case verse:
+		return "verse"
+	case verbatim:
+		return "verbatim"
+	case simple:
+		return "simple"
+	}
+	return "unknowncm"
+}
