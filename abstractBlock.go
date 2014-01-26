@@ -11,6 +11,7 @@ type abstractBlock struct {
 	level        int
 	title        string
 	style        string
+	caption      string
 }
 
 func newAbstractBlock(parent Documentable, context context) *abstractBlock {
@@ -21,7 +22,7 @@ func newAbstractBlock(parent Documentable, context context) *abstractBlock {
 	} else if parent != nil && context != section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", ""}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", ""}
 	return abstractBlock
 }
 
@@ -71,4 +72,12 @@ func (ab *abstractBlock) Style() string {
 }
 func (ab *abstractBlock) SetStyle(s string) {
 	ab.style = s
+}
+
+/* Get/Set the caption for this block. */
+func (ab *abstractBlock) Caption() string {
+	return ab.caption
+}
+func (ab *abstractBlock) SetCaption(c string) {
+	ab.caption = c
 }

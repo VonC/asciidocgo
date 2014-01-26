@@ -51,6 +51,11 @@ func TestAbstractBlock(t *testing.T) {
 			ab.SetStyle("a style")
 			So(ab.Style(), ShouldEqual, "a style")
 		})
+		Convey("By default, an AbstractBlock has an empty caption", func() {
+			So(ab.Caption(), ShouldEqual, "")
+			ab.SetCaption("a caption")
+			So(ab.Caption(), ShouldEqual, "a caption")
+		})
 	})
 
 }
