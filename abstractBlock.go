@@ -5,13 +5,15 @@ a block of AsciiDoc content, which is a node. */
 type abstractBlock struct {
 	*abstractNode
 	contentModel
-	subs         []string
-	templateName string
-	blocks       []*abstractBlock
-	level        int
-	title        string
-	style        string
-	caption      string
+	subs              []string
+	templateName      string
+	blocks            []*abstractBlock
+	level             int
+	title             string
+	style             string
+	caption           string
+	nextSectionIndex  int
+	nextSectionNumber int
 }
 
 func newAbstractBlock(parent Documentable, context context) *abstractBlock {
@@ -22,7 +24,7 @@ func newAbstractBlock(parent Documentable, context context) *abstractBlock {
 	} else if parent != nil && context != section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", ""}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1}
 	return abstractBlock
 }
 
