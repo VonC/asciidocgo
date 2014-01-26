@@ -8,11 +8,18 @@ type abstractBlock struct {
 	subs         []string
 	templateName string
 	blocks       []*abstractBlock
+	level        int
 }
 
 func newAbstractBlock(parent Documentable, context context) *abstractBlock {
 	templateName := "block_" + context.String()
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}}
+	level := -1 // there is no 'nil' for an int
+	if context == document {
+		level = 0
+	} else if parent != nil && context != section {
+		level = parent.Level()
+	}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level}
 	return abstractBlock
 }
 
@@ -40,4 +47,13 @@ func (ab *abstractBlock) SetTemplateName(tn string) {
 /* Array of Asciidoctor::AbstractBlock sub-blocks for this block */
 func (ab *abstractBlock) Blocks() []*abstractBlock {
 	return ab.blocks
+}
+
+/* Get/Set the Integer level of this Section or the Section level
+in which this Block resides */
+func (ab *abstractBlock) Level() int {
+	return ab.level
+}
+func (ab *abstractBlock) SetLevel(l int) {
+	ab.level = l
 }

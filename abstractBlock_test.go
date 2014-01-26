@@ -29,6 +29,18 @@ func TestAbstractBlock(t *testing.T) {
 		Convey("By default, an AbstractBlock has no blocks", func() {
 			So(len(ab.Blocks()), ShouldEqual, 0)
 		})
+		Convey("By default, an AbstractBlock with no document context and no parent has a level of -1", func() {
+			So(newAbstractBlock(nil, section).Level(), ShouldEqual, -1)
+		})
+		Convey("By default, an AbstractBlock with document context has a level of 0", func() {
+			So(ab.Level(), ShouldEqual, 0)
+		})
+		Convey("By default, an AbstractBlock with parent of non-section context has a level of the parent", func() {
+			parent := newAbstractBlock(nil, document)
+			parent.SetLevel(2)
+			ablock := newAbstractBlock(parent, paragraph)
+			So(ablock.Level(), ShouldEqual, 2)
+		})
 	})
 
 }
