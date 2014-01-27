@@ -96,6 +96,9 @@ If the block has child blocks, the content method should cause them
 to be rendered and returned as content that can be included
 in the parent block's template. */
 func (ab *abstractBlock) Render() string {
-	return ""
+	if ab.Document() != nil {
+		ab.Document().PlaybackAttributes(ab.Attributes())
+	}
+	return ab.Renderer().Render(ab.TemplateName(), ab, []interface{}{})
 	// TODO make sure document playback_attributes and renderer hare implemented
 }

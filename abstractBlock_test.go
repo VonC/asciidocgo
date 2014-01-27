@@ -68,7 +68,8 @@ func TestAbstractBlock(t *testing.T) {
 	})
 
 	Convey("An abstractBlock can render its content", t, func() {
-		ab := newAbstractBlock(nil, document)
+		parent := newAbstractBlock(nil, paragraph)
+		ab := newAbstractBlock(parent, document)
 		So(ab.Render(), ShouldEqual, "")
 		// TODO complete
 	})
