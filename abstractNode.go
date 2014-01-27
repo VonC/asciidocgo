@@ -21,6 +21,9 @@ type Documentable interface {
 	Safe() safeMode
 	BaseDir() string
 	Level() int
+
+	PlaybackAttributes(map[string]interface{})
+	Renderer() *Renderer
 }
 
 /* An abstract base class that provides state and methods for managing
@@ -210,6 +213,20 @@ return a Boolean indicating whether the option has been specified
 */
 func (an *abstractNode) HasOption(option string) bool {
 	_, res := an.attributes[option+"-option"]
+	return res
+}
+
+type Renderer struct{}
+
+func (r *Renderer) Render(view string, object interface{}, locals []interface{}) string { return "" }
+
+/* Get the Renderer instance being used for the
+Document to which this node belongs */
+func (an *abstractNode) Renderer() *Renderer {
+	var res *Renderer = nil
+	if an.Document() != nil {
+		res = an.Document().Renderer()
+	}
 	return res
 }
 
@@ -576,4 +593,9 @@ func (an *abstractNode) BaseDir() string {
 /* An Actual abstract Block would have a level */
 func (an *abstractNode) Level() int {
 	return -1
+}
+
+/* An Actual Document would know how to playback those attributes */
+func (an *abstractNode) PlaybackAttributes(map[string]interface{}) {
+	//
 }
