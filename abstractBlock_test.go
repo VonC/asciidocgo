@@ -67,4 +67,9 @@ func TestAbstractBlock(t *testing.T) {
 		So(ab.TemplateName(), ShouldEqual, "block_paragraph")
 	})
 
+	Convey("An abstractBlock can render its content", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(ab.Render(), ShouldEqual, "")
+		// TODO complete
+	})
 }

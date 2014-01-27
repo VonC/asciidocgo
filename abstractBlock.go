@@ -90,3 +90,12 @@ func (ab *abstractBlock) SetContext(c context) {
 	ab.context = c
 	ab.templateName = "block_" + ab.Context().String()
 }
+
+/* Get the rendered String content for this Block.
+If the block has child blocks, the content method should cause them
+to be rendered and returned as content that can be included
+in the parent block's template. */
+func (ab *abstractBlock) Render() string {
+	return ""
+	// TODO make sure document playback_attributes and renderer hare implemented
+}
