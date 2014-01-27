@@ -58,4 +58,13 @@ func TestAbstractBlock(t *testing.T) {
 		})
 	})
 
+	Convey("An abstractBlock can set its context", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(ab.Context(), ShouldEqual, document)
+		So(ab.TemplateName(), ShouldEqual, "block_document")
+		ab.SetContext(paragraph)
+		So(ab.Context(), ShouldEqual, paragraph)
+		So(ab.TemplateName(), ShouldEqual, "block_paragraph")
+	})
+
 }

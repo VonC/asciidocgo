@@ -83,3 +83,10 @@ func (ab *abstractBlock) Caption() string {
 func (ab *abstractBlock) SetCaption(c string) {
 	ab.caption = c
 }
+
+/* This method changes the context of this block.
+It also updates the template name accordingly. */
+func (ab *abstractBlock) SetContext(c context) {
+	ab.context = c
+	ab.templateName = "block_" + ab.Context().String()
+}
