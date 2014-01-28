@@ -216,10 +216,6 @@ func (an *abstractNode) HasOption(option string) bool {
 	return res
 }
 
-type Renderer struct{}
-
-func (r *Renderer) Render(view string, object interface{}, locals []interface{}) string { return "" }
-
 /* Get the Renderer instance being used for the
 Document to which this node belongs */
 func (an *abstractNode) Renderer() *Renderer {
