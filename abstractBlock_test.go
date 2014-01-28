@@ -74,6 +74,14 @@ func TestAbstractBlock(t *testing.T) {
 		// TODO complete
 	})
 
+	Convey("An abstractBlock can get its content", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(ab.Content(), ShouldEqual, "")
+		ab1 := newAbstractBlock(nil, document)
+		ab.AppendBlock(ab1)
+		So(ab.Content(), ShouldEqual, "\n")
+	})
+
 	Convey("An abstractBlock can add blocks", t, func() {
 		ab := newAbstractBlock(nil, document)
 		So(len(ab.Blocks()), ShouldEqual, 0)

@@ -103,6 +103,16 @@ func (ab *abstractBlock) Render() string {
 	// TODO make sure document playback_attributes and renderer hare implemented
 }
 
+/* Get an rendered version of the block content, rendering the
+children appropriate to content model that this block supports. */
+func (ab *abstractBlock) Content() string {
+	res := ""
+	for _, block := range ab.Blocks() {
+		res = res + block.Render() + "\n"
+	}
+	return res
+}
+
 /* Append a content block to this block's list of blocks.
    block - The new child block.
    Examples
