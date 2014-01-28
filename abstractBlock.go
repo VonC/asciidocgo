@@ -102,3 +102,20 @@ func (ab *abstractBlock) Render() string {
 	return ab.Renderer().Render(ab.TemplateName(), ab, []interface{}{})
 	// TODO make sure document playback_attributes and renderer hare implemented
 }
+
+/* Append a content block to this block's list of blocks.
+   block - The new child block.
+   Examples
+     block = Block.new(parent, :preamble, :content_model => :compound)
+     block << Block.new(block, :paragraph, :source => 'p1')
+     block << Block.new(block, :paragraph, :source => 'p2')
+     block.blocks?
+     # => true
+     block.blocks.size
+     # => 2
+ Returns nothing. */
+func (ab *abstractBlock) AppendBlock(block *abstractBlock) {
+	// parent assignment pending refactor
+	// block.parent = self
+	ab.blocks = append(ab.Blocks(), block)
+}
