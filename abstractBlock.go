@@ -113,6 +113,12 @@ func (ab *abstractBlock) Content() string {
 	return res
 }
 
+/* Determine whether this Block contains block content
+Returns A Boolean indicating whether this Block has block content */
+func (ab *abstractBlock) HasBlocks() bool {
+	return len(ab.Blocks()) > 0
+}
+
 /* Append a content block to this block's list of blocks.
    block - The new child block.
    Examples
