@@ -97,4 +97,11 @@ func TestAbstractBlock(t *testing.T) {
 		ab.AppendBlock(ab1)
 		So(len(ab.Blocks()), ShouldEqual, 1)
 	})
+
+	Convey("An abstractBlock can test for sub", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(ab.HasSub("test"), ShouldBeFalse)
+		ab.subs = []string{"a", "test", "c"}
+		So(ab.HasSub("test"), ShouldBeTrue)
+	})
 }

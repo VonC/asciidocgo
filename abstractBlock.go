@@ -113,6 +113,20 @@ func (ab *abstractBlock) Content() string {
 	return res
 }
 
+/* A convenience method that checks whether the specified substitution
+is enabled for this block.
+name - The Symbol substitution name */
+func (ab *abstractBlock) HasSub(name string) bool {
+	res := false
+	for _, sub := range ab.Subs() {
+		if sub == name {
+			res = true
+			break
+		}
+	}
+	return res
+}
+
 /* Determine whether this Block contains block content
 Returns A Boolean indicating whether this Block has block content */
 func (ab *abstractBlock) HasBlocks() bool {
