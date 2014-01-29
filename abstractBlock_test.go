@@ -118,4 +118,13 @@ func TestAbstractBlock(t *testing.T) {
 		ab.setTitle("a title")
 		So(ab.Title(), ShouldEqual, "a title")
 	})
+
+	Convey("An abstractBlock can get its captioned title", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(ab.CaptionedTitle(), ShouldEqual, "")
+		ab.setTitle("a title")
+		So(ab.CaptionedTitle(), ShouldEqual, "a title")
+		ab.SetCaption("a caption ")
+		So(ab.CaptionedTitle(), ShouldEqual, "a caption a title")
+	})
 }

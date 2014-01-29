@@ -153,6 +153,18 @@ func (ab *abstractBlock) Title() string {
 	return ab.title
 }
 
+/* Convenience method that returns the interpreted title of the Block
+with the caption prepended.
+Concatenates the value of this Block's caption instance variable and the
+return value of this Block's title method. No space is added between the
+two values.
+If the Block does not have a caption, the interpreted title is returned.
+Returns the String title prefixed with the caption, or just the title if no
+caption is set */
+func (ab *abstractBlock) CaptionedTitle() string {
+	return ab.caption + ab.title
+}
+
 /* Determine whether this Block contains block content
 Returns A Boolean indicating whether this Block has block content */
 func (ab *abstractBlock) HasBlocks() bool {
