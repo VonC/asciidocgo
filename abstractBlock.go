@@ -127,6 +127,12 @@ func (ab *abstractBlock) HasSub(name string) bool {
 	return res
 }
 
+/* A convenience method that indicates whether the title instance
+variable is blank (nil or empty) */
+func (ab *abstractBlock) HasTitle() bool {
+	return (ab.title != "")
+}
+
 /* Determine whether this Block contains block content
 Returns A Boolean indicating whether this Block has block content */
 func (ab *abstractBlock) HasBlocks() bool {
