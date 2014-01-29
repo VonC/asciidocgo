@@ -14,6 +14,7 @@ type abstractBlock struct {
 	caption           string
 	nextSectionIndex  int
 	nextSectionNumber int
+	subbedTitle       string
 }
 
 func newAbstractBlock(parent Documentable, context context) *abstractBlock {
@@ -24,7 +25,7 @@ func newAbstractBlock(parent Documentable, context context) *abstractBlock {
 	} else if parent != nil && context != section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
 	return abstractBlock
 }
 
@@ -131,6 +132,25 @@ func (ab *abstractBlock) HasSub(name string) bool {
 variable is blank (nil or empty) */
 func (ab *abstractBlock) HasTitle() bool {
 	return (ab.title != "")
+}
+
+/* Get the String title of this Block with title substitions applied
+The following substitutions are applied to block and section titles:
+:specialcharacters, :quotes, :replacements, :macros, :attributes
+and :post_replacements
+Examples
+   block.title = "Foo 3^ # {two-colons} Bar(1)"
+   block.title
+   => "Foo 3^ # :: Bar(1)" */
+func (ab *abstractBlock) Title() string {
+	//if ab.subbedTitle != "" {
+	//	return ab.subbedTitle
+	//}
+	// TODO add substitutor as mixin in Section and Block
+	//if ab.Title() != "" {
+	// return applyTitleSubs(ab.Title())
+	//}
+	return ab.title
 }
 
 /* Determine whether this Block contains block content
