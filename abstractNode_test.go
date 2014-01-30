@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/VonC/asciidocgo/context"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -15,39 +17,39 @@ func TestAbstractNode(t *testing.T) {
 			So(&abstractNode{}, ShouldNotBeNil)
 		})
 		Convey("An AbstractNode takes a parent and a context", func() {
-			So(newAbstractNode(nil, document), ShouldNotBeNil)
+			So(newAbstractNode(nil, context.Document), ShouldNotBeNil)
 		})
 		Convey("If context is a document, then parent is nil and document is parent", func() {
 			parent := &abstractNode{}
-			an := newAbstractNode(parent, document)
-			So(an.Context(), ShouldEqual, document)
+			an := newAbstractNode(parent, context.Document)
+			So(an.Context(), ShouldEqual, context.Document)
 			So(an.Parent(), ShouldBeNil)
 			So(an.Document(), ShouldEqual, parent)
 		})
 		Convey("If context is not document, then parent is parent and document is parent document", func() {
-			parent := &abstractNode{nil, document, &abstractNode{}, nil, &substitutors{}}
-			an := newAbstractNode(parent, section)
-			So(an.Context(), ShouldEqual, section)
+			parent := &abstractNode{nil, context.Document, &abstractNode{}, nil, &substitutors{}}
+			an := newAbstractNode(parent, context.Section)
+			So(an.Context(), ShouldEqual, context.Section)
 			So(an.Parent(), ShouldEqual, parent)
 			So(an.Document(), ShouldEqual, parent.Document())
 		})
 		Convey("If context is not document, and parent is nil, then document is nil", func() {
-			an := newAbstractNode(nil, section)
-			So(an.Context(), ShouldEqual, section)
+			an := newAbstractNode(nil, context.Section)
+			So(an.Context(), ShouldEqual, context.Section)
 			So(an.Parent(), ShouldBeNil)
 			So(an.Document(), ShouldBeNil)
 		})
 
 		Convey("An abstractNode has an empty attributes map", func() {
-			an := newAbstractNode(nil, section)
+			an := newAbstractNode(nil, context.Section)
 			So(len(an.Attributes()), ShouldEqual, 0)
 		})
 	})
 
 	Convey("An abstractNode can be associated to a parent", t, func() {
-		an := newAbstractNode(nil, section)
+		an := newAbstractNode(nil, context.Section)
 		documentParent := &abstractNode{}
-		parent := &abstractNode{nil, document, documentParent, nil, &substitutors{}}
+		parent := &abstractNode{nil, context.Document, documentParent, nil, &substitutors{}}
 		an.SetParent(parent)
 		So(an.Parent(), ShouldEqual, parent)
 		So(an.Document(), ShouldEqual, parent.Document())
@@ -55,10 +57,10 @@ func TestAbstractNode(t *testing.T) {
 
 	Convey("An abstractNode can retrieve an attribute", t, func() {
 
-		parentDocument := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("key", "val1", true)
-		parent := newAbstractNode(parentDocument, document)
-		an := newAbstractNode(nil, document)
+		parent := newAbstractNode(parentDocument, context.Document)
+		an := newAbstractNode(nil, context.Document)
 		Convey("If inherited, it is the attribute if there, or the document attribute, or default value", func() {
 			So(an.Attr("key", nil, true), ShouldBeNil)
 			an.setAttr("key", "val", false)
@@ -84,10 +86,10 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can check for an attribute", t, func() {
-		parentDocument := newAbstractNode(nil, document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("key1", "val1", true)
-		parent := newAbstractNode(parentDocument, document)
-		an := newAbstractNode(nil, document)
+		parent := newAbstractNode(parentDocument, context.Document)
+		an := newAbstractNode(nil, context.Document)
 
 		Convey("If expect nil, check if key is there", func() {
 			So(an.HasAttr("key1", nil, false), ShouldBeFalse)
@@ -113,7 +115,7 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can set an attribute", t, func() {
-		an := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
 		an.setAttr("key", "val", true)
 		So(an.Attr("key", nil, true), ShouldEqual, "val")
 		Convey("If not override and already present, the value should not change", func() {
@@ -124,7 +126,7 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can set an option attribute", t, func() {
-		an := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
 		Convey("First option means options attributes has len 1", func() {
 			an.SetOption("opt1")
 			So(len(an.attributes["options"].(map[string]bool)), ShouldEqual, 1)
@@ -138,7 +140,7 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can get an option attribute", t, func() {
-		an := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
 		Convey("Zero option means Option returns false", func() {
 			So(an.HasOption("opt1"), ShouldBeFalse)
 			an.SetOption("opt1")
@@ -149,7 +151,7 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode update option attributes with other attributes", t, func() {
-		an := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
 		an.setAttr("key1", "val1", true)
 		an.setAttr("key2", "val2", true)
 		Convey("New Attributes are added during an update", func() {
@@ -169,10 +171,10 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can check for a role", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("role", "roleFromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 		Convey("A role can be checked, whatever its value is", func() {
 			So(an.HasRole(nil), ShouldBeFalse)
 			So(parentDocument.HasRole(nil), ShouldBeTrue)
@@ -180,7 +182,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasRole(nil), ShouldBeTrue)
 		})
 		Convey("A role can be checked against an expected value", func() {
-			an := newAbstractNode(nil, document)
+			an := newAbstractNode(nil, context.Document)
 			an.SetParent(parent)
 			So(an.HasRole("roleFromAN"), ShouldBeFalse)
 			So(an.HasRole("roleFromParentDocument"), ShouldBeTrue)
@@ -190,10 +192,10 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can check for a role name", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("role", "role1FromParentDocument role2FromParentDocument role3FromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 
 		Convey("A role name can be checked on the document", func() {
 			So(an.HasARole("role3FromAN"), ShouldBeFalse)
@@ -213,10 +215,10 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can access role", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("role", "roleFromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 		Convey("A role can be access from an document, when an has no role", func() {
 			So(an.Role(), ShouldBeNil)
 			So(parentDocument.Role(), ShouldEqual, "roleFromParentDocument")
@@ -229,10 +231,10 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can access role names", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("role", "role1FromParentDocument role2FromParentDocument role3FromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 
 		Convey("A role name can be accessed on the document", func() {
 			So(len(an.RoleNames()), ShouldBeZeroValue)
@@ -247,10 +249,10 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can check for a reftext", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 		Convey("A reftext can be checked on the document", func() {
 			So(an.HasReftext(), ShouldBeFalse)
 			So(parentDocument.HasReftext(), ShouldBeTrue)
@@ -258,9 +260,9 @@ func TestAbstractNode(t *testing.T) {
 			So(an.HasReftext(), ShouldBeTrue)
 		})
 		Convey("A reftext can be checked directly on the abstractNode", func() {
-			an := newAbstractNode(nil, document)
-			parentDocument := newAbstractNode(nil, document)
-			parent := newAbstractNode(parentDocument, document)
+			an := newAbstractNode(nil, context.Document)
+			parentDocument := newAbstractNode(nil, context.Document)
+			parent := newAbstractNode(parentDocument, context.Document)
 			So(an.HasReftext(), ShouldBeFalse)
 			an.SetParent(parent)
 			So(an.HasReftext(), ShouldBeFalse)
@@ -271,10 +273,10 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can access reftext", t, func() {
-		an := newAbstractNode(nil, document)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Document)
+		parentDocument := newAbstractNode(nil, context.Document)
 		parentDocument.setAttr("reftext", "reftextFromParentDocument", true)
-		parent := newAbstractNode(parentDocument, document)
+		parent := newAbstractNode(parentDocument, context.Document)
 		Convey("A reftext can be access from an document, when an has no reftext", func() {
 			So(an.Reftext(), ShouldBeNil)
 			So(parentDocument.Reftext(), ShouldEqual, "reftextFromParentDocument")
@@ -288,14 +290,14 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can check for Slash Usage", t, func() {
-		an := newAbstractNode(nil, section)
-		parentDocument := newAbstractNode(nil, document)
+		an := newAbstractNode(nil, context.Section)
+		parentDocument := newAbstractNode(nil, context.Document)
 		Convey("A abstractNode without document won't use slash", func() {
 			So(an.ShortTagSlash(), ShouldBeNil)
 		})
 		Convey("A abstractNode with document htmlsyntax set to not xml won't use slash", func() {
 			parentDocument.setAttr("htmlsyntax", "notxml", true)
-			parent := newAbstractNode(parentDocument, document)
+			parent := newAbstractNode(parentDocument, context.Document)
 			an.SetParent(parent)
 			So(an.ShortTagSlash(), ShouldBeNil)
 		})
@@ -305,7 +307,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can build media uri", t, func() {
-		an := newAbstractNode(nil, section)
+		an := newAbstractNode(nil, context.Section)
 		target := ""
 		Convey("If the target media is a URI reference, then leave it untouched.", func() {
 			target = "data:info"
@@ -328,8 +330,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can build icon uri", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		target := ""
 		Convey("If the icon attribute is not there, imageUri with icon", func() {
 			So(an.IconUri(target), ShouldEqual, ".png")
@@ -343,8 +345,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can normalize system paths", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		pr := NewPathResolver(0, "")
 		wd := Posixfy(pr.WorkingDir())
 		Convey("Empty target means working dir", func() {
@@ -361,8 +363,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can generate data uri", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		pr := NewPathResolver(0, "")
 		wd := Posixfy(pr.WorkingDir())
 
@@ -386,8 +388,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can build image uri", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		Convey("If the data-uri attribute is not there, imageUri with icon", func() {
 			So(an.ImageUri("http://a/b", ""), ShouldEqual, "http://a/b")
 		})
@@ -421,8 +423,8 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can normalize asset path", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		pr := NewPathResolver(0, "")
 		wd := Posixfy(pr.WorkingDir())
 		Convey("Empty parameters means working directory", func() {
@@ -433,8 +435,8 @@ func TestAbstractNode(t *testing.T) {
 		})
 	})
 	Convey("An abstractNode can compute relative path", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		Convey("Empty parameters means empty relative path", func() {
 			So(an.relativePath(""), ShouldEqual, "")
 		})
@@ -444,8 +446,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode can access marker keyword", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		Convey("Empty parameters means empty style means empty rune", func() {
 			So(an.listMarkerKeyword(""), ShouldEqual, 0)
 		})
@@ -455,8 +457,8 @@ func TestAbstractNode(t *testing.T) {
 	})
 
 	Convey("An abstractNode always has a level of -1", t, func() {
-		parent := newAbstractNode(nil, section)
-		an := newAbstractNode(parent, document)
+		parent := newAbstractNode(nil, context.Section)
+		an := newAbstractNode(parent, context.Document)
 		So(an.Level(), ShouldEqual, -1)
 	})
 }

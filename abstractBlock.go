@@ -1,5 +1,7 @@
 package asciidocgo
 
+import "github.com/VonC/asciidocgo/context"
+
 /* An abstract class that provides state and methods for managing
 a block of AsciiDoc content, which is a node. */
 type abstractBlock struct {
@@ -17,15 +19,15 @@ type abstractBlock struct {
 	subbedTitle       string
 }
 
-func newAbstractBlock(parent Documentable, context context) *abstractBlock {
-	templateName := "block_" + context.String()
+func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
+	templateName := "block_" + c.String()
 	level := -1 // there is no 'nil' for an int
-	if context == document {
+	if c == context.Document {
 		level = 0
-	} else if parent != nil && context != section {
+	} else if parent != nil && c != context.Section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, context), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, c), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
 	return abstractBlock
 }
 
@@ -87,7 +89,7 @@ func (ab *abstractBlock) SetCaption(c string) {
 
 /* This method changes the context of this block.
 It also updates the template name accordingly. */
-func (ab *abstractBlock) SetContext(c context) {
+func (ab *abstractBlock) SetContext(c context.Context) {
 	ab.context = c
 	ab.templateName = "block_" + ab.Context().String()
 }
@@ -206,7 +208,7 @@ returns an Array of Section objects
 func (ab *abstractBlock) Sections() []*abstractBlock {
 	res := []*abstractBlock{}
 	for _, block := range ab.Blocks() {
-		if block.Context() == section {
+		if block.Context() == context.Section {
 			res = append(res, block)
 		}
 	}

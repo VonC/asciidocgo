@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/VonC/asciidocgo/context"
 )
 
 type Documentable interface {
@@ -32,15 +34,15 @@ The state and methods on this class are comment to all content segments
 in an AsciiDoc document. */
 type abstractNode struct {
 	parent     Documentable
-	context    context
+	context    context.Context
 	document   Documentable
 	attributes map[string]interface{}
 	*substitutors
 }
 
-func newAbstractNode(parent Documentable, context context) *abstractNode {
-	abstractNode := &abstractNode{parent, context, nil, make(map[string]interface{}), &substitutors{}}
-	if context == document {
+func newAbstractNode(parent Documentable, c context.Context) *abstractNode {
+	abstractNode := &abstractNode{parent, c, nil, make(map[string]interface{}), &substitutors{}}
+	if c == context.Document {
 		abstractNode.parent = nil
 		abstractNode.document = parent
 	} else if parent != nil {
@@ -60,7 +62,7 @@ func (an *abstractNode) Document() Documentable {
 }
 
 // Get the Symbol context for this node
-func (an *abstractNode) Context() context {
+func (an *abstractNode) Context() context.Context {
 	return an.context
 }
 
