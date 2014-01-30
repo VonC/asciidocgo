@@ -187,3 +187,28 @@ func (ab *abstractBlock) AppendBlock(block *abstractBlock) {
 	// block.parent = self
 	ab.blocks = append(ab.Blocks(), block)
 }
+
+/* Get the Array of child Section objects
+Only applies to Document and Section instances
+Examples
+   section = Section.new(parent)
+   section << Block.new(section, :paragraph, :source => 'paragraph 1')
+   section << Section.new(parent)
+   section << Block.new(section, :paragraph, :source => 'paragraph 2')
+   section.blocks?
+   # => true
+   section.blocks.size
+   # => 3
+   section.sections.size
+   # => 1
+returns an Array of Section objects
+*/
+func (ab *abstractBlock) Sections() []*abstractBlock {
+	res := []*abstractBlock{}
+	for _, block := range ab.Blocks() {
+		if block.Context() == section {
+			res = append(res, block)
+		}
+	}
+	return res
+}

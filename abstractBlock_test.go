@@ -127,4 +127,12 @@ func TestAbstractBlock(t *testing.T) {
 		ab.SetCaption("a caption ")
 		So(ab.CaptionedTitle(), ShouldEqual, "a caption a title")
 	})
+
+	Convey("An abstractBlock can get its Sections", t, func() {
+		ab := newAbstractBlock(nil, document)
+		So(len(ab.Sections()), ShouldEqual, 0)
+		section := newAbstractBlock(nil, section)
+		ab.AppendBlock(section)
+		So(len(ab.Sections()), ShouldEqual, 1)
+	})
 }
