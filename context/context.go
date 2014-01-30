@@ -1,22 +1,22 @@
-package asciidocgo
+package context
 
 // Symbol name for the type of content (e.g., :paragraph).
-type context int
+type Context int
 
 const (
-	document context = iota
-	section
-	paragraph
-	unknown
+	Document Context = iota
+	Section
+	Paragraph
+	Unknown
 )
 
-func (c context) String() string {
+func (c Context) String() string {
 	switch c {
-	case document:
+	case Document:
 		return "document"
-	case section:
+	case Section:
 		return "section"
-	case paragraph:
+	case Paragraph:
 		return "paragraph"
 	}
 	return "unknown"

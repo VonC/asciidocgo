@@ -1,4 +1,4 @@
-package asciidocgo
+package context
 
 import (
 	"testing"
@@ -8,10 +8,10 @@ import (
 func TestContext(t *testing.T) {
 
 	Convey("An context has a string", t, func() {
-		So(document.String(), ShouldEqual, "document")
-		So(section.String(), ShouldEqual, "section")
-		So(paragraph.String(), ShouldEqual, "paragraph")
-		So(unknown.String(), ShouldEqual, "unknown")
+		So(Document.String(), ShouldEqual, "document")
+		So(Section.String(), ShouldEqual, "section")
+		So(Paragraph.String(), ShouldEqual, "paragraph")
+		So(Unknown.String(), ShouldEqual, "unknown")
 	})
 
 }
