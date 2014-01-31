@@ -1,25 +1,25 @@
-package asciidocgo
+package contentmodel
 
 // Symbol name for the type of content (e.g., :paragraph).
-type contentModel int
+type ContentModel int
 
 const (
-	compound contentModel = iota
-	verse
-	verbatim
-	simple
-	unknowncm
+	Compound ContentModel = iota
+	Verse
+	Verbatim
+	Simple
+	UnknownCM
 )
 
-func (cm contentModel) String() string {
+func (cm ContentModel) String() string {
 	switch cm {
-	case compound:
+	case Compound:
 		return "compound"
-	case verse:
+	case Verse:
 		return "verse"
-	case verbatim:
+	case Verbatim:
 		return "verbatim"
-	case simple:
+	case Simple:
 		return "simple"
 	}
 	return "unknowncm"

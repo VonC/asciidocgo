@@ -1,4 +1,4 @@
-package asciidocgo
+package contentmodel
 
 import (
 	"testing"
@@ -8,11 +8,11 @@ import (
 func TestContentModel(t *testing.T) {
 
 	Convey("A content model has a string", t, func() {
-		So(compound.String(), ShouldEqual, "compound")
-		So(verse.String(), ShouldEqual, "verse")
-		So(verbatim.String(), ShouldEqual, "verbatim")
-		So(simple.String(), ShouldEqual, "simple")
-		So(unknowncm.String(), ShouldEqual, "unknowncm")
+		So(Compound.String(), ShouldEqual, "compound")
+		So(Verse.String(), ShouldEqual, "verse")
+		So(Verbatim.String(), ShouldEqual, "verbatim")
+		So(Simple.String(), ShouldEqual, "simple")
+		So(UnknownCM.String(), ShouldEqual, "unknowncm")
 	})
 
 }
