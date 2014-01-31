@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+var testpr = ""
+
 /*
 Handles all operations for resolving, cleaning and joining paths.
 This class includes operations for handling both web paths (request URIs) and
@@ -227,13 +229,13 @@ func PartitionPath(path string, webPath bool) (pathSegments []string, root strin
 			}
 		}
 	}
-	if Test == "test_PartitionPath_segments" {
+	if testpr == "test_PartitionPath_segments" {
 		return pathSegments, root, fmt.Sprintf("pathSegments=(%v)'%v'- root='%v'(%v), posixPath='%v'", len(pathSegments), pathSegments, root, isRoot, posixPath)
 	}
 	if isRoot {
 		root, pathSegments = pathSegments[0], pathSegments[1:len(pathSegments)]
 	}
-	if Test == "test_PartitionPath_rootSegments" {
+	if testpr == "test_PartitionPath_rootSegments" {
 		return pathSegments, root, fmt.Sprintf("pathSegments=(%v)'%v'- root='%v'(%v), posixPath='%v'", len(pathSegments), pathSegments, root, isRoot, posixPath)
 	}
 	return pathSegments, root, posixPath
@@ -327,7 +329,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 	} else {
 		start = pr.SystemPath(start, jail, jail, true, targetName)
 	}
-	if Test == "test_SystemPath_start" {
+	if testpr == "test_SystemPath_start" {
 		return start
 	}
 
@@ -355,7 +357,7 @@ func (pr *PathResolver) SystemPath(target, start, jail string, canrecover bool, 
 		jailRoot = startRoot
 	}
 
-	if Test == "test_SystemPath_segments" {
+	if testpr == "test_SystemPath_segments" {
 		return fmt.Sprintf("jail='%v', jailRoot='%v', jailSegments '%v', startRoot='%v', startSegments '%v'", jail, jailRoot, jailSegments, startRoot, startSegments)
 	}
 
@@ -415,11 +417,11 @@ func WebPath(target, start string) string {
 	}
 	// BUG? slash seems to be lost in https://github.com/asciidoctor/asciidoctor/blob/ab1e0b9c45e5138394b089dac205fb6d854e15e6/lib/asciidoctor/path_resolver.rb#L352-L366
 	isWebroot = IsWebRoot(target)
-	if Test == "test_Webath_uriPrefix" {
+	if testpr == "test_Webath_uriPrefix" {
 		return fmt.Sprintf("target='%v', uriPrefix='%v'", target, uriPrefix)
 	}
 	targetSegments, targetRoot, _ := PartitionPath(target, true)
-	if Test == "test_Webath_partitionTarget" {
+	if testpr == "test_Webath_partitionTarget" {
 		return fmt.Sprintf("targetSegments=(%v)'%v', targetRoot='%v'", len(targetSegments), targetSegments, targetRoot)
 	}
 	accum := []string{}

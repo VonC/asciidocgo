@@ -6,8 +6,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var Test = "aaa"
-
 func TestPathResolver(t *testing.T) {
 
 	Convey("A pathResolver can be initialized", t, func() {
@@ -151,15 +149,15 @@ func TestPathResolver(t *testing.T) {
 			So(root, ShouldEqual, "")
 			So(posixPath, ShouldEqual, "a/b")
 
-			Test = "test_PartitionPath_segments"
+			testpr = "test_PartitionPath_segments"
 			pathSegments, root, posixPath = PartitionPath("/../images", true)
 			So(posixPath, ShouldEqual, "pathSegments=(3)'[ .. images]'- root=''(true), posixPath='/../images'")
-			Test = ""
+			testpr = ""
 
-			Test = "test_PartitionPath_rootSegments"
+			testpr = "test_PartitionPath_rootSegments"
 			pathSegments, root, posixPath = PartitionPath("/../images", true)
 			So(posixPath, ShouldEqual, "pathSegments=(2)'[.. images]'- root=''(true), posixPath='/../images'")
-			Test = ""
+			testpr = ""
 
 		})
 
@@ -204,7 +202,7 @@ func TestPathResolver(t *testing.T) {
 	})
 
 	Convey("A Partition can resolve a system path from the target and start paths (internal tests)", t, func() {
-		Test = ""
+		testpr = ""
 		pr := NewPathResolver(0, "C:/a/working/dir")
 		Convey("A Non-absolute jail path should panic", func() {
 			recovered := false
@@ -240,16 +238,16 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("Empty start and jail means start is working dir", func() {
-			Test = "test_SystemPath_start"
+			testpr = "test_SystemPath_start"
 			So(pr.SystemPath("a/b1", "", "", false, ""), ShouldEqual, pr.WorkingDir())
 		})
 		Convey("Empty start and non-empty jail means start is jail", func() {
-			Test = "test_SystemPath_start"
+			testpr = "test_SystemPath_start"
 			So(pr.SystemPath("a/b1", "", "C:/c/d", false, ""), ShouldEqual, "C:/c/d")
 		})
 
 		Convey("Non-Empty root start means posixfied start", func() {
-			Test = "test_SystemPath_start"
+			testpr = "test_SystemPath_start"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:/c/d", false, ""), ShouldEqual, "C:/a/b/c")
 		})
 
@@ -258,7 +256,7 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("Same jail and start means posixfied start", func() {
-			Test = "test_SystemPath_segments"
+			testpr = "test_SystemPath_segments"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startRoot='', startSegments '[a b c]'")
 		})
 
@@ -274,18 +272,18 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("Start must includes jail", func() {
-			Test = "test_SystemPath_segments"
+			testpr = "test_SystemPath_segments"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c/e/f", "C:\\a/b/c", false, ""), ShouldEqual, "jail='C:/a/b/c', jailRoot='C:', jailSegments '[a b c]', startRoot='C:', startSegments '[a b c e f]'")
 		})
 
 		Convey("Start with empty jail", func() {
-			Test = "test_SystemPath_segments"
+			testpr = "test_SystemPath_segments"
 			So(pr.SystemPath("a/b1", "C:\\a/b\\c/e/f", "", false, ""), ShouldEqual, "jail='', jailRoot='C:', jailSegments '[]', startRoot='C:', startSegments '[a b c e f]'")
 		})
 	})
 
 	Convey("A Partition can resolve a system path from the target and start paths (Unit Tests)", t, func() {
-		Test = ""
+		testpr = ""
 		pr := NewPathResolver(0, "C:/a/working/dir")
 
 		Convey("Simple non-root target is append to current working dir", func() {
@@ -402,14 +400,14 @@ func TestPathResolver(t *testing.T) {
 	})
 
 	Convey("A PathResolver can compute a web path from the target and start paths (internal tests)", t, func() {
-		Test = ""
+		testpr = ""
 
 		Convey("Empty target and start returns empty web path", func() {
 			So(WebPath("", ""), ShouldEqual, "")
 		})
 
 		Convey("target and start with http means non-empty uriPrefix", func() {
-			Test = "test_Webath_uriPrefix"
+			testpr = "test_Webath_uriPrefix"
 			So(WebPath("b/c", "http://a"), ShouldEqual, "target='a/b/c', uriPrefix='http://'")
 			So(WebPath("/images", ""), ShouldEqual, "target='/images', uriPrefix=''")
 			So(WebPath("/../images", ""), ShouldEqual, "target='/../images', uriPrefix=''")
@@ -417,7 +415,7 @@ func TestPathResolver(t *testing.T) {
 		})
 
 		Convey("target and start with http means non-empty target segments", func() {
-			Test = "test_Webath_partitionTarget"
+			testpr = "test_Webath_partitionTarget"
 			So(WebPath("b/c", "http://a"), ShouldEqual, "targetSegments=(3)'[a b c]', targetRoot=''")
 			So(WebPath("b/c", "/a//"), ShouldEqual, "targetSegments=(3)'[a b c]', targetRoot=''")
 			So(WebPath("/b/c", "/a/"), ShouldEqual, "targetSegments=(2)'[b c]', targetRoot=''")
@@ -428,7 +426,7 @@ func TestPathResolver(t *testing.T) {
 	})
 
 	Convey("A PathResolver can compute a web path from the target and start paths (unit tests)", t, func() {
-		Test = ""
+		testpr = ""
 
 		Convey("Simple target and empty start returns simple target", func() {
 			/* resolver.web_path('images')
@@ -488,7 +486,7 @@ func TestPathResolver(t *testing.T) {
 			//So(pr.RelativePath("C:\\z", "C:\\a\\b\\"), ShouldEqual, "c/d")
 			//So(pr.RelativePath("", "C:\\a\\b\\"), ShouldEqual, "c/d")
 		})
-		Test = ""
+		testpr = ""
 	})
 
 }
