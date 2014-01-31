@@ -1,12 +1,15 @@
 package asciidocgo
 
-import "github.com/VonC/asciidocgo/context"
+import (
+	"github.com/VonC/asciidocgo/contentModel"
+	"github.com/VonC/asciidocgo/context"
+)
 
 /* An abstract class that provides state and methods for managing
 a block of AsciiDoc content, which is a node. */
 type abstractBlock struct {
 	*abstractNode
-	contentModel
+	cm                contentmodel.ContentModel
 	subs              []string
 	templateName      string
 	blocks            []*abstractBlock
@@ -27,16 +30,16 @@ func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
 	} else if parent != nil && c != context.Section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, c), compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
 	return abstractBlock
 }
 
 /* The types of content that this block can accomodate */
-func (ab *abstractBlock) ContentModel() contentModel {
-	return ab.contentModel
+func (ab *abstractBlock) ContentModel() contentmodel.ContentModel {
+	return ab.cm
 }
-func (ab *abstractBlock) SetContentModel(c contentModel) {
-	ab.contentModel = c
+func (ab *abstractBlock) SetContentModel(c contentmodel.ContentModel) {
+	ab.cm = c
 }
 
 /* Substitutions to be applied to content in this block */

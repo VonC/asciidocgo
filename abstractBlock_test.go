@@ -3,6 +3,7 @@ package asciidocgo
 import (
 	"testing"
 
+	"github.com/VonC/asciidocgo/contentModel"
 	"github.com/VonC/asciidocgo/context"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -16,9 +17,9 @@ func TestAbstractBlock(t *testing.T) {
 			So(ab, ShouldNotBeNil)
 		})
 		Convey("By default, an AbstractBlock has a 'compound' content model", func() {
-			So(ab.ContentModel(), ShouldEqual, compound)
-			ab.SetContentModel(simple)
-			So(ab.ContentModel(), ShouldEqual, simple)
+			So(ab.ContentModel(), ShouldEqual, contentmodel.Compound)
+			ab.SetContentModel(contentmodel.Simple)
+			So(ab.ContentModel(), ShouldEqual, contentmodel.Simple)
 		})
 		Convey("By default, an AbstractBlock has no subs", func() {
 			So(len(ab.Subs()), ShouldEqual, 0)
