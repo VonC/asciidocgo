@@ -217,3 +217,21 @@ func (ab *abstractBlock) Sections() []*abstractBlock {
 	}
 	return res
 }
+
+/* Remove a substitution from this block
+sub  - The Symbol substitution name
+Returns nothing */
+func (ab *abstractBlock) RemoveSub(sub string) {
+	asub := ""
+	i := -1
+	// http://stackoverflow.com/a/18203895/6309
+	for i, asub = range ab.subs {
+		if asub == sub {
+			break
+		}
+	}
+	if i >= 0 {
+		// http://code.google.com/p/go-wiki/wiki/SliceTricks
+		ab.subs = append(ab.subs[:i], ab.subs[i+1:]...)
+	}
+}
