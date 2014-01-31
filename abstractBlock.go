@@ -235,3 +235,22 @@ func (ab *abstractBlock) RemoveSub(sub string) {
 		ab.subs = append(ab.subs[:i], ab.subs[i+1:]...)
 	}
 }
+
+/* Generate a caption and assign it to this block if one
+is not already assigned.
+
+If the block has a title and a caption prefix is available
+for this block, then build a caption from this information,
+assign it a number and store it to the caption attribute on
+the block.
+
+If an explicit caption has been specified on this block, then
+do nothing.
+
+key         - The prefix of the caption and counter attribute names.
+              If not provided, the name of the context for this block
+              is used. (default: nil).
+returns nothing */
+func (ab *abstractBlock) AssignCaption(caption, key string) {
+
+}

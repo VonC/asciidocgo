@@ -139,7 +139,7 @@ func TestAbstractBlock(t *testing.T) {
 		So(len(ab.Sections()), ShouldEqual, 1)
 	})
 
-	Convey("An abstractBlock can reomve a sub", t, func() {
+	Convey("An abstractBlock can remove a sub", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
 		ab.subs = append(ab.subs, "test1")
 		ab.subs = append(ab.subs, "test2")
@@ -160,5 +160,17 @@ func TestAbstractBlock(t *testing.T) {
 		So(ab.HasSub("test1"), ShouldBeFalse)
 		ab.RemoveSub("test1")
 		So(ab.HasSub("test1"), ShouldBeFalse)
+	})
+	Convey("An abstractBlock can assign a caption", t, func() {
+		ab := newAbstractBlock(nil, context.Document)
+		Convey("By default, no caption if none passed", func() {
+			ab.AssignCaption("", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "")
+		})
+		Convey("By default, no caption if title already there", func() {
+			ab.setTitle("a title")
+			ab.AssignCaption("a caption", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "a title")
+		})
 	})
 }
