@@ -1,6 +1,8 @@
 package asciidocgo
 
 import (
+	"strconv"
+
 	"github.com/VonC/asciidocgo/contentModel"
 	"github.com/VonC/asciidocgo/context"
 )
@@ -274,5 +276,48 @@ func (ab *abstractBlock) AssignCaption(caption, key string) {
 		// TODO this won't work when ab is a Document, because CounterIncrement of Document won't be called
 		captionNum := ab.Document().CounterIncrement(key+"-number", ab.abstractNode)
 		ab.SetCaption(captionTitle + " " + captionNum + ". ")
+	}
+}
+
+type sectionAble interface {
+	SetIndex(index int)
+	SectName() string
+	SetNumber(number int)
+	IsNumbered() bool
+	SetCaption(caption string)
+	Level() int
+	IsSpecial() bool
+}
+
+/* Assign the next index (0-based) to this section
+Assign the next index of this section within the parent Block
+(in document order)
+returns nothing */
+func (ab *abstractBlock) assignIndex(section sectionAble) {
+	section.SetIndex(ab.nextSectionIndex)
+	ab.nextSectionIndex = ab.nextSectionIndex + 1
+	if ab.Document() == nil {
+		return
+	}
+	if section.SectName() == "appendix" {
+		appendixNumber := ab.Document().Counter("appendix-number", "A")
+		if section.IsNumbered() {
+			section.SetNumber(appendixNumber)
+		}
+		caption := ab.Document().Attr("appendix-caption", nil, false).(string)
+		if caption != "" {
+			section.SetCaption(caption + " " + strconv.Itoa(appendixNumber) + ": ")
+		} else {
+			section.SetCaption(strconv.Itoa(appendixNumber) + ". ")
+		}
+	} else if section.IsNumbered() {
+		// chapters in a book doctype should be sequential even when
+		// divided into parts
+		if (section.Level() == 1 || (section.Level() == 0 && section.IsSpecial())) && ab.Document().DocType() == "book" {
+			section.SetNumber(ab.Document().Counter("chapter-number", "1"))
+		} else {
+			section.SetNumber(ab.nextSectionNumber)
+			ab.nextSectionNumber = ab.nextSectionNumber + 1
+		}
 	}
 }
