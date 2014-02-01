@@ -258,4 +258,10 @@ func (ab *abstractBlock) AssignCaption(caption, key string) {
 	if caption != "" {
 		ab.SetCaption(caption)
 	}
+	if ab.Document() == nil {
+		return
+	}
+	if ab.Document().HasAttr("caption", nil, false) {
+		ab.SetCaption(ab.Document().Attr("caption", nil, false).(string))
+	}
 }

@@ -168,10 +168,24 @@ func TestAbstractBlock(t *testing.T) {
 			ab.AssignCaption("a new caption", "key")
 			So(ab.CaptionedTitle(), ShouldEqual, "a caption")
 		})
-		Convey("Assign caption if one is passed", func() {
+		Convey("Assign caption if one is passed and a title is there", func() {
 			ab.setTitle("a title")
 			ab.AssignCaption("a new caption", "key")
 			So(ab.CaptionedTitle(), ShouldEqual, "a new captiona title")
+		})
+		Convey("If title, no caption and empty document, no caption assigned", func() {
+			ab.setTitle("a title")
+			ab = newAbstractBlock(nil, context.Document)
+			ab.AssignCaption("", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "")
+		})
+		Convey("If title, no caption and actual document, caption assigned for key 'caption'", func() {
+			parent := newAbstractNode(nil, context.Section)
+			ab = newAbstractBlock(parent, context.Document)
+			ab.setTitle("a title")
+			parent.setAttr("caption", "an attr caption", false)
+			ab.AssignCaption("", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "an attr captiona title")
 		})
 
 	})
