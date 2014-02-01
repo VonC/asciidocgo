@@ -163,14 +163,10 @@ func TestAbstractBlock(t *testing.T) {
 	})
 	Convey("An abstractBlock can assign a caption", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
-		Convey("By default, no caption if none passed", func() {
-			ab.AssignCaption("", "key")
-			So(ab.CaptionedTitle(), ShouldEqual, "")
-		})
-		Convey("By default, no caption if title already there", func() {
-			ab.setTitle("a title")
-			ab.AssignCaption("a caption", "key")
-			So(ab.CaptionedTitle(), ShouldEqual, "a title")
+		ab.SetCaption("a caption")
+		Convey("By default, no caption if there is a caption already there, but no title", func() {
+			ab.AssignCaption("a new caption", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "a caption")
 		})
 	})
 }
