@@ -255,4 +255,7 @@ func (ab *abstractBlock) AssignCaption(caption, key string) {
 	if !ab.HasTitle() && ab.Caption() != "" {
 		return
 	}
+	if caption != "" {
+		ab.SetCaption(caption)
+	}
 }

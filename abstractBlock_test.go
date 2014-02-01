@@ -168,5 +168,11 @@ func TestAbstractBlock(t *testing.T) {
 			ab.AssignCaption("a new caption", "key")
 			So(ab.CaptionedTitle(), ShouldEqual, "a caption")
 		})
+		Convey("Assign caption if one is passed", func() {
+			ab.setTitle("a title")
+			ab.AssignCaption("a new caption", "key")
+			So(ab.CaptionedTitle(), ShouldEqual, "a new captiona title")
+		})
+
 	})
 }
