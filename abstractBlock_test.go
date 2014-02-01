@@ -187,6 +187,18 @@ func TestAbstractBlock(t *testing.T) {
 			ab.AssignCaption("", "key")
 			So(ab.CaptionedTitle(), ShouldEqual, "an attr captiona title")
 		})
+		Convey("If title, no caption and actual document and no key, caption assigned for key equals to 'document context-caption'", func() {
+			parent := newAbstractNode(nil, context.Section)
+			ab = newAbstractBlock(parent, context.Document)
+			ab.setTitle("a title2")
+
+			parent.setAttr(ab.Context().String()+"-caption", "an attr doc caption", false)
+			So(ab.Document().HasAttr("caption", nil, false), ShouldBeFalse)
+			So(ab.Document().HasAttr(ab.Context().String()+"-caption", nil, false), ShouldBeTrue)
+
+			ab.AssignCaption("", "")
+			So(ab.CaptionedTitle(), ShouldEqual, "an attr doc caption . a title2")
+		})
 
 	})
 }

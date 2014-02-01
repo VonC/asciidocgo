@@ -263,5 +263,16 @@ func (ab *abstractBlock) AssignCaption(caption, key string) {
 	}
 	if ab.Document().HasAttr("caption", nil, false) {
 		ab.SetCaption(ab.Document().Attr("caption", nil, false).(string))
+		return
+	}
+	if key == "" {
+		key = ab.Context().String()
+	}
+	captionKey := key + "-caption"
+	if ab.Document().HasAttr(captionKey, nil, false) {
+		captionTitle := ab.Document().Attr(captionKey, nil, false).(string)
+		// TODO this won't work when ab is a Document, because CounterIncrement of Document won't be called
+		captionNum := ab.Document().CounterIncrement(key+"-number", ab.abstractNode)
+		ab.SetCaption(captionTitle + " " + captionNum + ". ")
 	}
 }

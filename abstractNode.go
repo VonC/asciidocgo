@@ -28,6 +28,7 @@ type Documentable interface {
 
 	PlaybackAttributes(map[string]interface{})
 	Renderer() *Renderer
+	CounterIncrement(counterName string, block *abstractNode) string
 }
 
 /* An abstract base class that provides state and methods for managing
@@ -598,4 +599,9 @@ func (an *abstractNode) Level() int {
 /* An Actual Document would know how to playback those attributes */
 func (an *abstractNode) PlaybackAttributes(map[string]interface{}) {
 	//
+}
+
+/* An Actual Document would know how to counter increment */
+func (an *abstractNode) CounterIncrement(counterName string, block *abstractNode) string {
+	return ""
 }
