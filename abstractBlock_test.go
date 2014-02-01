@@ -161,6 +161,7 @@ func TestAbstractBlock(t *testing.T) {
 		ab.RemoveSub("test1")
 		So(ab.HasSub("test1"), ShouldBeFalse)
 	})
+
 	Convey("An abstractBlock can assign a caption", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
 		ab.SetCaption("a caption")
@@ -201,4 +202,45 @@ func TestAbstractBlock(t *testing.T) {
 		})
 
 	})
+
+	Convey("An abstractBlock can assign an index to a section", t, func() {
+		ab := newAbstractBlock(nil, context.Document)
+		ts := &testSection{}
+		ab.assignIndex(ts)
+		So(ts.index, ShouldEqual, 1)
+	})
+
+}
+
+type testSection struct {
+	index    int
+	number   int
+	numbered bool
+	name     string
+	caption  string
+	level    int
+	special  bool
+}
+
+func (ts *testSection) SetIndex(index int) {
+	ts.index = index
+}
+
+func (ts *testSection) SectName() string {
+	return ts.name
+}
+func (ts *testSection) SetNumber(number int) {
+	ts.number = number
+}
+func (ts *testSection) IsNumbered() bool {
+	return ts.numbered
+}
+func (ts *testSection) SetCaption(caption string) {
+	ts.caption = caption
+}
+func (ts *testSection) Level() int {
+	return ts.level
+}
+func (ts *testSection) IsSpecial() bool {
+	return ts.special
 }
