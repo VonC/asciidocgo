@@ -24,7 +24,6 @@ type Documentable interface {
 
 	Safe() safeMode
 	BaseDir() string
-	Level() int
 
 	PlaybackAttributes(map[string]interface{})
 	Renderer() *Renderer
@@ -38,26 +37,35 @@ a node of AsciiDoc content.
 The state and methods on this class are comment to all content segments
 in an AsciiDoc document. */
 type abstractNode struct {
-	parent     Documentable
+	parent     *abstractNode
 	context    context.Context
 	document   Documentable
 	attributes map[string]interface{}
+	_doc       Documentable
 	*substitutors
 }
 
-func newAbstractNode(parent Documentable, c context.Context) *abstractNode {
-	abstractNode := &abstractNode{parent, c, nil, make(map[string]interface{}), &substitutors{}}
+func newAbstractNode(parent *abstractNode, c context.Context) *abstractNode {
+	abstractNode := &abstractNode{parent, c, nil, make(map[string]interface{}), nil, &substitutors{}}
 	if c == context.Document {
 		abstractNode.parent = nil
-		abstractNode.document = parent
+		if parent != nil {
+			abstractNode.document = parent._doc
+		}
 	} else if parent != nil {
 		abstractNode.document = parent.Document()
 	}
 	return abstractNode
 }
 
+func (an *abstractNode) MainDocumentable(d Documentable) {
+	if an.Context() == context.Document {
+		an._doc = d
+	}
+}
+
 //  Get the element which is the parent of this node
-func (an *abstractNode) Parent() Documentable {
+func (an *abstractNode) Parent() *abstractNode {
 	return an.parent
 }
 
@@ -105,7 +113,7 @@ Return the value of the attribute or the default value if the attribute is
 not found in the attributes of this node or the document node
 */
 func (an *abstractNode) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
-	if an == an.document {
+	if an._doc == an.document {
 		inherit = false
 	}
 	if an.attributes[name] != nil {
@@ -141,7 +149,7 @@ comparison value is specified, whether the value of the attribute matches
 the comparison value
 */
 func (an *abstractNode) HasAttr(name string, expect interface{}, inherit bool) bool {
-	if an == an.document {
+	if an._doc == an.document {
 		inherit = false
 	}
 	if expect == nil {
@@ -581,39 +589,4 @@ func (an *abstractNode) listMarkerKeyword(listType string) rune {
 		listType = an.Style()
 	}
 	return ORDERED_LIST_KEYWORDS[listType]
-}
-
-/* An actual document would have a default safe level of SERVER */
-func (an *abstractNode) Safe() safeMode {
-	return UNSAFE
-}
-
-/* An Actual document would have a base dir */
-func (an *abstractNode) BaseDir() string {
-	return ""
-}
-
-/* An Actual abstract Block would have a level */
-func (an *abstractNode) Level() int {
-	return -1
-}
-
-/* An Actual Document would know how to playback those attributes */
-func (an *abstractNode) PlaybackAttributes(map[string]interface{}) {
-	//
-}
-
-/* An Actual Document would know how to counter increment */
-func (an *abstractNode) CounterIncrement(counterName string, block *abstractNode) string {
-	return ""
-}
-
-/* An Actual Document would know how to counter */
-func (an *abstractNode) Counter(name, seed string) int {
-	return -1
-}
-
-/* An Actual Document would know how to counter */
-func (an *abstractNode) DocType() string {
-	return ""
 }
