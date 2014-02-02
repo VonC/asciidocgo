@@ -251,9 +251,43 @@ func TestAbstractBlock(t *testing.T) {
 		})
 	})
 
+	Convey("An abstractBlock can reindex sections", t, func() {
+		parent := newAbstractNode(nil, context.Section)
+		ab := newAbstractBlock(parent, context.Document)
+		So(len(ab.Sections()), ShouldEqual, 0)
+		section1 := newTestSection(nil, context.Section)
+		section2 := newTestSection(nil, context.Section)
+		section2.numbered = true
+		section3 := newTestSection(nil, context.Section)
+		section3.numbered = true
+		ab.AppendBlock(section1.abstractBlock)
+		ab.AppendBlock(section2.abstractBlock)
+		ab.AppendBlock(section3.abstractBlock)
+		ab.Section()
+		ab.nextSectionIndex = -1
+		ab.nextSectionNumber = -1
+		ab.reindexSections()
+		So(ab.nextSectionIndex, ShouldEqual, 3)
+		So(ab.nextSectionNumber, ShouldEqual, 2)
+	})
+}
+
+func newTestSection(parent Documentable, c context.Context) *testSection {
+	templateName := "block_" + c.String()
+	level := -1 // there is no 'nil' for an int
+	if c == context.Document {
+		level = 0
+	} else if parent != nil && c != context.Section {
+		level = parent.Level()
+	}
+	testSection := &testSection{&abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, "", nil}, 0, 0, false, "", "", 0, false}
+	testSection.section = testSection
+	//fmt.Printf("testSection '%v' => '%v' => '%v' vs. '%v'\n", testSection, testSection.abstractBlock, testSection.Section(), testSection.abstractBlock.Section())
+	return testSection
 }
 
 type testSection struct {
+	*abstractBlock
 	index    int
 	number   int
 	numbered bool
@@ -284,4 +318,7 @@ func (ts *testSection) Level() int {
 }
 func (ts *testSection) IsSpecial() bool {
 	return ts.special
+}
+func (ts *testSection) Section() sectionAble {
+	return ts
 }

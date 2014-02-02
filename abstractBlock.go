@@ -22,6 +22,7 @@ type abstractBlock struct {
 	nextSectionIndex  int
 	nextSectionNumber int
 	subbedTitle       string
+	section           sectionAble
 }
 
 var testab = ""
@@ -34,7 +35,7 @@ func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
 	} else if parent != nil && c != context.Section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, ""}
+	abstractBlock := &abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, "", nil}
 	return abstractBlock
 }
 
@@ -322,8 +323,33 @@ func (ab *abstractBlock) assignIndex(section sectionAble) {
 		if (section.Level() == 1 || (section.Level() == 0 && section.IsSpecial())) && (ab.Document().DocType() == "book" || testab == "test_doctypeBook_assignIndex") {
 			section.SetNumber(ab.Document().Counter("chapter-number", "1"))
 		} else {
+			//fmt.Printf("ooooooooooo0 %v => '%v' for '%v'\n", ab.nextSectionNumber, ab, section)
 			section.SetNumber(ab.nextSectionNumber)
 			ab.nextSectionNumber = ab.nextSectionNumber + 1
+			//fmt.Printf("ooooooooooo1 %v => '%v' for '%v'\n", ab.nextSectionNumber, ab, section)
+		}
+	}
+}
+
+func (ab *abstractBlock) Section() sectionAble {
+	if ab.section != nil {
+		return ab.section
+	}
+	return nil
+}
+
+/* Reassign the section indexes.
+Walk the descendents of the current Document or Section
+and reassign the section 0-based index value to each Section
+as it appears in document order.
+Returns nothing */
+func (ab *abstractBlock) reindexSections() {
+	ab.nextSectionIndex = 0
+	ab.nextSectionNumber = 0
+	for _, block := range ab.Blocks() {
+		if block.Context() == context.Section {
+			ab.assignIndex(block.Section())
+			block.reindexSections()
 		}
 	}
 }
