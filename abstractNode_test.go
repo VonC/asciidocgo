@@ -356,9 +356,9 @@ func TestAbstractNode(t *testing.T) {
 			So(an.normalizeSystemPath("a/b", "", "", false, ""), ShouldEqual, wd+"/a/b")
 		})
 		Convey("Empty start and jail and safe document means working dir", func() {
-			testab = "test_normalizeSystemPath_safeDocument"
+			testan = "test_normalizeSystemPath_safeDocument"
 			So(an.normalizeSystemPath("a/b", "", "", false, ""), ShouldEqual, wd+"/a/b")
-			testab = ""
+			testan = ""
 		})
 	})
 
@@ -376,11 +376,11 @@ func TestAbstractNode(t *testing.T) {
 			So(an.generateDataUri("a/b.svg", ""), ShouldEqual, "data:image/svg+xml:base64,")
 		})
 		Convey("Svg target and non-empty assetDir imagePath", func() {
-			testab = "test_generateDataUri_imagePath"
+			testan = "test_generateDataUri_imagePath"
 			So(an.generateDataUri("a/b.svg", "akey"), ShouldEqual, "imagePath='"+wd+"/a/b.svg'")
 			parent.setAttr("akey", "c:/x", true)
 			So(an.generateDataUri("a/b.svg", "akey"), ShouldEqual, "imagePath='c:/x/a/b.svg'")
-			testab = ""
+			testan = ""
 		})
 		Convey("Existing target and empty assetDir means data content", func() {
 			So(an.generateDataUri("test/t.txt", ""), ShouldEqual, "test data")

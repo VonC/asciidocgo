@@ -12,7 +12,7 @@ import (
 	"github.com/VonC/asciidocgo/context"
 )
 
-var testab = ""
+var testan = ""
 
 type Documentable interface {
 	Document() Documentable
@@ -454,7 +454,7 @@ func (an *abstractNode) generateDataUri(targetImage, assetDirKey string) string 
 	} else {
 		imagePath = an.normalizeSystemPath(targetImage, "", "", false, "")
 	}
-	if testab == "test_generateDataUri_imagePath" {
+	if testan == "test_generateDataUri_imagePath" {
 		return fmt.Sprintf("imagePath='%v'", imagePath)
 	}
 	if file, err := os.Open(imagePath); err == nil {
@@ -535,7 +535,7 @@ func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecov
 	if start == "" && an.Document() != nil {
 		start = an.Document().BaseDir()
 	}
-	if jail == "" && an.Document() != nil && (an.Document().Safe() >= SAFE || testab == "test_normalizeSystemPath_safeDocument") {
+	if jail == "" && an.Document() != nil && (an.Document().Safe() >= SAFE || testan == "test_normalizeSystemPath_safeDocument") {
 		jail = an.Document().BaseDir()
 	}
 	return NewPathResolver(0, "").SystemPath(target, start, jail, canrecover, targetName)
@@ -610,7 +610,7 @@ func (an *abstractNode) CounterIncrement(counterName string, block *abstractNode
 
 /* An Actual Document would know how to counter */
 func (an *abstractNode) Counter(name, seed string) int {
-	return 0
+	return -1
 }
 
 /* An Actual Document would know how to counter */
