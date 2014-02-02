@@ -1,0 +1,3 @@
+[submodule "asciidoctor"]
+	path = asciidoctor
+	url = https://VonC@github.com/VonC/asciidoctor
