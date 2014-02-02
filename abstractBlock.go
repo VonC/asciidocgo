@@ -22,7 +22,7 @@ type abstractBlock struct {
 	nextSectionIndex  int
 	nextSectionNumber int
 	subbedTitle       string
-	section           sectionAble
+	_section          sectionAble
 }
 
 var testab = ""
@@ -292,6 +292,12 @@ type sectionAble interface {
 	IsSpecial() bool
 }
 
+func (ab *abstractBlock) MainSectionAble(sa sectionAble) {
+	if ab.Context() == context.Section {
+		ab._section = sa
+	}
+}
+
 /* Assign the next index (0-based) to this section
 Assign the next index of this section within the parent Block
 (in document order)
@@ -331,13 +337,6 @@ func (ab *abstractBlock) assignIndex(section sectionAble) {
 	}
 }
 
-func (ab *abstractBlock) Section() sectionAble {
-	if ab.section != nil {
-		return ab.section
-	}
-	return nil
-}
-
 /* Reassign the section indexes.
 Walk the descendents of the current Document or Section
 and reassign the section 0-based index value to each Section
@@ -348,7 +347,7 @@ func (ab *abstractBlock) reindexSections() {
 	ab.nextSectionNumber = 0
 	for _, block := range ab.Blocks() {
 		if block.Context() == context.Section {
-			ab.assignIndex(block.Section())
+			ab.assignIndex(block._section)
 			block.reindexSections()
 		}
 	}

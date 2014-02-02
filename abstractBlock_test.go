@@ -8,6 +8,17 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+type testSectionAble struct {
+	*abstractBlock
+	index    int
+	number   int
+	numbered bool
+	name     string
+	caption  string
+	level    int
+	special  bool
+}
+
 func TestAbstractBlock(t *testing.T) {
 
 	Convey("An abstractBlock can be initialized", t, func() {
@@ -206,7 +217,7 @@ func TestAbstractBlock(t *testing.T) {
 	Convey("An abstractBlock can assign an index to a section", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
 		parent := newAbstractNode(nil, context.Section)
-		ts := &testSection{}
+		ts := &testSectionAble{}
 		ab.assignIndex(ts)
 		ab.assignIndex(ts)
 		ab.assignIndex(ts)
@@ -263,7 +274,7 @@ func TestAbstractBlock(t *testing.T) {
 		ab.AppendBlock(section1.abstractBlock)
 		ab.AppendBlock(section2.abstractBlock)
 		ab.AppendBlock(section3.abstractBlock)
-		ab.Section()
+		//ab.Section()
 		ab.nextSectionIndex = -1
 		ab.nextSectionNumber = -1
 		ab.reindexSections()
@@ -272,53 +283,37 @@ func TestAbstractBlock(t *testing.T) {
 	})
 }
 
-func newTestSection(parent Documentable, c context.Context) *testSection {
-	templateName := "block_" + c.String()
-	level := -1 // there is no 'nil' for an int
-	if c == context.Document {
-		level = 0
-	} else if parent != nil && c != context.Section {
-		level = parent.Level()
-	}
-	testSection := &testSection{&abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, "", nil}, 0, 0, false, "", "", 0, false}
-	testSection.section = testSection
-	//fmt.Printf("testSection '%v' => '%v' => '%v' vs. '%v'\n", testSection, testSection.abstractBlock, testSection.Section(), testSection.abstractBlock.Section())
-	return testSection
+func newTestSection(parent *abstractBlock, c context.Context) *testSectionAble {
+	ab := newAbstractBlock(parent, context.Section)
+	testSectionAble := &testSectionAble{ab, 0, 0, false, "", "", 0, false}
+	ab.MainSectionAble(testSectionAble)
+	//fmt.Printf("testSectionAble '%v' => '%v' => '%v' vs. '%v'\n", testSectionAble, testSectionAble.abstractBlock, testSectionAble.Section(), testSectionAble.abstractBlock.Section())
+	return testSectionAble
 }
 
-type testSection struct {
-	*abstractBlock
-	index    int
-	number   int
-	numbered bool
-	name     string
-	caption  string
-	level    int
-	special  bool
-}
-
-func (ts *testSection) SetIndex(index int) {
+func (ts *testSectionAble) SetIndex(index int) {
 	ts.index = index
 }
 
-func (ts *testSection) SectName() string {
+func (ts *testSectionAble) SectName() string {
 	return ts.name
 }
-func (ts *testSection) SetNumber(number int) {
+func (ts *testSectionAble) SetNumber(number int) {
 	ts.number = number
 }
-func (ts *testSection) IsNumbered() bool {
+func (ts *testSectionAble) IsNumbered() bool {
 	return ts.numbered
 }
-func (ts *testSection) SetCaption(caption string) {
+func (ts *testSectionAble) SetCaption(caption string) {
 	ts.caption = caption
 }
-func (ts *testSection) Level() int {
+func (ts *testSectionAble) Level() int {
 	return ts.level
 }
-func (ts *testSection) IsSpecial() bool {
+func (ts *testSectionAble) IsSpecial() bool {
 	return ts.special
 }
-func (ts *testSection) Section() sectionAble {
+func (ts *testSectionAble) Section() sectionAble {
 	return ts
 }
+
