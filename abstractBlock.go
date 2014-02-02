@@ -27,7 +27,7 @@ type abstractBlock struct {
 
 var testab = ""
 
-func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
+func newAbstractBlock(parent *abstractBlock, c context.Context) *abstractBlock {
 	templateName := "block_" + c.String()
 	level := -1 // there is no 'nil' for an int
 	if c == context.Document {
@@ -35,8 +35,13 @@ func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
 	} else if parent != nil && c != context.Section {
 		level = parent.Level()
 	}
-	abstractBlock := &abstractBlock{newAbstractNode(parent, c), contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, "", nil}
-	return abstractBlock
+	var parentAn *abstractNode = nil
+	if parent != nil {
+		parentAn = parent.abstractNode
+	}
+	an := newAbstractNode(parentAn, c)
+	ab := &abstractBlock{an, contentmodel.Compound, []string{}, templateName, []*abstractBlock{}, level, "", "", "", 0, 1, "", nil}
+	return ab
 }
 
 /* The types of content that this block can accomodate */

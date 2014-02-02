@@ -19,6 +19,10 @@ type testSectionAble struct {
 	special  bool
 }
 
+type testBlockDocumentAble struct {
+	*abstractBlock
+}
+
 func TestAbstractBlock(t *testing.T) {
 
 	Convey("An abstractBlock can be initialized", t, func() {
@@ -82,7 +86,7 @@ func TestAbstractBlock(t *testing.T) {
 	})
 
 	Convey("An abstractBlock can render its content", t, func() {
-		parent := newAbstractBlock(nil, context.Paragraph)
+		parent := newTestBlockDocumentAble(nil).abstractBlock
 		ab := newAbstractBlock(parent, context.Document)
 		So(ab.Render(), ShouldEqual, "")
 		// TODO complete
@@ -192,7 +196,7 @@ func TestAbstractBlock(t *testing.T) {
 			So(ab.CaptionedTitle(), ShouldEqual, "")
 		})
 		Convey("If title, no caption and actual document, caption assigned for key 'caption'", func() {
-			parent := newAbstractNode(nil, context.Section)
+			parent := newTestBlockDocumentAble(nil).abstractBlock
 			ab = newAbstractBlock(parent, context.Document)
 			ab.setTitle("a title")
 			parent.setAttr("caption", "an attr caption", false)
@@ -200,8 +204,8 @@ func TestAbstractBlock(t *testing.T) {
 			So(ab.CaptionedTitle(), ShouldEqual, "an attr captiona title")
 		})
 		Convey("If title, no caption and actual document and no key, caption assigned for key equals to 'document context-caption'", func() {
-			parent := newAbstractNode(nil, context.Section)
-			ab = newAbstractBlock(parent, context.Document)
+			parent := newTestBlockDocumentAble(nil)
+			ab = newAbstractBlock(parent.abstractBlock, context.Document)
 			ab.setTitle("a title2")
 
 			parent.setAttr(ab.Context().String()+"-caption", "an attr doc caption", false)
@@ -216,7 +220,7 @@ func TestAbstractBlock(t *testing.T) {
 
 	Convey("An abstractBlock can assign an index to a section", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
-		parent := newAbstractNode(nil, context.Section)
+		parent := newTestBlockDocumentAble(nil).abstractBlock
 		ts := &testSectionAble{}
 		ab.assignIndex(ts)
 		ab.assignIndex(ts)
@@ -263,7 +267,7 @@ func TestAbstractBlock(t *testing.T) {
 	})
 
 	Convey("An abstractBlock can reindex sections", t, func() {
-		parent := newAbstractNode(nil, context.Section)
+		parent := newTestBlockDocumentAble(nil).abstractBlock
 		ab := newAbstractBlock(parent, context.Document)
 		So(len(ab.Sections()), ShouldEqual, 0)
 		section1 := newTestSection(nil, context.Section)
@@ -317,3 +321,33 @@ func (ts *testSectionAble) Section() sectionAble {
 	return ts
 }
 
+func newTestBlockDocumentAble(parent *abstractBlock) *testBlockDocumentAble {
+	an := newAbstractBlock(parent, context.Document)
+	tba := &testBlockDocumentAble{an}
+	an.MainDocumentable(tba)
+	return tba
+}
+
+func (tbd *testBlockDocumentAble) Safe() safeMode {
+	return UNSAFE
+}
+
+func (tbd *testBlockDocumentAble) BaseDir() string {
+	return ""
+}
+
+func (tbd *testBlockDocumentAble) PlaybackAttributes(map[string]interface{}) {
+	//
+}
+
+func (tbd *testBlockDocumentAble) CounterIncrement(counterName string, block *abstractNode) string {
+	return ""
+}
+
+func (tbd *testBlockDocumentAble) Counter(name, seed string) int {
+	return -1
+}
+
+func (tbd *testBlockDocumentAble) DocType() string {
+	return ""
+}
