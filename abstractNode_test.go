@@ -65,7 +65,7 @@ func TestAbstractNode(t *testing.T) {
 		parentDocument := newTestDocumentAble(nil)
 		parentDocument.setAttr("key", "val1", true)
 		parent := newTestDocumentAble(parentDocument.abstractNode).abstractNode
-		an := newAbstractNode(nil, context.Document)
+		an := newTestDocumentAble(nil).abstractNode
 		Convey("If inherited, it is the attribute if there, or the document attribute, or default value", func() {
 			So(an.Attr("key", nil, true), ShouldBeNil)
 			an.setAttr("key", "val", false)
@@ -77,7 +77,7 @@ func TestAbstractNode(t *testing.T) {
 			// an should have for parent a child, which has an as a document
 			// then an.document would be "parent".document, meaning an, when
 			// setting an.setParent(child)
-			//an.document = an
+			an.document = an._doc
 			an.setAttr("key", "val", false)
 			So(an.Attr("key", nil, true), ShouldEqual, "val")
 		})
@@ -94,7 +94,7 @@ func TestAbstractNode(t *testing.T) {
 		parentDocument := newTestDocumentAble(nil)
 		parentDocument.setAttr("key1", "val1", true)
 		parent := newAbstractNode(parentDocument.abstractNode, context.Document)
-		an := newAbstractNode(nil, context.Document)
+		an := newTestDocumentAble(nil).abstractNode
 
 		Convey("If expect nil, check if key is there", func() {
 			So(an.HasAttr("key1", nil, false), ShouldBeFalse)
@@ -114,7 +114,7 @@ func TestAbstractNode(t *testing.T) {
 			an.setAttr("key1", "val1", true)
 			an.SetParent(nil)
 			So(an.HasAttr("key1", "val1", false), ShouldBeTrue)
-			//an.document = an
+			an.document = an._doc
 			So(an.HasAttr("key1", "val1", true), ShouldBeTrue)
 		})
 	})
