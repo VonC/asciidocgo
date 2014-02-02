@@ -205,9 +205,50 @@ func TestAbstractBlock(t *testing.T) {
 
 	Convey("An abstractBlock can assign an index to a section", t, func() {
 		ab := newAbstractBlock(nil, context.Document)
+		parent := newAbstractNode(nil, context.Section)
 		ts := &testSection{}
 		ab.assignIndex(ts)
-		So(ts.index, ShouldEqual, 1)
+		ab.assignIndex(ts)
+		ab.assignIndex(ts)
+		So(ts.index, ShouldEqual, 2)
+		Convey("Section not apendix and not numbered has no number or caption", func() {
+			ab = newAbstractBlock(parent, context.Document)
+			ab.assignIndex(ts)
+			ab.assignIndex(ts)
+			So(ts.index, ShouldEqual, 1)
+			So(ts.caption, ShouldEqual, "")
+			So(ts.number, ShouldEqual, 0)
+		})
+		Convey("An appendix Section has number only if numbered", func() {
+			ts.name = "appendix"
+			ab.assignIndex(ts)
+			So(ts.number, ShouldEqual, 0)
+			ts.numbered = true
+			ab.assignIndex(ts)
+			So(ts.number, ShouldEqual, -1)
+			So(ts.caption, ShouldEqual, "-1. ")
+		})
+		Convey("An appendix Section has caption only if document has appendix-caption attribute", func() {
+			parent.setAttr("appendix-caption", "an appendix CAPTION", false)
+			ab.assignIndex(ts)
+			So(ts.caption, ShouldEqual, "an appendix CAPTION -1: ")
+		})
+		Convey("An non-appendix Section with non-book document has number equals to nextSectionNumber", func() {
+			ts.name = ""
+			So(ts.number, ShouldEqual, -1)
+			ab.assignIndex(ts)
+			So(ts.number, ShouldEqual, 1)
+			ab.assignIndex(ts)
+			So(ts.number, ShouldEqual, 2)
+		})
+		Convey("An non-appendix Section with level 1 and book document should have counter number", func() {
+			ts.number = 0
+			ts.level = 1
+			testab = "test_doctypeBook_assignIndex"
+			ab.assignIndex(ts)
+			testab = ""
+			So(ts.number, ShouldEqual, -1)
+		})
 	})
 
 }

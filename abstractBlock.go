@@ -24,6 +24,8 @@ type abstractBlock struct {
 	subbedTitle       string
 }
 
+var testab = ""
+
 func newAbstractBlock(parent Documentable, c context.Context) *abstractBlock {
 	templateName := "block_" + c.String()
 	level := -1 // there is no 'nil' for an int
@@ -304,7 +306,11 @@ func (ab *abstractBlock) assignIndex(section sectionAble) {
 		if section.IsNumbered() {
 			section.SetNumber(appendixNumber)
 		}
-		caption := ab.Document().Attr("appendix-caption", nil, false).(string)
+		appendixCaptionAttr := ab.Document().Attr("appendix-caption", nil, false)
+		caption := ""
+		if appendixCaptionAttr != nil {
+			caption = appendixCaptionAttr.(string)
+		}
 		if caption != "" {
 			section.SetCaption(caption + " " + strconv.Itoa(appendixNumber) + ": ")
 		} else {
@@ -313,7 +319,7 @@ func (ab *abstractBlock) assignIndex(section sectionAble) {
 	} else if section.IsNumbered() {
 		// chapters in a book doctype should be sequential even when
 		// divided into parts
-		if (section.Level() == 1 || (section.Level() == 0 && section.IsSpecial())) && ab.Document().DocType() == "book" {
+		if (section.Level() == 1 || (section.Level() == 0 && section.IsSpecial())) && (ab.Document().DocType() == "book" || testab == "test_doctypeBook_assignIndex") {
 			section.SetNumber(ab.Document().Counter("chapter-number", "1"))
 		} else {
 			section.SetNumber(ab.nextSectionNumber)
