@@ -38,6 +38,7 @@ The state and methods on this class are comment to all content segments
 in an AsciiDoc document. */
 type abstractNode struct {
 	parent     *abstractNode
+	id         string
 	context    context.Context
 	document   Documentable
 	attributes map[string]interface{}
@@ -46,7 +47,7 @@ type abstractNode struct {
 }
 
 func newAbstractNode(parent *abstractNode, c context.Context) *abstractNode {
-	abstractNode := &abstractNode{parent, c, nil, make(map[string]interface{}), nil, &substitutors{}}
+	abstractNode := &abstractNode{parent, "", c, nil, make(map[string]interface{}), nil, &substitutors{}}
 	if c == context.Document {
 		abstractNode.parent = nil
 		if parent != nil {
@@ -72,6 +73,16 @@ func (an *abstractNode) Parent() *abstractNode {
 //  Get the Asciidoctor::Document to which this node belongs
 func (an *abstractNode) Document() Documentable {
 	return an.document
+}
+
+// Get the Id for this node
+func (an *abstractNode) Id() string {
+	return an.id
+}
+
+// Set the Id for this node
+func (an *abstractNode) SetId(id string) {
+	an.id = id
 }
 
 // Get the Symbol context for this node

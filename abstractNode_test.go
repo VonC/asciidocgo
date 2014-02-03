@@ -29,6 +29,7 @@ func TestAbstractNode(t *testing.T) {
 			So(an.Context(), ShouldEqual, context.Document)
 			So(an.Parent(), ShouldBeNil)
 			So(an.Document(), ShouldEqual, parent)
+			So(an.Id(), ShouldEqual, "")
 		})
 		Convey("If context is not document, then parent is parent and document is parent document", func() {
 			doc := newTestDocumentAble(nil)
@@ -58,6 +59,13 @@ func TestAbstractNode(t *testing.T) {
 		an.SetParent(parent)
 		So(an.Parent(), ShouldEqual, parent)
 		So(an.Document(), ShouldEqual, parent.Document())
+	})
+
+	Convey("An abstractNode can retrieve and set an id", t, func() {
+		an := newAbstractNode(nil, context.Section)
+		So(an.Id(), ShouldEqual, "")
+		an.SetId("test")
+		So(an.Id(), ShouldEqual, "test")
 	})
 
 	Convey("An abstractNode can retrieve an attribute", t, func() {
