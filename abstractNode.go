@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/VonC/asciidocgo/context"
+	"github.com/VonC/asciidocgo/safemode"
 )
 
 var testan = ""
@@ -22,7 +23,7 @@ type Documentable interface {
 	setAttr(name string, val interface{}, override bool) bool
 	HasReftext() bool
 
-	Safe() safeMode
+	Safe() safemode.SafeMode
 	BaseDir() string
 
 	PlaybackAttributes(map[string]interface{})
@@ -432,7 +433,7 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	if strings.Contains(targetImage, ":") && REGEXP[":uri_sniff"].MatchString(targetImage) {
 		return targetImage
 	}
-	if an.Document() != nil && an.Document().Safe() < SECURE && an.Document().HasAttr("data-uri", nil, true) {
+	if an.Document() != nil && an.Document().Safe() < safemode.SECURE && an.Document().HasAttr("data-uri", nil, true) {
 		return an.generateDataUri(targetImage, assetDirKey)
 	}
 	if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
@@ -554,7 +555,7 @@ func (an *abstractNode) normalizeSystemPath(target, start, jail string, canrecov
 	if start == "" && an.Document() != nil {
 		start = an.Document().BaseDir()
 	}
-	if jail == "" && an.Document() != nil && (an.Document().Safe() >= SAFE || testan == "test_normalizeSystemPath_safeDocument") {
+	if jail == "" && an.Document() != nil && (an.Document().Safe() >= safemode.SAFE || testan == "test_normalizeSystemPath_safeDocument") {
 		jail = an.Document().BaseDir()
 	}
 	return NewPathResolver(0, "").SystemPath(target, start, jail, canrecover, targetName)

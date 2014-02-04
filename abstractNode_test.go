@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/VonC/asciidocgo/context"
+	"github.com/VonC/asciidocgo/safemode"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -478,8 +479,8 @@ func newTestDocumentAble(parent *abstractNode) *testDocumentAble {
 	return testDocumentAble
 }
 
-func (td *testDocumentAble) Safe() safeMode {
-	return UNSAFE
+func (td *testDocumentAble) Safe() safemode.SafeMode {
+	return safemode.UNSAFE
 }
 
 func (td *testDocumentAble) BaseDir() string {

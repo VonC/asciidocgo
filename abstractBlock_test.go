@@ -5,6 +5,7 @@ import (
 
 	"github.com/VonC/asciidocgo/contentModel"
 	"github.com/VonC/asciidocgo/context"
+	"github.com/VonC/asciidocgo/safemode"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -328,8 +329,8 @@ func newTestBlockDocumentAble(parent *abstractBlock) *testBlockDocumentAble {
 	return tba
 }
 
-func (tbd *testBlockDocumentAble) Safe() safeMode {
-	return UNSAFE
+func (tbd *testBlockDocumentAble) Safe() safemode.SafeMode {
+	return safemode.UNSAFE
 }
 
 func (tbd *testBlockDocumentAble) BaseDir() string {
