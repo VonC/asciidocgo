@@ -43,13 +43,7 @@ Use custom (Tilt-supported) templates:
 */
 package asciidocgo
 
-import (
-	"fmt"
-	"io"
-	"regexp"
-
-	"github.com/VonC/asciidocgo/utils"
-)
+import "io"
 
 // Accepts input as a string
 func LoadString(input string) *Document {
@@ -67,70 +61,3 @@ func LoadStrings(inputs ...string) *Document {
 func Load(input io.Reader) *Document {
 	return nil
 }
-
-const (
-	CC_ALPHA = `a-zA-Z`
-	CC_ALNUM = `a-zA-Z0-9`
-	CC_BLANK = `[ \t]`
-	// non-blank character
-	CC_GRAPH = `[\x21-\x7E]`
-	CC_EOL   = `(?=\n|$)`
-)
-
-var ADMONITION_STYLES utils.Arr = []string{"NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"}
-
-var ORDERED_LIST_KEYWORDS = map[string]rune{
-	"loweralpha": 'a',
-	"lowerroman": 'i',
-	"upperalpha": 'A',
-	"upperroman": 'I',
-	//'lowergreek': 'a'
-	//'arabic': '1'
-	//'decimal': '1'
-}
-
-/* The following pattern, which appears frequently, captures the contents
-between square brackets, ignoring escaped closing brackets
-(closing brackets prefixed with a backslash '\' character)
-
-	Pattern:
-	(?:\[((?:\\\]|[^\]])*?)\])
-	Matches:
-	[enclosed text here] or [enclosed [text\] here]
-*/
-var REGEXP_STRING = map[string]string{
-	//:strip_line_wise => /\A(?:\s*\n)?(.*?)\s*\z/m,
-
-	// # NOTE: this is a inline admonition note
-	//	:admonition_inline => /^(#{ADMONITION_STYLES.to_a * '|'}):#{CC_BLANK}/,
-	":admonition_inline": fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK),
-
-	//	http://domain
-	//	https://domain
-	//	data:info
-	//	:uri_sniff        => %r{^[#{CC_ALPHA}][#{CC_ALNUM}.+-]*:/{0,2}},
-	":uri_sniff": fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_ALPHA, CC_ALNUM),
-}
-
-func iniREGEXP(regexps map[string]string) map[string]*regexp.Regexp {
-	res := map[string]*regexp.Regexp{}
-	for key, regexpString := range regexps {
-		regexp, err := regexp.Compile(regexpString)
-		if err != nil {
-			panic(fmt.Sprintf("iniREGEXP should compile all REGEXP_STRING like %v: %v", regexpString, err))
-		}
-		res[key] = regexp
-	}
-	return res
-}
-
-/* The following pattern, which appears frequently, captures the contents
-between square brackets, ignoring escaped closing brackets
-(closing brackets prefixed with a backslash '\' character)
-
-	Pattern:
-	(?:\[((?:\\\]|[^\]])*?)\])
-	Matches:
-	[enclosed text here] or [enclosed [text\] here]
-*/
-var REGEXP = iniREGEXP(REGEXP_STRING)

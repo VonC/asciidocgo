@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/VonC/asciidocgo/consts/regexps"
 )
 
 var testpr = ""
@@ -409,7 +411,7 @@ func WebPath(target, start string) string {
 	if !isWebroot && start != "" {
 		target = start + "/" + target
 		if strings.Contains(target, ":") {
-			if res := REGEXP[":uri_sniff"].FindStringSubmatchIndex(target); len(res) == 4 {
+			if res := regexps.UriSniffRx.FindStringSubmatchIndex(target); len(res) == 4 {
 				uriPrefix = target[:res[3]]
 				target = target[res[3]:]
 			}

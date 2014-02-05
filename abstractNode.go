@@ -10,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/VonC/asciidocgo/consts/context"
+	"github.com/VonC/asciidocgo/consts/regexps"
 	"github.com/VonC/asciidocgo/consts/safemode"
 )
 
@@ -396,7 +397,7 @@ func (an *abstractNode) MediaUri(target string, assetDirKey string) string {
 	if assetDirKey == "" {
 		assetDirKey = "imagesdir"
 	}
-	if strings.Contains(target, ":") && REGEXP[":uri_sniff"].MatchString(target) {
+	if strings.Contains(target, ":") && regexps.UriSniffRx.MatchString(target) {
 		return target
 	} else if assetDirKey != "" && an.HasAttr(assetDirKey, nil, true) {
 		// normalize_web_path(target, @document.attr(asset_dir_key)) ???
@@ -430,7 +431,7 @@ func (an *abstractNode) ImageUri(targetImage, assetDirKey string) string {
 	if assetDirKey == "" {
 		assetDirKey = "imagesdir"
 	}
-	if strings.Contains(targetImage, ":") && REGEXP[":uri_sniff"].MatchString(targetImage) {
+	if strings.Contains(targetImage, ":") && regexps.UriSniffRx.MatchString(targetImage) {
 		return targetImage
 	}
 	if an.Document() != nil && an.Document().Safe() < safemode.SECURE && an.Document().HasAttr("data-uri", nil, true) {
@@ -600,5 +601,5 @@ func (an *abstractNode) listMarkerKeyword(listType string) rune {
 	if listType == "" {
 		listType = an.Style()
 	}
-	return ORDERED_LIST_KEYWORDS[listType]
+	return regexps.ORDERED_LIST_KEYWORDS[listType]
 }
