@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/VonC/asciidocgo/context"
-	"github.com/VonC/asciidocgo/safemode"
+	"github.com/VonC/asciidocgo/consts/context"
+	"github.com/VonC/asciidocgo/consts/safemode"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
