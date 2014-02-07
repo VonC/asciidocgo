@@ -255,6 +255,7 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 	if testsub == "test_ApplySubs_extractPassthroughs" {
 		return text
 	}
+	// TODO complete (s *substitutors) ApplySubs after extractPassthroughs
 	return text
 }
 
