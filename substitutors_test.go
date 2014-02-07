@@ -31,11 +31,11 @@ func TestSubstitutor(t *testing.T) {
 
 	Convey("A substitutors can aaply substitutions", t, func() {
 
-		source := []string{"test"}
+		source := "test"
 		s := &substitutors{}
 
 		Convey("By default, no substitution or a pass subs will return source unchanged", func() {
-			So(s.ApplySubs(source, nil), ShouldResemble, source)
+			So(s.ApplySubs(source, nil), ShouldEqual, source)
 			So(s.ApplySubs(source, []*subsEnum{sub.pass}), ShouldResemble, source)
 			So(len(s.ApplySubs(source, []*subsEnum{sub.unknown})), ShouldEqual, 0)
 			So(len(s.ApplySubs(source, []*subsEnum{sub.title})), ShouldEqual, 0)
@@ -43,8 +43,8 @@ func TestSubstitutor(t *testing.T) {
 
 		Convey("A normal substition will use normal substitution modes", func() {
 			testsub = "test_ApplySubs_allsubs"
-			So(s.ApplySubs(source, []*subsEnum{sub.normal}), ShouldResemble, []string{"specialcharacters", "quotes", "attributes", "replacements", "macros", "post_replacements"})
-			So(s.ApplySubs(source, []*subsEnum{sub.title}), ShouldResemble, []string{"title"})
+			So(s.ApplySubs(source, []*subsEnum{sub.normal}), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
+			So(s.ApplySubs(source, []*subsEnum{sub.title}), ShouldEqual, "[title]")
 			testsub = ""
 		})
 

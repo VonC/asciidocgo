@@ -1,5 +1,7 @@
 package asciidocgo
 
+import "fmt"
+
 type _sub string
 
 const (
@@ -211,8 +213,8 @@ subs    - The substitutions to perform. Can be a Symbol or a Symbol Array (defau
 expand -  A Boolean to control whether sub aliases are expanded (default: true)
 
 returns Either a String or String Array, whichever matches the type of the first argument */
-func (s *substitutors) ApplySubs(source []string, someSubs []*subsEnum) []string {
-	res := []string{}
+func (s *substitutors) ApplySubs(source string, someSubs []*subsEnum) string {
+	res := ""
 	var allSubs []*subsEnum
 	if len(someSubs) == 1 {
 		if someSubs[0] == sub.pass {
@@ -230,7 +232,7 @@ func (s *substitutors) ApplySubs(source []string, someSubs []*subsEnum) []string
 		}
 	}
 	if testsub == "test_ApplySubs_allsubs" {
-		return values(allSubs)
+		return fmt.Sprintf("%v", values(allSubs))
 	}
 	if len(allSubs) == 0 {
 		return source
