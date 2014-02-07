@@ -1,21 +1,48 @@
 package asciidocgo
 
-type _subs string
+type _sub string
 
 const (
-	subsBasic    _subs = "basic"
-	subsNormal   _subs = "normal"
-	subsVerbatim _subs = "verbatim"
-	subsTitle    _subs = "title"
-	subsHeader   _subs = "header"
-	subsPass     _subs = "pass"
-	subsUnknown  _subs = "unknown"
+	subsBasic    _sub = "basic"
+	subsNormal   _sub = "normal"
+	subsVerbatim _sub = "verbatim"
+	subsTitle    _sub = "title"
+	subsHeader   _sub = "header"
+	subsPass     _sub = "pass"
+	subsUnknown  _sub = "unknown"
+)
+const (
+	subsSpecialCharacters _sub = "specialcharacters"
+	subsQuotes            _sub = "quotes"
+	subsAttributes        _sub = "attributes"
+	subsReplacements      _sub = "replacements"
+	subsMacros            _sub = "macros"
+	subsPostReplacements  _sub = "post_replacements"
+	subsCallout           _sub = "callouts"
+)
+const (
+	subsNone         _sub = "none"
+	subsSpecialChars _sub = "specialchars"
+)
+const (
+	subsA _sub = "a"
+	subsM _sub = "m"
+	subsN _sub = "n"
+	subsP _sub = "p"
+	subsQ _sub = "q"
+	subsR _sub = "R"
+	subsC _sub = "C"
+	subsV _sub = "V"
+)
+const (
+	subsBlock  _sub = "block"
+	subsInline _sub = "inline"
 )
 
 var testsub = ""
 
 type subsEnum struct {
-	value _subs
+	value _sub
 }
 
 type subsEnums struct {
@@ -26,6 +53,39 @@ type subsEnums struct {
 	header   *subsEnum
 	pass     *subsEnum
 	unknown  *subsEnum
+}
+
+type subsEnumsValues struct {
+	specialcharacters *subsEnum
+	quotes            *subsEnum
+	attributes        *subsEnum
+	replacements      *subsEnum
+	macros            *subsEnum
+	postReplacements  *subsEnum
+	callouts          *subsEnum
+}
+
+type compositeSubsEnums struct {
+	none         *subsEnum
+	normal       *subsEnum
+	verbatim     *subsEnum
+	specialchars *subsEnum
+}
+
+type subSymbolsEnums struct {
+	a *subsEnum
+	m *subsEnum
+	n *subsEnum
+	p *subsEnum
+	q *subsEnum
+	r *subsEnum
+	c *subsEnum
+	v *subsEnum
+}
+
+type subOptionsEnums struct {
+	block  *subsEnum
+	inline *subsEnum
 }
 
 func newSubsEnums() *subsEnums {
@@ -39,25 +99,102 @@ func newSubsEnums() *subsEnums {
 		&subsEnum{subsUnknown}}
 }
 
-func (se *subsEnum) values() []string {
-	switch se.value {
-	case subsBasic:
-		return []string{"specialcharacters"}
-	case subsNormal:
-		return []string{"specialcharacters", "quotes", "attributes", "replacements", "macros", "post_replacements"}
-	case subsVerbatim:
-		return []string{"specialcharacters", "callouts"}
-	case subsTitle:
-		return []string{"specialcharacters", "quotes", "replacements", "macros", "post_replacements"}
-	case subsHeader:
-		return []string{"specialcharacters", "attributes"}
-	case subsPass:
-		return []string{}
-	}
-	return []string{}
+func newSubsEnumsValues() *subsEnumsValues {
+	return &subsEnumsValues{
+		&subsEnum{subsSpecialCharacters},
+		&subsEnum{subsQuotes},
+		&subsEnum{subsAttributes},
+		&subsEnum{subsReplacements},
+		&subsEnum{subsMacros},
+		&subsEnum{subsPostReplacements},
+		&subsEnum{subsCallout}}
 }
 
-var subs = newSubsEnums()
+func newCompositeSubsEnums() *compositeSubsEnums {
+	return &compositeSubsEnums{
+		&subsEnum{subsNone},
+		&subsEnum{subsNormal},
+		&subsEnum{subsVerbatim},
+		&subsEnum{subsSpecialChars}}
+}
+
+func newSubSymbolsEnums() *subSymbolsEnums {
+	return &subSymbolsEnums{
+		&subsEnum{subsA},
+		&subsEnum{subsM},
+		&subsEnum{subsN},
+		&subsEnum{subsP},
+		&subsEnum{subsQ},
+		&subsEnum{subsR},
+		&subsEnum{subsC},
+		&subsEnum{subsV}}
+}
+
+func newSubOptionsEnums() *subOptionsEnums {
+	return &subOptionsEnums{
+		&subsEnum{subsBlock},
+		&subsEnum{subsInline}}
+}
+
+var sub = newSubsEnums()
+var subValue = newSubsEnumsValues()
+var compositeSub = newCompositeSubsEnums()
+var subSymbol = newSubSymbolsEnums()
+var subOption = newSubOptionsEnums()
+
+func (cses *compositeSubsEnums) keys() []*subsEnum {
+	res := []*subsEnum{}
+	res = append(res, cses.none)
+	res = append(res, cses.normal)
+	res = append(res, cses.verbatim)
+	res = append(res, cses.specialchars)
+	return res
+}
+
+var subs = map[*subsEnum][]*subsEnum{
+	sub.basic:    []*subsEnum{subValue.specialcharacters},
+	sub.normal:   []*subsEnum{subValue.specialcharacters, subValue.quotes, subValue.attributes, subValue.replacements, subValue.macros, subValue.postReplacements},
+	sub.verbatim: []*subsEnum{subValue.specialcharacters, subValue.callouts},
+	sub.title:    []*subsEnum{subValue.specialcharacters, subValue.quotes, subValue.replacements, subValue.macros, subValue.attributes, subValue.postReplacements},
+	sub.header:   []*subsEnum{subValue.specialcharacters, subValue.attributes},
+	sub.pass:     []*subsEnum{},
+}
+var compositeSubs = map[*subsEnum][]*subsEnum{
+	compositeSub.none:         []*subsEnum{},
+	compositeSub.normal:       subs[sub.normal],
+	sub.normal:                subs[sub.normal],
+	compositeSub.verbatim:     subs[sub.verbatim],
+	compositeSub.specialchars: []*subsEnum{subValue.specialcharacters},
+}
+var subSymbols = map[*subsEnum][]*subsEnum{
+	subSymbol.a: []*subsEnum{subValue.attributes},
+	subSymbol.m: []*subsEnum{subValue.macros},
+	subSymbol.n: []*subsEnum{sub.normal},
+	subSymbol.p: []*subsEnum{subValue.postReplacements},
+	subSymbol.q: []*subsEnum{subValue.quotes},
+	subSymbol.r: []*subsEnum{subValue.replacements},
+	subSymbol.c: []*subsEnum{subValue.specialcharacters},
+	subSymbol.v: []*subsEnum{sub.verbatim},
+}
+var subOptions = map[*subsEnum][]*subsEnum{
+	subOption.block:  append(append(compositeSub.keys(), subs[sub.normal]...), subValue.callouts),
+	subOption.inline: append(compositeSub.keys(), subs[sub.normal]...),
+}
+
+func (se *subsEnum) isCompositeSub() bool {
+	if _, ok := compositeSubs[se]; ok {
+		return true
+	}
+	return false
+}
+
+func values(someSubs []*subsEnum) []string {
+	res := []string{}
+	for _, aSub := range someSubs {
+		res = append(res, string(aSub.value))
+	}
+	return res
+}
 
 /* Methods to perform substitutions on lines of AsciiDoc text.
 This module is intented to be mixed-in to Section and Block to provide
@@ -75,18 +212,28 @@ expand -  A Boolean to control whether sub aliases are expanded (default: true)
 
 returns Either a String or String Array, whichever matches the type of the first argument */
 func (s *substitutors) ApplySubs(source []string, someSubs []*subsEnum) []string {
-	if len(someSubs) == 0 {
-		return source
+	res := []string{}
+	var allSubs []*subsEnum
+	if len(someSubs) == 1 {
+		if someSubs[0] == sub.pass {
+			return source
+		}
+		if someSubs[0] == sub.unknown {
+			return res
+		}
 	}
-	if len(someSubs) == 1 && someSubs[0] == subs.pass {
-		return source
-	}
-	var allsubs []string
-	if len(someSubs) == 1 && someSubs[0] == subs.normal {
-		allsubs = subs.normal.values()
+	for _, aSub := range someSubs {
+		if aSub.isCompositeSub() {
+			allSubs = append(allSubs, compositeSubs[aSub]...)
+		} else {
+			allSubs = append(allSubs, aSub)
+		}
 	}
 	if testsub == "test_ApplySubs_allsubs" {
-		return allsubs
+		return values(allSubs)
 	}
-	return []string{}
+	if len(allSubs) == 0 {
+		return source
+	}
+	return res
 }
