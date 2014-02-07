@@ -12,6 +12,8 @@ const (
 	subsUnknown  _subs = "unknown"
 )
 
+var testsub = ""
+
 type subsEnum struct {
 	value _subs
 }
@@ -72,9 +74,19 @@ subs    - The substitutions to perform. Can be a Symbol or a Symbol Array (defau
 expand -  A Boolean to control whether sub aliases are expanded (default: true)
 
 returns Either a String or String Array, whichever matches the type of the first argument */
-func (s *substitutors) ApplySubs(source []string, sub *subsEnum) []string {
-	if sub == nil || sub == subs.pass {
+func (s *substitutors) ApplySubs(source []string, someSubs []*subsEnum) []string {
+	if len(someSubs) == 0 {
 		return source
+	}
+	if len(someSubs) == 1 && someSubs[0] == subs.pass {
+		return source
+	}
+	var allsubs []string
+	if len(someSubs) == 1 && someSubs[0] == subs.normal {
+		allsubs = subs.normal.values()
+	}
+	if testsub == "test_ApplySubs_allsubs" {
+		return allsubs
 	}
 	return []string{}
 }
