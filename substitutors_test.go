@@ -29,24 +29,36 @@ func TestSubstitutor(t *testing.T) {
 		So(len(subs[sub.unknown]), ShouldEqual, 0)
 	})
 
-	Convey("A substitutors can aaply substitutions", t, func() {
+	Convey("A substitutors can apply substitutions", t, func() {
 
 		source := "test"
 		s := &substitutors{}
 
 		Convey("By default, no substitution or a pass subs will return source unchanged", func() {
 			So(s.ApplySubs(source, nil), ShouldEqual, source)
-			So(s.ApplySubs(source, []*subsEnum{sub.pass}), ShouldResemble, source)
-			So(len(s.ApplySubs(source, []*subsEnum{sub.unknown})), ShouldEqual, 0)
-			So(len(s.ApplySubs(source, []*subsEnum{sub.title})), ShouldEqual, 0)
+			So(s.ApplySubs(source, subArray{sub.pass}), ShouldResemble, source)
+			So(len(s.ApplySubs(source, subArray{sub.unknown})), ShouldEqual, 0)
+			So(s.ApplySubs(source, subArray{sub.title}), ShouldEqual, "test")
 		})
 
 		Convey("A normal substition will use normal substitution modes", func() {
 			testsub = "test_ApplySubs_allsubs"
-			So(s.ApplySubs(source, []*subsEnum{sub.normal}), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
-			So(s.ApplySubs(source, []*subsEnum{sub.title}), ShouldEqual, "[title]")
+			So(s.ApplySubs(source, subArray{sub.normal}), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
+			So(s.ApplySubs(source, subArray{sub.title}), ShouldEqual, "[title]")
+			testsub = ""
+		})
+		Convey("A macros substition will call extractPassthroughs", func() {
+			testsub = "test_ApplySubs_extractPassthroughs"
+			So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test")
 			testsub = ""
 		})
 
 	})
+
+	Convey("A substitutors can Extract the passthrough text from the document for reinsertion after processing", t, func() {
+		source := "test for passthrough"
+		s := &substitutors{}
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test for passthrough")
+	})
+
 }

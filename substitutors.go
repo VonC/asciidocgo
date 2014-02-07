@@ -144,8 +144,10 @@ var compositeSub = newCompositeSubsEnums()
 var subSymbol = newSubSymbolsEnums()
 var subOption = newSubOptionsEnums()
 
-func (cses *compositeSubsEnums) keys() []*subsEnum {
-	res := []*subsEnum{}
+type subArray []*subsEnum
+
+func (cses *compositeSubsEnums) keys() subArray {
+	res := subArray{}
 	res = append(res, cses.none)
 	res = append(res, cses.normal)
 	res = append(res, cses.verbatim)
@@ -153,32 +155,32 @@ func (cses *compositeSubsEnums) keys() []*subsEnum {
 	return res
 }
 
-var subs = map[*subsEnum][]*subsEnum{
-	sub.basic:    []*subsEnum{subValue.specialcharacters},
-	sub.normal:   []*subsEnum{subValue.specialcharacters, subValue.quotes, subValue.attributes, subValue.replacements, subValue.macros, subValue.postReplacements},
-	sub.verbatim: []*subsEnum{subValue.specialcharacters, subValue.callouts},
-	sub.title:    []*subsEnum{subValue.specialcharacters, subValue.quotes, subValue.replacements, subValue.macros, subValue.attributes, subValue.postReplacements},
-	sub.header:   []*subsEnum{subValue.specialcharacters, subValue.attributes},
-	sub.pass:     []*subsEnum{},
+var subs = map[*subsEnum]subArray{
+	sub.basic:    subArray{subValue.specialcharacters},
+	sub.normal:   subArray{subValue.specialcharacters, subValue.quotes, subValue.attributes, subValue.replacements, subValue.macros, subValue.postReplacements},
+	sub.verbatim: subArray{subValue.specialcharacters, subValue.callouts},
+	sub.title:    subArray{subValue.specialcharacters, subValue.quotes, subValue.replacements, subValue.macros, subValue.attributes, subValue.postReplacements},
+	sub.header:   subArray{subValue.specialcharacters, subValue.attributes},
+	sub.pass:     subArray{},
 }
-var compositeSubs = map[*subsEnum][]*subsEnum{
-	compositeSub.none:         []*subsEnum{},
+var compositeSubs = map[*subsEnum]subArray{
+	compositeSub.none:         subArray{},
 	compositeSub.normal:       subs[sub.normal],
 	sub.normal:                subs[sub.normal],
 	compositeSub.verbatim:     subs[sub.verbatim],
-	compositeSub.specialchars: []*subsEnum{subValue.specialcharacters},
+	compositeSub.specialchars: subArray{subValue.specialcharacters},
 }
-var subSymbols = map[*subsEnum][]*subsEnum{
-	subSymbol.a: []*subsEnum{subValue.attributes},
-	subSymbol.m: []*subsEnum{subValue.macros},
-	subSymbol.n: []*subsEnum{sub.normal},
-	subSymbol.p: []*subsEnum{subValue.postReplacements},
-	subSymbol.q: []*subsEnum{subValue.quotes},
-	subSymbol.r: []*subsEnum{subValue.replacements},
-	subSymbol.c: []*subsEnum{subValue.specialcharacters},
-	subSymbol.v: []*subsEnum{sub.verbatim},
+var subSymbols = map[*subsEnum]subArray{
+	subSymbol.a: subArray{subValue.attributes},
+	subSymbol.m: subArray{subValue.macros},
+	subSymbol.n: subArray{sub.normal},
+	subSymbol.p: subArray{subValue.postReplacements},
+	subSymbol.q: subArray{subValue.quotes},
+	subSymbol.r: subArray{subValue.replacements},
+	subSymbol.c: subArray{subValue.specialcharacters},
+	subSymbol.v: subArray{sub.verbatim},
 }
-var subOptions = map[*subsEnum][]*subsEnum{
+var subOptions = map[*subsEnum]subArray{
 	subOption.block:  append(append(compositeSub.keys(), subs[sub.normal]...), subValue.callouts),
 	subOption.inline: append(compositeSub.keys(), subs[sub.normal]...),
 }
@@ -190,12 +192,21 @@ func (se *subsEnum) isCompositeSub() bool {
 	return false
 }
 
-func values(someSubs []*subsEnum) []string {
+func values(someSubs subArray) []string {
 	res := []string{}
 	for _, aSub := range someSubs {
 		res = append(res, string(aSub.value))
 	}
 	return res
+}
+
+func (sa subArray) include(s *subsEnum) bool {
+	for _, aSub := range sa {
+		if aSub == s {
+			return true
+		}
+	}
+	return false
 }
 
 /* Methods to perform substitutions on lines of AsciiDoc text.
@@ -213,15 +224,15 @@ subs    - The substitutions to perform. Can be a Symbol or a Symbol Array (defau
 expand -  A Boolean to control whether sub aliases are expanded (default: true)
 
 returns Either a String or String Array, whichever matches the type of the first argument */
-func (s *substitutors) ApplySubs(source string, someSubs []*subsEnum) string {
-	res := ""
-	var allSubs []*subsEnum
+func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
+	text := ""
+	var allSubs subArray
 	if len(someSubs) == 1 {
 		if someSubs[0] == sub.pass {
 			return source
 		}
 		if someSubs[0] == sub.unknown {
-			return res
+			return text
 		}
 	}
 	for _, aSub := range someSubs {
@@ -237,5 +248,19 @@ func (s *substitutors) ApplySubs(source string, someSubs []*subsEnum) string {
 	if len(allSubs) == 0 {
 		return source
 	}
-	return res
+	text = source
+	if allSubs.include(subValue.macros) {
+		text = s.extractPassthroughs(text)
+	}
+	if testsub == "test_ApplySubs_extractPassthroughs" {
+		return text
+	}
+	return text
+}
+
+/* Extract the passthrough text from the document for reinsertion after processing.
+text - The String from which to extract passthrough fragements
+returns - The text with the passthrough region substituted with placeholders */
+func (s *substitutors) extractPassthroughs(text string) string {
+	return text
 }
