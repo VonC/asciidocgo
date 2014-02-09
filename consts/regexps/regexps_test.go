@@ -13,6 +13,12 @@ func TestRegexps(t *testing.T) {
 		So(AdmonitionParagraphRx.MatchString("TIP: Don't forget!"), ShouldBeTrue)
 	})
 
+	Convey("Regexps can match several variants of the passthrough inline macro, which may span multiple lines", t, func() {
+		So(PassInlineMacroRx.MatchString("+++text+++"), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString("$$text$$"), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString("pass:quotes[text]"), ShouldBeTrue)
+	})
+
 	Convey("Regexps can detect strings that resemble URIs", t, func() {
 		So(UriSniffRx.MatchString("http://domain"), ShouldBeTrue)
 		So(UriSniffRx.MatchString("https://domain"), ShouldBeTrue)

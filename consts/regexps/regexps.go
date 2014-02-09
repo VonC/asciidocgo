@@ -44,6 +44,17 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches several variants of the passthrough inline macro,
+which may span multiple lines.
+
+ Examples
+
+   +++text+++
+   $$text$$
+   pass:quotes[text] */
+// http://stackoverflow.com/questions/6770898/unknown-escape-sequence-error-in-go
+var PassInlineMacroRx, _ = regexp.Compile(`(?m)\\?(?:(\+{3}(.*?)\+{3}|\${2}(.*?)\${2})(.*?)|pass:([a-z,]*)\[(.*?[^\\])\])`)
+
 /* Detects strings that resemble URIs.
 
    Examples
