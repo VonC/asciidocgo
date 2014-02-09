@@ -15,8 +15,17 @@ func TestRegexps(t *testing.T) {
 
 	Convey("Regexps can match several variants of the passthrough inline macro, which may span multiple lines", t, func() {
 		So(PassInlineMacroRx.MatchString("+++text+++"), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString(`+++text
+			line2
+			line3+++`), ShouldBeTrue)
 		So(PassInlineMacroRx.MatchString("$$text$$"), ShouldBeTrue)
-		So(PassInlineMacroRx.MatchString("pass:quotes[text]"), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString("$$text$$"), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString(`pass:quotes[text
+			line2
+			line3]`), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString(`pass:quotes[text
+			line2
+			line3]`), ShouldBeTrue)
 	})
 
 	Convey("Regexps can detect strings that resemble URIs", t, func() {

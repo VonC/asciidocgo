@@ -53,7 +53,7 @@ which may span multiple lines.
    $$text$$
    pass:quotes[text] */
 // http://stackoverflow.com/questions/6770898/unknown-escape-sequence-error-in-go
-var PassInlineMacroRx, _ = regexp.Compile(`(?m)\\?(?:(\+{3}(.*?)\+{3}|\${2}(.*?)\${2})(.*?)|pass:([a-z,]*)\[(.*?[^\\])\])`)
+var PassInlineMacroRx, _ = regexp.Compile(`:(\+{3})(.*?)`)
 
 /* Detects strings that resemble URIs.
 
