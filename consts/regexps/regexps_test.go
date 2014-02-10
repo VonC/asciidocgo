@@ -19,10 +19,10 @@ func TestRegexps(t *testing.T) {
 			line2
 			line3+++`), ShouldBeTrue)
 		So(PassInlineMacroRx.MatchString("$$text$$"), ShouldBeTrue)
-		So(PassInlineMacroRx.MatchString("$$text$$"), ShouldBeTrue)
-		So(PassInlineMacroRx.MatchString(`pass:quotes[text
-			line2
-			line3]`), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString(`$$text
+			mulutple
+			line$$`), ShouldBeTrue)
+		So(PassInlineMacroRx.MatchString(`pass:quotes[text]`), ShouldBeTrue)
 		So(PassInlineMacroRx.MatchString(`pass:quotes[text
 			line2
 			line3]`), ShouldBeTrue)
