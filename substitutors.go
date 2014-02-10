@@ -1,6 +1,11 @@
 package asciidocgo
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/VonC/asciidocgo/consts/regexps"
+)
 
 type _sub string
 
@@ -263,5 +268,19 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 text - The String from which to extract passthrough fragements
 returns - The text with the passthrough region substituted with placeholders */
 func (s *substitutors) extractPassthroughs(text string) string {
-	return text
+	res := ""
+	if strings.Contains(text, "++") || strings.Contains(text, "$$") || strings.Contains(text, "ss:") {
+		m := regexps.PassInlineMacroRx.FindAllStringSubmatchIndex(text, -1)
+		if len(m) == 0 {
+			goto Next
+		}
+		for _, mi := range m {
+			fmt.Printf("mi %v for %v", mi, regexps.PassInlineMacroRx)
+		}
+	}
+Next:
+	if res == "" {
+		res = text
+	}
+	return res
 }
