@@ -58,7 +58,12 @@ func TestSubstitutor(t *testing.T) {
 	Convey("A substitutors can Extract the passthrough text from the document for reinsertion after processing", t, func() {
 		source := `test +++for 
 		a
-		passthrough+++ test`
+		passthrough+++ test$$text
+			mulutple
+			line$$ for
+			test pass:quotes[text
+			line2
+			line3] test`
 		s := &substitutors{}
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test for passthrough")
 	})

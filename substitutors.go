@@ -268,19 +268,19 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 text - The String from which to extract passthrough fragements
 returns - The text with the passthrough region substituted with placeholders */
 func (s *substitutors) extractPassthroughs(text string) string {
-	res := ""
-	if strings.Contains(text, "++") || strings.Contains(text, "$$") || strings.Contains(text, "ss:") {
-		m := regexps.PassInlineMacroRx.FindAllStringSubmatchIndex(text, -1)
+	res := text
+	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
+		resOri := res
+		m := regexps.PassInlineMacroRx.FindAllStringSubmatchIndex(resOri, -1)
 		if len(m) == 0 {
 			goto Next
 		}
+		res = ""
 		for _, mi := range m {
-			fmt.Printf("mi %v for %v", mi, regexps.PassInlineMacroRx)
+			fmt.Printf("mi %v for %v\n", mi, regexps.PassInlineMacroRx)
+			res = resOri[:mi[0]] + "eee" + resOri[mi[1]:]
 		}
 	}
 Next:
-	if res == "" {
-		res = text
-	}
 	return res
 }
