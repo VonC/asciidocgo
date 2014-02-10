@@ -1,8 +1,8 @@
 package asciidocgo
 
 import (
-	"testing"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 func TestSubstitutor(t *testing.T) {
@@ -58,12 +58,12 @@ func TestSubstitutor(t *testing.T) {
 	Convey("A substitutors can Extract the passthrough text from the document for reinsertion after processing", t, func() {
 		source := `test +++for 
 		a
-		passthrough+++ test$$text
-			mulutple
+		passthrough+++ by test2 $$text
+			multiple
 			line$$ for
-			test pass:quotes[text
+			test3 pass:quotes[text
 			line2
-			line3] test`
+			line3] end test4`
 		s := &substitutors{}
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test for passthrough")
 	})
