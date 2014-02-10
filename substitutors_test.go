@@ -55,8 +55,28 @@ func TestSubstitutor(t *testing.T) {
 
 	})
 
+	Convey("A substitutors can Extract the passthrough text from the document for reinsertion without processing if escaped", t, func() {
+		source := `test \+++for
+		a
+		passthrough+++ by test2 \$$text
+			multiple
+			line$$ for
+			test3 \pass:quotes[text
+			line2
+			line3] end test4`
+		s := &substitutors{}
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, `test +++for
+		a
+		passthrough+++ by test2 $$text
+			multiple
+			line$$ for
+			test3 pass:quotes[text
+			line2
+			line3] end test4`)
+	})
+
 	Convey("A substitutors can Extract the passthrough text from the document for reinsertion after processing", t, func() {
-		source := `test +++for 
+		source := `test +++for
 		a
 		passthrough+++ by test2 $$text
 			multiple
@@ -67,5 +87,4 @@ func TestSubstitutor(t *testing.T) {
 		s := &substitutors{}
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test for passthrough")
 	})
-
 }

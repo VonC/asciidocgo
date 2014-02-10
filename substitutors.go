@@ -279,7 +279,12 @@ func (s *substitutors) extractPassthroughs(text string) string {
 		previous := 0
 		for _, mi := range m {
 			//fmt.Printf("mi! %v for %v\n", mi, regexps.PassInlineMacroRx)
-			res = res + resOri[previous:mi[0]] + "eee"
+			res = res + resOri[previous:mi[0]]
+			if resOri[mi[0]] == '\\' {
+				// honor the escape
+				// meaning don't transform anything, but loose the escape
+				res = res + resOri[mi[0]+1:mi[1]]
+			}
 			previous = mi[1]
 		}
 		res = res + resOri[previous:]
