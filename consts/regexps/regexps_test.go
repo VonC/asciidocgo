@@ -33,4 +33,9 @@ func TestRegexps(t *testing.T) {
 		So(UriSniffRx.MatchString("https://domain"), ShouldBeTrue)
 		So(UriSniffRx.MatchString("data:info"), ShouldBeTrue)
 	})
+
+	Convey("Regexps can detect escaped brackets", t, func() {
+		So(EscapedBracketRx.MatchString(`\]`), ShouldBeTrue)
+		So(EscapedBracketRx.MatchString(`a\\]a`), ShouldBeTrue)
+	})
 }

@@ -62,3 +62,6 @@ var PassInlineMacroRx, _ = regexp.Compile(`(?s)\\?(?:(\+{3})(.*?)\+{3}|(\${2})(.
      https://domain
      data:info */
 var UriSniffRx, _ = regexp.Compile(fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_ALPHA, CC_ALNUM))
+
+/* Detects escaped brackets */
+var EscapedBracketRx, _ = regexp.Compile(`\\\]`)
