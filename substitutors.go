@@ -214,12 +214,17 @@ func (sa subArray) include(s *subsEnum) bool {
 	return false
 }
 
+type passthrough struct {
+	text string
+	subs subArray
+}
+
 /* Methods to perform substitutions on lines of AsciiDoc text.
 This module is intented to be mixed-in to Section and Block to provide
 operations for performing the necessary substitutions. */
 type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
-	passthroughs []string
+	passthroughs []passthrough
 }
 
 /* Apply the specified substitutions to the lines of text
@@ -264,13 +269,25 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 	return text
 }
 
+// Delimiters and matchers for the passthrough placeholder
+// See http://www.aivosto.com/vbtips/control-characters.html#listabout
+// for characters to use
+
+const (
+	// SPA, start of guarded protected area (\u0096)
+	subPASS_START = "\u0096"
+
+	// EPA, end of guarded protected area (\u0097)
+	subPASS_END = "\u0097"
+)
+
 /* Extract the passthrough text from the document for reinsertion after processing.
 text - The String from which to extract passthrough fragements
 returns - The text with the passthrough region substituted with placeholders */
 func (s *substitutors) extractPassthroughs(text string) string {
 	res := text
 	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
-		resOri := res
+		resOri := string(res)
 		m := regexps.PassInlineMacroRx.FindAllStringSubmatchIndex(resOri, -1)
 		if len(m) == 0 {
 			goto Next
@@ -280,10 +297,32 @@ func (s *substitutors) extractPassthroughs(text string) string {
 		for _, mi := range m {
 			//fmt.Printf("mi! %v for %v\n", mi, regexps.PassInlineMacroRx)
 			res = res + resOri[previous:mi[0]]
+			textOri := ""
+			subsOri := subArray{}
 			if resOri[mi[0]] == '\\' {
 				// honor the escape
 				// meaning don't transform anything, but loose the escape
 				res = res + resOri[mi[0]+1:mi[1]]
+			} else if mi[12] > -1 {
+				textOri = unescapeBrackets(resOri[mi[12]:mi[13]])
+				if mi[10] > -1 && mi[10] < mi[11] {
+					subsOri = resolvePassSubs(resOri[mi[10]:mi[11]])
+				}
+			} else {
+				i := 0
+				if mi[2] == -1 {
+					i = i + 4
+				}
+				textOri = resOri[mi[4+i]:mi[5+i]]
+				if resOri[mi[2+i]:mi[3+i]] == "$$" {
+					subsOri = subArray{subValue.specialcharacters}
+				}
+			}
+			if textOri != "" {
+				p := passthrough{textOri, subsOri}
+				s.passthroughs = append(s.passthroughs, p)
+				index := len(s.passthroughs) - 1
+				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
 			}
 			previous = mi[1]
 		}
@@ -291,4 +330,20 @@ func (s *substitutors) extractPassthroughs(text string) string {
 	}
 Next:
 	return res
+}
+
+/* Internal: Unescape closing square brackets.
+   Intended for text extracted from square brackets. */
+func unescapeBrackets(str string) string {
+	// FIXME make \] a regex
+	if str == "" {
+		return str
+	}
+	str = regexps.EscapedBracketRx.ReplaceAllString(str, "]")
+	return str
+}
+
+func resolvePassSubs(str string) subArray {
+	// resolve_subs subs, :inline, nil, 'passthrough macro'
+	return subArray{}
 }

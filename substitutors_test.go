@@ -1,8 +1,9 @@
 package asciidocgo
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
+	"fmt"
 	"testing"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSubstitutor(t *testing.T) {
@@ -85,6 +86,16 @@ func TestSubstitutor(t *testing.T) {
 			line2
 			line3] end test4`
 		s := &substitutors{}
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test for passthrough")
+
+		Convey("If no substitution detected, return text unchanged", func() {
+			So(s.ApplySubs("test ++ nosub", subArray{subValue.macros}), ShouldEqual, "test ++ nosub")
+		})
+
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
+			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+	})
+	Convey("A substitutors can unescape escaped branckets", t, func() {
+		So(unescapeBrackets(""), ShouldEqual, "")
+		So(unescapeBrackets(`a\]b]c\]`), ShouldEqual, `a]b]c]`)
 	})
 }
