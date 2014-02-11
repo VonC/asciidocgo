@@ -28,6 +28,37 @@ var ORDERED_LIST_KEYWORDS = map[string]rune{
 	//'decimal': '1'
 }
 
+type Reres struct {
+	r        *regexp.Regexp
+	s        string
+	matches  [][]int
+	i        int
+	previous int
+}
+
+func NewReres(s string, r *regexp.Regexp) *Reres {
+	matches := r.FindAllStringSubmatchIndex(s, -1)
+	return &Reres{r, s, matches, 0, 0}
+}
+
+func (rr *Reres) HasAnyMatch() bool {
+	return len(rr.matches) > 0
+}
+
+func (rr *Reres) HasNext() bool {
+	return rr.i < len(rr.matches)
+}
+
+func (rr *Reres) Next() {
+	rr.previous = rr.matches[rr.i][1]
+	rr.i = rr.i + 1
+}
+
+func (rr *Reres) Previous() string {
+	mi := rr.matches[rr.i]
+	return rr.s[rr.previous:mi[0]]
+}
+
 /* The following pattern, which appears frequently, captures the contents
 between square brackets, ignoring escaped closing brackets
 (closing brackets prefixed with a backslash '\' character)

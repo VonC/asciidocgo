@@ -288,15 +288,14 @@ func (s *substitutors) extractPassthroughs(text string) string {
 	res := text
 	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
 		resOri := string(res)
-		m := regexps.PassInlineMacroRx.FindAllStringSubmatchIndex(resOri, -1)
-		if len(m) == 0 {
+		reres := regexps.NewReres(resOri, regexps.PassInlineMacroRx)
+		if !reres.HasAnyMatch() {
 			goto Next
 		}
 		res = ""
 		previous := 0
-		for _, mi := range m {
-			//fmt.Printf("mi! %v for %v\n", mi, regexps.PassInlineMacroRx)
-			res = res + resOri[previous:mi[0]]
+		for reres.HasNext() {
+			res = res + reres.Previous()
 			textOri := ""
 			subsOri := subArray{}
 			if resOri[mi[0]] == '\\' {
