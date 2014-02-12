@@ -150,8 +150,14 @@ type PassInlineMacroRxres struct {
 	*Reres
 }
 
+/* Results for PassInlineMacroRx */
 func NewPassInlineMacroRxres(s string) *PassInlineMacroRxres {
 	return &PassInlineMacroRxres{NewReres(s, PassInlineMacroRx)}
+}
+
+/* Check if has text 'yyy' in 'pass:xx[yyy]' */
+func (pr *PassInlineMacroRxres) HasPassText() bool {
+	return pr.HasGroup(6)
 }
 
 /* Detects strings that resemble URIs.

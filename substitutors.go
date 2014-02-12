@@ -300,18 +300,18 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				// honor the escape
 				// meaning don't transform anything, but loose the escape
 				res = res + reres.FullMatch()[1:]
-			} else if reres.HasGroup(6) {
-				textOri = unescapeBrackets(reres.Group(6))
-				if reres.HasGroup(5) {
-					subsOri = resolvePassSubs(reres.Group(5))
+			} else if reres.HasPassText() {
+				textOri = unescapeBrackets(reres.PassText())
+				if reres.HasPassSub() {
+					subsOri = resolvePassSubs(reres.PassSub())
 				}
 			} else {
 				i := 1
 				if !reres.HasGroup(i) {
 					i = i + 2
 				}
-				textOri = reres.Group(i + 1)
-				if reres.Group(i) == "$$" {
+				textOri = reres.InlineText()
+				if reres.InlineSub() == "$$" {
 					subsOri = subArray{subValue.specialcharacters}
 				}
 			}
