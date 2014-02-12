@@ -41,8 +41,8 @@ func TestRegexps(t *testing.T) {
 	})
 
 	Convey("Regexps can encapsulate results in a struct Reres", t, func() {
-		testRx, _ := regexp.Compile("a(b*)c")
-		r := NewReres("xxxabbbbcyyy111aabbbcc222ac33", testRx)
+		testRx, _ := regexp.Compile("\\\\?a(b*)c")
+		r := NewReres("xxxabbbbcyyy111aabbbcc222\\ac33", testRx)
 
 		Convey("Regexps can create a Reres struct", func() {
 			So(r, ShouldNotBeNil)
@@ -70,11 +70,11 @@ func TestRegexps(t *testing.T) {
 		})
 
 		Convey("Regexps can get the suffix, string after each match", func() {
-			So(r.Suffix(), ShouldEqual, "xxxabbbbcyyy111aabbbcc222ac33")
+			So(r.Suffix(), ShouldEqual, "xxxabbbbcyyy111aabbbcc222\\ac33")
 			r.Next()
-			So(r.Suffix(), ShouldEqual, "yyy111aabbbcc222ac33")
+			So(r.Suffix(), ShouldEqual, "yyy111aabbbcc222\\ac33")
 			r.Next()
-			So(r.Suffix(), ShouldEqual, "c222ac33")
+			So(r.Suffix(), ShouldEqual, "c222\\ac33")
 			r.Next()
 			So(r.Suffix(), ShouldEqual, "33")
 			r.ResetNext()
@@ -89,7 +89,7 @@ func TestRegexps(t *testing.T) {
 			r.Next()
 			So(r.FullMatch(), ShouldEqual, "abbbc")
 			r.Next()
-			So(r.FullMatch(), ShouldEqual, "ac")
+			So(r.FullMatch(), ShouldEqual, "\\ac")
 			r.ResetNext()
 		})
 
