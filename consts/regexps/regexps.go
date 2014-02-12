@@ -160,6 +160,39 @@ func (pr *PassInlineMacroRxres) HasPassText() bool {
 	return pr.HasGroup(6)
 }
 
+/* Return text 'yyy' in 'pass:xx[yyy]' */
+func (pr *PassInlineMacroRxres) PassText() string {
+	return pr.Group(6)
+}
+
+/* Return text 'yyy' in 'xxyyyxx' */
+func (pr *PassInlineMacroRxres) InlineText() string {
+	res := pr.Group(2)
+	if res == "" {
+		res = pr.Group(4)
+	}
+	return res
+}
+
+/* Check if has sub 'xx' in 'pass:xx[yyy]' */
+func (pr *PassInlineMacroRxres) HasPassSub() bool {
+	return pr.HasGroup(5)
+}
+
+/* Return sub 'xx' in 'pass:xx[yyy]' */
+func (pr *PassInlineMacroRxres) PassSub() string {
+	return pr.Group(5)
+}
+
+/* Return text 'xx' in 'xxyyyxx' */
+func (pr *PassInlineMacroRxres) InlineSub() string {
+	res := pr.Group(1)
+	if res == "" {
+		res = pr.Group(3)
+	}
+	return res
+}
+
 /* Detects strings that resemble URIs.
 
    Examples

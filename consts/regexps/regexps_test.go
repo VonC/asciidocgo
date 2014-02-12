@@ -139,5 +139,65 @@ func TestRegexps(t *testing.T) {
 			line3] end test4`)
 		So(r.HasAnyMatch(), ShouldBeTrue)
 
+		Convey("PassInlineMacroRx can test for pass text", func() {
+			So(r.HasPassText(), ShouldBeFalse)
+			r.Next()
+			So(r.HasPassText(), ShouldBeFalse)
+			r.Next()
+			So(r.HasPassText(), ShouldBeTrue)
+			r.ResetNext()
+		})
+
+		Convey("PassInlineMacroRx can get pass text", func() {
+			So(r.PassText(), ShouldEqual, "")
+			r.Next()
+			So(r.PassText(), ShouldEqual, "")
+			r.Next()
+			So(r.PassText(), ShouldEqual, `text
+			line2
+			line3`)
+			r.ResetNext()
+		})
+
+		Convey("PassInlineMacroRx can test for pass sub", func() {
+			So(r.HasPassSub(), ShouldBeFalse)
+			r.Next()
+			So(r.HasPassSub(), ShouldBeFalse)
+			r.Next()
+			So(r.HasPassSub(), ShouldBeTrue)
+			r.ResetNext()
+		})
+
+		Convey("PassInlineMacroRx can get pass sub", func() {
+			So(r.PassSub(), ShouldEqual, "")
+			r.Next()
+			So(r.PassSub(), ShouldEqual, "")
+			r.Next()
+			So(r.PassSub(), ShouldEqual, "quotes")
+			r.ResetNext()
+		})
+
+		Convey("PassInlineMacroRx can get inline text", func() {
+			So(r.InlineText(), ShouldEqual, `for
+		a
+		passthrough`)
+			r.Next()
+			So(r.InlineText(), ShouldEqual, `text
+			multiple
+			line`)
+			r.Next()
+			So(r.InlineText(), ShouldEqual, "")
+			r.ResetNext()
+		})
+
+		Convey("PassInlineMacroRx can get inline sub", func() {
+			So(r.InlineSub(), ShouldEqual, "+++")
+			r.Next()
+			So(r.InlineSub(), ShouldEqual, "$$")
+			r.Next()
+			So(r.InlineSub(), ShouldEqual, "")
+			r.ResetNext()
+		})
+
 	})
 }

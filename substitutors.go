@@ -306,10 +306,6 @@ func (s *substitutors) extractPassthroughs(text string) string {
 					subsOri = resolvePassSubs(reres.PassSub())
 				}
 			} else {
-				i := 1
-				if !reres.HasGroup(i) {
-					i = i + 2
-				}
 				textOri = reres.InlineText()
 				if reres.InlineSub() == "$$" {
 					subsOri = subArray{subValue.specialcharacters}
