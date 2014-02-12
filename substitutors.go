@@ -287,7 +287,7 @@ returns - The text with the passthrough region substituted with placeholders */
 func (s *substitutors) extractPassthroughs(text string) string {
 	res := text
 	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
-		reres := regexps.NewReres(res, regexps.PassInlineMacroRx)
+		reres := regexps.NewPassInlineMacroRxres(res)
 		if !reres.HasAnyMatch() {
 			goto Next
 		}
@@ -296,7 +296,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 			res = res + reres.Prefix()
 			textOri := ""
 			subsOri := subArray{}
-			if reres.FirstChar() == '\\' {
+			if reres.IsEscaped() {
 				// honor the escape
 				// meaning don't transform anything, but loose the escape
 				res = res + reres.FullMatch()[1:]
