@@ -128,4 +128,16 @@ func TestRegexps(t *testing.T) {
 		})
 	})
 
+	Convey("Regexps can encapsulate PassInlineMacroRx results in a struct PassInlineMacroRxres", t, func() {
+		r := NewPassInlineMacroRxres(`test \+++for
+		a
+		passthrough+++ by test2 $$text
+			multiple
+			line$$ for
+			test3 pass:quotes[text
+			line2
+			line3] end test4`)
+		So(r.HasAnyMatch(), ShouldBeTrue)
+
+	})
 }

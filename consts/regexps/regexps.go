@@ -146,6 +146,14 @@ which may span multiple lines.
 // http://stackoverflow.com/questions/6770898/unknown-escape-sequence-error-in-go
 var PassInlineMacroRx, _ = regexp.Compile(`(?s)\\?(?:(\+{3})(.*?)\+{3}|(\${2})(.*?)\${2}|pass:([a-z,]*)\[(.*?[^\\])\])`)
 
+type PassInlineMacroRxres struct {
+	*Reres
+}
+
+func NewPassInlineMacroRxres(s string) *PassInlineMacroRxres {
+	return &PassInlineMacroRxres{NewReres(s, PassInlineMacroRx)}
+}
+
 /* Detects strings that resemble URIs.
 
    Examples
