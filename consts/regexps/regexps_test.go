@@ -84,6 +84,15 @@ func TestRegexps(t *testing.T) {
 			So(r.FirstChar(), ShouldEqual, 'a')
 		})
 
+		Convey("Regexps can test for escape as first charater in the current match", func() {
+			So(r.IsEscaped(), ShouldBeFalse)
+			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
+			r.Next()
+			So(r.IsEscaped(), ShouldBeTrue)
+			r.ResetNext()
+		})
+
 		Convey("Regexps can get the full string of the current match", func() {
 			So(r.FullMatch(), ShouldEqual, "abbbbc")
 			r.Next()
