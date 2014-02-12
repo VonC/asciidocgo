@@ -287,33 +287,31 @@ returns - The text with the passthrough region substituted with placeholders */
 func (s *substitutors) extractPassthroughs(text string) string {
 	res := text
 	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
-		resOri := string(res)
-		reres := regexps.NewReres(resOri, regexps.PassInlineMacroRx)
+		reres := regexps.NewReres(res, regexps.PassInlineMacroRx)
 		if !reres.HasAnyMatch() {
 			goto Next
 		}
 		res = ""
-		previous := 0
 		for reres.HasNext() {
-			res = res + reres.Previous()
+			res = res + reres.Prefix()
 			textOri := ""
 			subsOri := subArray{}
-			if resOri[mi[0]] == '\\' {
+			if reres.FirstChar() == '\\' {
 				// honor the escape
 				// meaning don't transform anything, but loose the escape
-				res = res + resOri[mi[0]+1:mi[1]]
-			} else if mi[12] > -1 {
-				textOri = unescapeBrackets(resOri[mi[12]:mi[13]])
-				if mi[10] > -1 && mi[10] < mi[11] {
-					subsOri = resolvePassSubs(resOri[mi[10]:mi[11]])
+				res = res + reres.FullMatch()[1:]
+			} else if reres.HasGroup(6) {
+				textOri = unescapeBrackets(reres.Group(6))
+				if reres.HasGroup(5) {
+					subsOri = resolvePassSubs(reres.Group(5))
 				}
 			} else {
-				i := 0
-				if mi[2] == -1 {
-					i = i + 4
+				i := 1
+				if !reres.HasGroup(i) {
+					i = i + 2
 				}
-				textOri = resOri[mi[4+i]:mi[5+i]]
-				if resOri[mi[2+i]:mi[3+i]] == "$$" {
+				textOri = reres.Group(i + 1)
+				if reres.Group(i) == "$$" {
 					subsOri = subArray{subValue.specialcharacters}
 				}
 			}
@@ -323,9 +321,9 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				index := len(s.passthroughs) - 1
 				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
 			}
-			previous = mi[1]
+			reres.Next()
 		}
-		res = res + resOri[previous:]
+		res = res + reres.Suffix()
 	}
 Next:
 	return res
