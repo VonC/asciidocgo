@@ -147,6 +147,10 @@ type PassInlineLiteralRxres struct {
 	*Reres
 }
 
+/* Results for PassInlineLiteralRx */
+func NewPassInlineLiteralRxres(s string) *PassInlineLiteralRxres {
+	return &PassInlineLiteralRxres{NewReres(s, PassInlineLiteralRx)}
+}
 
 /* Matches several variants of the passthrough inline macro,
 which may span multiple lines.

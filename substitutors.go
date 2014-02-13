@@ -289,7 +289,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 	if strings.Contains(res, "++") || strings.Contains(res, "$$") || strings.Contains(res, "ss:") {
 		reres := regexps.NewPassInlineMacroRxres(res)
 		if !reres.HasAnyMatch() {
-			goto Next
+			goto PassInlineLiteralRx
 		}
 		res = ""
 		for reres.HasNext() {
@@ -321,7 +321,18 @@ func (s *substitutors) extractPassthroughs(text string) string {
 		}
 		res = res + reres.Suffix()
 	}
-Next:
+PassInlineLiteralRx:
+
+	if strings.Contains(res, "++") {
+
+		reres := regexps.NewPassInlineLiteralRxres(res)
+		if !reres.HasAnyMatch() {
+			goto MathInlineMacroRx
+		}
+
+	}
+
+MathInlineMacroRx:
 	return res
 }
 
