@@ -1,6 +1,7 @@
 package regexps
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -213,5 +214,10 @@ func TestRegexps(t *testing.T) {
 				"`Here`s Johnny!")
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
+		fmt.Printf("%v\n", r.matches)
+		for r.HasNext() {
+			fmt.Printf("== %v ==\n", r.FullMatch())
+			r.Next()
+		}
 	})
 }
