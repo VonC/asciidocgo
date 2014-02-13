@@ -323,7 +323,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 	}
 PassInlineLiteralRx:
 
-	if strings.Contains(res, "++") {
+	if strings.Contains(res, "`") {
 
 		reres := regexps.NewPassInlineLiteralRxres(res)
 		if !reres.HasAnyMatch() {
