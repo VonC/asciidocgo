@@ -135,6 +135,14 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches a passthrough literal value, which may span multiple lines.
+Examples
+  `text`
+*/
+// PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
+
+var PassInlineLiteralRx, _ = regexp.Compile(`(?sm)(^|[^` + "`" + `\w])(?:\[([^\]]+?)\])?(\\?` + "`" + `([^` + "`" + `\s]|[^` + "`" + `\s].*?\S)` + "`" + `)(?![` + "`" + `\w])`)
+
 /* Matches several variants of the passthrough inline macro,
 which may span multiple lines.
 
