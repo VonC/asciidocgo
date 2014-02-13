@@ -203,8 +203,11 @@ func TestRegexps(t *testing.T) {
 	Convey("Regexps can encapsulate PassInlineLiteralRx results in a struct PassInlineLiteralRxRes", t, func() {
 
 		r := NewPassInlineLiteralRxres(
-			"[input]`a few <\\{monospaced\\}> words\n" +
-				"\\[input]`a few <monospaced> word1\nwords`\n" +
+			"`a few <\\{monospaced\\}> words`" +
+				"[input]`a few <\\{monospaced\\}> words`\n" +
+				"\\[input]`a few <monospaced> words`\n" +
+				"\\[input]\\`a few <monospaced> words`" +
+				"`a few\n<\\{monospaced\\}> words`" +
 				"\\[input]`a few &lt;monospaced&gt; words`\n" +
 				"the text `asciimath:[x = y]` should be passed through as `literal` text\n" +
 				"`Here`s Johnny!")

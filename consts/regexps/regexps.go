@@ -141,7 +141,7 @@ Examples
 */
 // PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
 
-var PassInlineLiteralRx, _ = regexp.Compile(`(?sm)(^|[^` + "`" + `\w])(?:\[([^\]]+?)\])?(\\?` + "`" + `([^` + "`" + `\s]|[^` + "`" + `\s].*?\S)` + "`" + `)(?![` + "`" + `\w])`)
+var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)")
 
 type PassInlineLiteralRxres struct {
 	*Reres
