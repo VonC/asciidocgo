@@ -143,6 +143,11 @@ Examples
 
 var PassInlineLiteralRx, _ = regexp.Compile(`(?sm)(^|[^` + "`" + `\w])(?:\[([^\]]+?)\])?(\\?` + "`" + `([^` + "`" + `\s]|[^` + "`" + `\s].*?\S)` + "`" + `)(?![` + "`" + `\w])`)
 
+type PassInlineLiteralRxres struct {
+	*Reres
+}
+
+
 /* Matches several variants of the passthrough inline macro,
 which may span multiple lines.
 
