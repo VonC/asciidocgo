@@ -87,7 +87,7 @@ func TestSubstitutor(t *testing.T) {
 			line3] end test4`
 		s := &substitutors{}
 
-		Convey("If no substitution detected, return text unchanged", func() {
+		Convey("If no inline macros substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("test ++ nosub", subArray{subValue.macros}), ShouldEqual, "test ++ nosub")
 		})
 
@@ -97,5 +97,24 @@ func TestSubstitutor(t *testing.T) {
 	Convey("A substitutors can unescape escaped branckets", t, func() {
 		So(unescapeBrackets(""), ShouldEqual, "")
 		So(unescapeBrackets(`a\]b]c\]`), ShouldEqual, `a]b]c]`)
+	})
+
+	Convey("A substitutors can Extract inline text", t, func() {
+		source := "`a few <\\{monospaced\\}> words`" +
+			"[input]`A few <\\{monospaced\\}> words`\n" +
+			"\\[input]`a few <monospaced> words`\n" +
+			"\\[input]\\`a few <monospaced> words`\n" +
+			"`a few\n<\\{monospaced\\}> words`" +
+			"\\[input]`a few &lt;monospaced&gt; words`\n" +
+			"the text `asciimath:[x = y]` should be passed through as `literal` text\n" +
+			"`Here`s Johnny!"
+		s := &substitutors{}
+
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldNotEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
+			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+
+		Convey("If no literal text substitution detected, return text unchanged", func() {
+			So(s.ApplySubs("test`nosub", subArray{subValue.macros}), ShouldEqual, "test`nosub")
+		})
 	})
 }
