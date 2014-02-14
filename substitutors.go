@@ -332,6 +332,36 @@ PassInlineLiteralRx:
 			goto MathInlineMacroRx
 		}
 
+		res = ""
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			fmt.Printf("test %v\n", reres.i)
+
+			unescaped_attrs := ""
+			// honor the escape
+
+			if reres.Literal()[0] == '\\' {
+				res = res + reres.FirstChar() + reres.Attributes() + reres.Literal()[1:] + " : " + reres.FirstChar() + reres.Literal()[1:]
+				continue
+			}
+			if reres.IsEscaped() && reres.Attributes() != "" {
+				unescaped_attrs = "[" + reres.Attributes() + "]"
+				res = res + unescaped_attrs
+			} else {
+				res = res + reres.FirstChar()
+			}
+
+			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}}
+			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type
+			index := len(s.passthroughs) - 1
+			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
+
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
+
 	}
 
 MathInlineMacroRx:
@@ -350,6 +380,6 @@ func unescapeBrackets(str string) string {
 }
 
 func resolvePassSubs(str string) subArray {
-	// resolve_subs subs, :inline, nil, 'passthrough macro'
+	// TODO resolve_subs subs, :inline, nil, 'passthrough macro'
 	return subArray{}
 }
