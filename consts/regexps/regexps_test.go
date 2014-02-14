@@ -212,5 +212,31 @@ func TestRegexps(t *testing.T) {
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
 		So(len(r.matches), ShouldEqual, 8)
+		r.Next()
+		So(r.FirstChar(), ShouldEqual, "]")
+		So(r.Attributes(), ShouldEqual, "")
+		So(r.Literal(), ShouldEqual, "`A few <\\{monospaced\\}> words`")
+		So(r.LiteralText(), ShouldEqual, "A few <\\{monospaced\\}> words")
+
+		r.Next()
+		r.Next()
+		So(r.FirstChar(), ShouldEqual, "\\")
+		So(r.Attributes(), ShouldEqual, "input")
+		So(r.Literal(), ShouldEqual, "\\`a few <monospaced> words`")
+		So(r.LiteralText(), ShouldEqual, "a few <monospaced> words")
+
+		r.Next()
+		r.Next()
+		r.Next()
+		So(r.FirstChar(), ShouldEqual, " ")
+		So(r.Attributes(), ShouldEqual, "")
+		So(r.Literal(), ShouldEqual, "`asciimath:[x = y]`")
+		So(r.LiteralText(), ShouldEqual, "asciimath:[x = y]")
+
+		r.Next()
+		So(r.FirstChar(), ShouldEqual, " ")
+		So(r.Attributes(), ShouldEqual, "")
+		So(r.Literal(), ShouldEqual, "`literal`")
+		So(r.LiteralText(), ShouldEqual, "literal")
 	})
 }

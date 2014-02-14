@@ -177,6 +177,22 @@ func NewPassInlineLiteralRxres(s string) *PassInlineLiteralRxres {
 	return res
 }
 
+func (pilr *PassInlineLiteralRxres) FirstChar() string {
+	return pilr.Group(1)
+}
+
+func (pilr *PassInlineLiteralRxres) Attributes() string {
+	return pilr.Group(2)
+}
+
+func (pilr *PassInlineLiteralRxres) Literal() string {
+	return pilr.Group(3)
+}
+
+func (pilr *PassInlineLiteralRxres) LiteralText() string {
+	return pilr.Group(4)
+}
+
 /* Matches several variants of the passthrough inline macro,
 which may span multiple lines.
 
