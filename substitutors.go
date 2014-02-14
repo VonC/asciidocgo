@@ -292,6 +292,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 			goto PassInlineLiteralRx
 		}
 		res = ""
+		suffix := ""
 		for reres.HasNext() {
 			res = res + reres.Prefix()
 			textOri := ""
@@ -317,9 +318,10 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				index := len(s.passthroughs) - 1
 				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
 			}
+			suffix = reres.Suffix()
 			reres.Next()
 		}
-		res = res + reres.Suffix()
+		res = res + suffix
 	}
 PassInlineLiteralRx:
 
