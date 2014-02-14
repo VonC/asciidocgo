@@ -1,7 +1,6 @@
 package regexps
 
 import (
-	"fmt"
 	"regexp"
 	"testing"
 
@@ -71,8 +70,6 @@ func TestRegexps(t *testing.T) {
 		})
 
 		Convey("Regexps can get the suffix, string after each match", func() {
-			So(r.Suffix(), ShouldEqual, "xxxabbbbcyyy111aabbbcc222\\ac33")
-			r.Next()
 			So(r.Suffix(), ShouldEqual, "yyy111aabbbcc222\\ac33")
 			r.Next()
 			So(r.Suffix(), ShouldEqual, "c222\\ac33")
@@ -205,19 +202,15 @@ func TestRegexps(t *testing.T) {
 
 		r := NewPassInlineLiteralRxres(
 			"`a few <\\{monospaced\\}> words`" +
-				"[input]`a few <\\{monospaced\\}> words`\n" +
+				"[input]`A few <\\{monospaced\\}> words`\n" +
 				"\\[input]`a few <monospaced> words`\n" +
-				"\\[input]\\`a few <monospaced> words`" +
+				"\\[input]\\`a few <monospaced> words`\n" +
 				"`a few\n<\\{monospaced\\}> words`" +
 				"\\[input]`a few &lt;monospaced&gt; words`\n" +
 				"the text `asciimath:[x = y]` should be passed through as `literal` text\n" +
 				"`Here`s Johnny!")
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
-		fmt.Printf("%v\n", r.matches)
-		for r.HasNext() {
-			fmt.Printf("== %v ==\n", r.FullMatch())
-			r.Next()
-		}
+		So(len(r.matches), ShouldEqual, 8)
 	})
 }

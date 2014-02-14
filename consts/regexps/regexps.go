@@ -74,7 +74,12 @@ func (rr *Reres) Prefix() string {
 
 /* String from current match to the end ofthe all string */
 func (rr *Reres) Suffix() string {
-	return rr.s[rr.previous:]
+	mi := rr.matches[rr.i]
+	res := ""
+	if len(rr.s) > mi[1] {
+		res = rr.s[mi[1]:]
+	}
+	return res
 }
 
 /* First character of the current match */
@@ -142,6 +147,7 @@ Examples
 // PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
 
 var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)")
+var PassInlineMacroRxLookahead, _ = regexp.Compile("^[`\\w]")
 
 type PassInlineLiteralRxres struct {
 	*Reres
@@ -149,7 +155,26 @@ type PassInlineLiteralRxres struct {
 
 /* Results for PassInlineLiteralRx */
 func NewPassInlineLiteralRxres(s string) *PassInlineLiteralRxres {
-	return &PassInlineLiteralRxres{NewReres(s, PassInlineLiteralRx)}
+	res := &PassInlineLiteralRxres{NewReres(s, PassInlineLiteralRx)}
+	if res.HasAnyMatch() {
+		m := [][]int{}
+		for res.HasNext() {
+			p := res.Suffix()
+			c := ""
+			if p != "" {
+				c = p[0:1]
+			}
+			b := PassInlineMacroRxLookahead.FindAllString(c, -1) != nil
+			//fmt.Printf("****%s****='%s'=>'%v':%v\n", res.FullMatch(), c, b, res.matches[res.i])
+			if !b {
+				m = append(m, res.matches[res.i])
+			}
+			res.Next()
+		}
+		res.ResetNext()
+		res.matches = m
+	}
+	return res
 }
 
 /* Matches several variants of the passthrough inline macro,
