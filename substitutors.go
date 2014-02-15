@@ -336,13 +336,14 @@ PassInlineLiteralRx:
 		suffix := ""
 		for reres.HasNext() {
 			res = res + reres.Prefix()
-			fmt.Printf("test %v\n", reres.i)
 
 			unescaped_attrs := ""
 			// honor the escape
 
 			if reres.Literal()[0] == '\\' {
 				res = res + reres.FirstChar() + reres.Attributes() + reres.Literal()[1:] + " : " + reres.FirstChar() + reres.Literal()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
 				continue
 			}
 			if reres.IsEscaped() && reres.Attributes() != "" {
