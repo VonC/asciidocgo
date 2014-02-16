@@ -158,6 +158,21 @@ func NewMathInlineMacroRxres(s string) *MathInlineMacroRxres {
 	return &MathInlineMacroRxres{NewReres(s, MathInlineMacroRx)}
 }
 
+/* Return type 'math' in 'math:xx[yyy]' */
+func (mimr *MathInlineMacroRxres) MathType() string {
+	return mimr.Group(1)
+}
+
+/* Return sub 'xx' in 'math:xx[yyy]' */
+func (mimr *MathInlineMacroRxres) MathSub() string {
+	return mimr.Group(2)
+}
+
+/* Return text 'yyy' in 'math:xx[yyy]' */
+func (mimr *MathInlineMacroRxres) MathText() string {
+	return mimr.Group(3)
+}
+
 /* Matches a passthrough literal value, which may span multiple lines.
 Examples
   `text`

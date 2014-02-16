@@ -244,7 +244,7 @@ func TestRegexps(t *testing.T) {
 		r := NewMathInlineMacroRxres(`
 			math:[x != 0]
    asciimath:[x != 0]
-   latexmath:[\sqrt{4} = 2]`)
+   latexmath:abc[\sqrt{4} = 2]`)
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
 		So(len(r.matches), ShouldEqual, 3)
@@ -257,7 +257,7 @@ func TestRegexps(t *testing.T) {
 		So(r.Group(3), ShouldEqual, "x != 0")
 		r.Next()
 		So(r.Group(1), ShouldEqual, "latexmath")
-		So(r.Group(2), ShouldEqual, "")
+		So(r.Group(2), ShouldEqual, "abc")
 		So(r.Group(3), ShouldEqual, "\\sqrt{4} = 2")
 	})
 }
