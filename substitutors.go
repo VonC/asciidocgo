@@ -214,6 +214,12 @@ func (sa subArray) include(s *subsEnum) bool {
 	return false
 }
 
+type SubstDocumentable interface {
+	Document() SubstDocumentable
+	Attr(name string, defaultValue interface{}, inherit bool) interface{}
+	Basebackend(base interface{}) bool
+}
+
 type passthrough struct {
 	text string
 	subs subArray
@@ -225,6 +231,7 @@ operations for performing the necessary substitutions. */
 type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
 	passthroughs []passthrough
+	document     SubstDocumentable
 }
 
 /* Apply the specified substitutions to the lines of text
@@ -332,7 +339,6 @@ PassInlineLiteralRx:
 			goto MathInlineMacroRx
 		}
 
-		res = ""
 		suffix := ""
 		for reres.HasNext() {
 			res = res + reres.Prefix()
@@ -366,6 +372,58 @@ PassInlineLiteralRx:
 	}
 
 MathInlineMacroRx:
+
+	if strings.Contains(res, "math:") {
+		reres := regexps.NewMathInlineMacroRxres(res)
+		if !reres.HasAnyMatch() {
+			goto ExtractPassthroughsRes
+		}
+
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+
+			if reres.IsEscaped() {
+				// honor the escape
+				// meaning don't transform anything, but loose the escape
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			mathType := reres.MathType()
+			if mathType == "math" {
+				defaultType := "asciimath"
+				defaultTypeI := s.document.Attr("math", nil, false)
+				if defaultTypeI != nil && defaultTypeI.(string) != "" {
+					defaultType = defaultTypeI.(string)
+				}
+				mathType = defaultType
+			}
+			mathText := unescapeBrackets(reres.MathText())
+			mathSubs := subArray{}
+			if reres.MathSub() == "" {
+				if s.document != nil && s.document.Basebackend("html") {
+					mathSubs = subArray{subValue.specialcharacters}
+				} else {
+					mathSubs = resolvePassSubs(reres.MathSub())
+				}
+			}
+
+			p := passthrough{mathText, mathSubs}
+			s.passthroughs = append(s.passthroughs, p)
+			index := len(s.passthroughs) - 1
+			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
+
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
+	}
+
+ExtractPassthroughsRes:
+
 	return res
 }
 
