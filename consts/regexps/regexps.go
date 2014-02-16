@@ -140,6 +140,24 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches a math inline macro, which may span multiple lines.
+Examples
+  math:[x != 0]
+  asciimath:[x != 0]
+  latexmath:[\sqrt{4} = 2]
+
+MathInlineMacroRx = /\\?((?:latex|ascii)?math):([a-z,]*)\[(.*?[^\\])\]/m */
+var MathInlineMacroRx, _ = regexp.Compile(`(?sm)\\?((?:latex|ascii)?math):([a-z,]*)\[(.*?[^\\])\]`)
+
+type MathInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for MathInlineMacroRx */
+func NewMathInlineMacroRxres(s string) *MathInlineMacroRxres {
+	return &MathInlineMacroRxres{NewReres(s, MathInlineMacroRx)}
+}
+
 /* Matches a passthrough literal value, which may span multiple lines.
 Examples
   `text`

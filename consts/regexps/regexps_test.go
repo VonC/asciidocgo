@@ -239,4 +239,25 @@ func TestRegexps(t *testing.T) {
 		So(r.Literal(), ShouldEqual, "`literal`")
 		So(r.LiteralText(), ShouldEqual, "literal")
 	})
+
+	Convey("Regexps can encapsulate MathInlineMacroRx results in a struct MathInlineMacroRxRes", t, func() {
+		r := NewMathInlineMacroRxres(`
+			math:[x != 0]
+   asciimath:[x != 0]
+   latexmath:[\sqrt{4} = 2]`)
+
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 3)
+		So(r.Group(1), ShouldEqual, "math")
+		So(r.Group(2), ShouldEqual, "")
+		So(r.Group(3), ShouldEqual, "x != 0")
+		r.Next()
+		So(r.Group(1), ShouldEqual, "asciimath")
+		So(r.Group(2), ShouldEqual, "")
+		So(r.Group(3), ShouldEqual, "x != 0")
+		r.Next()
+		So(r.Group(1), ShouldEqual, "latexmath")
+		So(r.Group(2), ShouldEqual, "")
+		So(r.Group(3), ShouldEqual, "\\sqrt{4} = 2")
+	})
 }
