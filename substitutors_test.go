@@ -137,12 +137,19 @@ the text %s5%s should be passed through as %s6%s text
    \math:[x != 0]
    asciimath:[x != 0]
    latexmath:abc[\sqrt{4} = 2]`
-		s := &substitutors{document: &testSubstDocumentAble{}}
+		s := &substitutors{}
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s
    math:[x != 0]
    %s1%s
    %s2%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+
+		s.document = &testSubstDocumentAble{}
+
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s3%s
+   math:[x != 0]
+   %s4%s
+   %s5%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		Convey("If no math literal substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")
