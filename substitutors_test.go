@@ -177,5 +177,14 @@ the text %s5%s should be passed through as %s6%s text
 			So(subSpecialCharacters(">a&bc<"), ShouldEqual, "&gt;a&amp;bc&lt;")
 		})
 	})
+	Convey("A substitutors can substitute special characters", t, func() {
 
+		Convey("If none, return text unchanged", func() {
+			s := &substitutors{}
+			source := "\\[input]`a few <monospaced> words`"
+			testsub = "test_ApplySubs_applyAllsubs"
+			So(s.ApplySubs(source, subArray{subValue.specialcharacters}), ShouldEqual, fmt.Sprintf("\\[input]`a few &lt;monospaced&gt; words`"))
+			testsub = ""
+		})
+	})
 }
