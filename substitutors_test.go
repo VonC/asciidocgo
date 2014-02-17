@@ -120,8 +120,12 @@ func TestSubstitutor(t *testing.T) {
 			"`Here`s Johnny!"
 		s := &substitutors{}
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldNotEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
-			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s[input]%s1%s
+[input]%s2%s
+\input`+"`"+`a few <monospaced> words`+"`"+` : \`+"`"+`a few <monospaced> words`+"`"+`
+%s3%s[input]%s4%s
+the text %s5%s should be passed through as %s6%s text
+`+"`"+`Here`+"`"+`s Johnny!`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		Convey("If no literal text substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("test`nosub", subArray{subValue.macros}), ShouldEqual, "test`nosub")
@@ -135,8 +139,10 @@ func TestSubstitutor(t *testing.T) {
    latexmath:abc[\sqrt{4} = 2]`
 		s := &substitutors{document: &testSubstDocumentAble{}}
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldNotEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
-			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s
+   math:[x != 0]
+   %s1%s
+   %s2%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		Convey("If no math literal substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")

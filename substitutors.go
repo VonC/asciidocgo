@@ -311,7 +311,11 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				// honor the escape
 				// meaning don't transform anything, but loose the escape
 				res = res + reres.FullMatch()[1:]
-			} else if reres.HasPassText() {
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+			if reres.HasPassText() {
 				textOri = unescapeBrackets(reres.PassText())
 				if reres.HasPassSub() {
 					subsOri = resolvePassSubs(reres.PassSub())
@@ -342,19 +346,21 @@ PassInlineLiteralRx:
 			goto MathInlineMacroRx
 		}
 
+		res = ""
 		suffix := ""
 		for reres.HasNext() {
 			res = res + reres.Prefix()
 
 			unescaped_attrs := ""
 			// honor the escape
-
 			if reres.Literal()[0] == '\\' {
+				//fmt.Printf("======== %v=====\n", reres.FullMatch())
 				res = res + reres.FirstChar() + reres.Attributes() + reres.Literal()[1:] + " : " + reres.FirstChar() + reres.Literal()[1:]
 				suffix = reres.Suffix()
 				reres.Next()
 				continue
 			}
+
 			if reres.IsEscaped() && reres.Attributes() != "" {
 				unescaped_attrs = "[" + reres.Attributes() + "]"
 				res = res + unescaped_attrs
@@ -382,6 +388,7 @@ MathInlineMacroRx:
 			goto ExtractPassthroughsRes
 		}
 
+		res = ""
 		suffix := ""
 		for reres.HasNext() {
 			res = res + reres.Prefix()
