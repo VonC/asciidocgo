@@ -163,4 +163,19 @@ the text %s5%s should be passed through as %s6%s text
 		})
 		testsub = ""
 	})
+	Convey("A substitutors can be substitute special characters", t, func() {
+
+		Convey("If none, return text unchanged", func() {
+			So(subSpecialCharacters("abcd"), ShouldEqual, "abcd")
+		})
+
+		Convey("All special characters should be replaced", func() {
+			So(subSpecialCharacters("&"), ShouldEqual, "&amp;")
+			So(subSpecialCharacters("<"), ShouldEqual, "&lt;")
+			So(subSpecialCharacters(">"), ShouldEqual, "&gt;")
+			So(subSpecialCharacters(">&<"), ShouldEqual, "&gt;&amp;&lt;")
+			So(subSpecialCharacters(">a&bc<"), ShouldEqual, "&gt;a&amp;bc&lt;")
+		})
+	})
+
 }

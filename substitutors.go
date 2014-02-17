@@ -2,6 +2,7 @@ package asciidocgo
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/VonC/asciidocgo/consts/regexps"
@@ -275,6 +276,22 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 	if testsub == "test_ApplySubs_extractPassthroughs" {
 		return text
 	}
+	for _, aSub := range allSubs {
+		switch aSub.value {
+		case "specialcharacters":
+			text = subSpecialCharacters(text)
+		case "quotes":
+		case "attributes":
+		case "replacements":
+		case "macros":
+		case "highlight":
+		case "callouts":
+		case "post_replacements":
+		}
+	}
+	if testsub == "test_ApplySubs_applyAllsubs" {
+		return text
+	}
 	// TODO complete (s *substitutors) ApplySubs after extractPassthroughs
 	return text
 }
@@ -436,6 +453,42 @@ MathInlineMacroRx:
 
 ExtractPassthroughsRes:
 
+	return res
+}
+
+var specialCharacterPatternRx, _ = regexp.Compile(`[&<>]`)
+
+type specialCharacterPatternRxRes struct {
+	*regexps.Reres
+}
+
+/* Substitute special characters (i.e., encode XML)
+Special characters are defined in the Asciidoctor::SPECIAL_CHARS Array constant
+
+ text - The String text to process
+ returns The String text with special characters replaced */
+func subSpecialCharacters(text string) string {
+	reres := &specialCharacterPatternRxRes{regexps.NewReres(text, specialCharacterPatternRx)}
+
+	if !reres.HasAnyMatch() {
+		return text
+	}
+	res := ""
+	suffix := ""
+	for reres.HasNext() {
+		res = res + reres.Prefix()
+		switch reres.FullMatch() {
+		case "&":
+			res = res + "&amp;"
+		case "<":
+			res = res + "&lt;"
+		case ">":
+			res = res + "&gt;"
+		}
+		suffix = reres.Suffix()
+		reres.Next()
+	}
+	res = res + suffix
 	return res
 }
 
