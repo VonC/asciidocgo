@@ -76,6 +76,7 @@ func TestSubstitutor(t *testing.T) {
 			line2
 			line3] end test4`
 		s := &substitutors{}
+		testsub = "test_ApplySubs_extractPassthroughs"
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, `test +++for
 		a
 		passthrough+++ by test2 $$text
@@ -84,6 +85,7 @@ func TestSubstitutor(t *testing.T) {
 			test3 pass:quotes[text
 			line2
 			line3] end test4`)
+		testsub = ""
 	})
 
 	Convey("A substitutors can Extract the passthrough text from the document for reinsertion after processing", t, func() {
@@ -96,6 +98,7 @@ func TestSubstitutor(t *testing.T) {
 			line2
 			line3] end test4`
 		s := &substitutors{}
+		testsub = "test_ApplySubs_extractPassthroughs"
 
 		Convey("If no inline macros substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("test ++ nosub", subArray{subValue.macros}), ShouldEqual, "test ++ nosub")
@@ -103,6 +106,7 @@ func TestSubstitutor(t *testing.T) {
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
 			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+		testsub = ""
 	})
 	Convey("A substitutors can unescape escaped branckets", t, func() {
 		So(unescapeBrackets(""), ShouldEqual, "")
@@ -119,6 +123,7 @@ func TestSubstitutor(t *testing.T) {
 			"the text `asciimath:[x = y]` should be passed through as `literal` text\n" +
 			"`Here`s Johnny!"
 		s := &substitutors{}
+		testsub = "test_ApplySubs_extractPassthroughs"
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s[input]%s1%s
 [input]%s2%s
@@ -130,6 +135,7 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("If no literal text substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("test`nosub", subArray{subValue.macros}), ShouldEqual, "test`nosub")
 		})
+		testsub = ""
 	})
 
 	Convey("A substitutors can Extract math inline text", t, func() {
@@ -138,6 +144,7 @@ the text %s5%s should be passed through as %s6%s text
    asciimath:[x != 0]
    latexmath:abc[\sqrt{4} = 2]`
 		s := &substitutors{}
+		testsub = "test_ApplySubs_extractPassthroughs"
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s
    math:[x != 0]
@@ -154,5 +161,6 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("If no math literal substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")
 		})
+		testsub = ""
 	})
 }
