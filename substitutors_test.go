@@ -6,6 +6,16 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+type testSubstDocumentAble struct {
+}
+
+func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
+	return "mathtest"
+}
+func (tsd *testSubstDocumentAble) Basebackend(base interface{}) bool {
+	return true
+}
+
 func TestSubstitutor(t *testing.T) {
 
 	Convey("A substitutors can be initialized", t, func() {
@@ -115,6 +125,21 @@ func TestSubstitutor(t *testing.T) {
 
 		Convey("If no literal text substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("test`nosub", subArray{subValue.macros}), ShouldEqual, "test`nosub")
+		})
+	})
+
+	Convey("A substitutors can Extract math inline text", t, func() {
+		source := `math:[x != 0]
+   \math:[x != 0]
+   asciimath:[x != 0]
+   latexmath:abc[\sqrt{4} = 2]`
+		s := &substitutors{document: &testSubstDocumentAble{}}
+
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldNotEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
+			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
+
+		Convey("If no math literal substitution detected, return text unchanged", func() {
+			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")
 		})
 	})
 }

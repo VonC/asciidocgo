@@ -215,7 +215,6 @@ func (sa subArray) include(s *subsEnum) bool {
 }
 
 type SubstDocumentable interface {
-	Document() SubstDocumentable
 	Attr(name string, defaultValue interface{}, inherit bool) interface{}
 	Basebackend(base interface{}) bool
 }
@@ -232,6 +231,10 @@ type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
 	passthroughs []passthrough
 	document     SubstDocumentable
+}
+
+func (s *substitutors) Document() SubstDocumentable {
+	return s.document
 }
 
 /* Apply the specified substitutions to the lines of text
@@ -395,16 +398,18 @@ MathInlineMacroRx:
 			mathType := reres.MathType()
 			if mathType == "math" {
 				defaultType := "asciimath"
-				defaultTypeI := s.document.Attr("math", nil, false)
-				if defaultTypeI != nil && defaultTypeI.(string) != "" {
-					defaultType = defaultTypeI.(string)
+				if s.Document() != nil {
+					defaultTypeI := s.Document().Attr("math", nil, false)
+					if defaultTypeI != nil && defaultTypeI.(string) != "" {
+						defaultType = defaultTypeI.(string)
+					}
 				}
 				mathType = defaultType
 			}
 			mathText := unescapeBrackets(reres.MathText())
 			mathSubs := subArray{}
 			if reres.MathSub() == "" {
-				if s.document != nil && s.document.Basebackend("html") {
+				if s.Document() != nil && s.Document().Basebackend("html") {
 					mathSubs = subArray{subValue.specialcharacters}
 				} else {
 					mathSubs = resolvePassSubs(reres.MathSub())
