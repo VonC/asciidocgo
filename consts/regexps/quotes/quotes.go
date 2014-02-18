@@ -30,25 +30,9 @@ type QuoteSubRxres struct {
 	qs *QuoteSub
 }
 
-var constraintRx, _ = regexp.Compile(`\W`)
-
-func quoteSubLookAhead(suffix string) bool {
-	if suffix == "" {
-		return true
-	}
-	c := suffix[0:1]
-	//fmt.Printf("c%v====\n", c)
-	r := constraintRx.FindStringSubmatch(c)
-	//fmt.Printf("c%v====%d\n", r, len(r))
-	return r != nil && len(r) > 0
-}
-
 /* Results for QuoteSubRxres */
 func NewQuoteSubRxres(s string, qs *QuoteSub) *QuoteSubRxres {
 	res := &QuoteSubRxres{regexps.NewReres(s, qs.rx), qs}
-	if qs.constrained {
-		res = &QuoteSubRxres{regexps.NewReresLA(s, qs.rx, quoteSubLookAhead), qs}
-	}
 	return res
 }
 
@@ -93,7 +77,7 @@ func iniQuoteSubs() []*QuoteSub {
 	// **strong**
 	res = addQuoteSub(res, Strong, false, `(?s)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
 	// *strong*
-	res = addQuoteSub(res, Strong, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*`)
+	res = addQuoteSub(res, Strong, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*(?:$|\W)`)
 	return res
 }
 
