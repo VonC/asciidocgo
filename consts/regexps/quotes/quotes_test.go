@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 2)
+		So(len(QuoteSubs), ShouldEqual, 3)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -126,6 +126,13 @@ func TestQuotes(t *testing.T) {
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "2d*word")
 			So(reres.Suffix(), ShouldEqual, "--")
+		})
+
+	})
+	Convey("Quotes subs should detect constrained ``double-quoted'' quotes", t, func() {
+		qs := QuoteSubs[2]
+		Convey("single-line double-quoted string", func() {
+			So(qs, ShouldNotBeNil)
 		})
 	})
 }
