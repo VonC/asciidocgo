@@ -39,30 +39,10 @@ type Reres struct {
 	previous int
 }
 
-type lookahead func(suffix string) bool
-
 /* Build new result from FindAllStringSubmatchIndex on a string */
 func NewReres(s string, r *regexp.Regexp) *Reres {
 	matches := r.FindAllStringSubmatchIndex(s, -1)
 	return &Reres{r, s, matches, 0, 0}
-}
-
-/* Build new result from FindAllStringSubmatchIndex on a string,
-validated by last group being a lookahead after each match */
-func NewReresLA(s string, r *regexp.Regexp, la lookahead) *Reres {
-	res := NewReres(s, r)
-	if la != nil && res.HasAnyMatch() {
-		m := [][]int{}
-		for res.HasNext() {
-			if la(res.Suffix()) {
-				m = append(m, res.matches[res.i])
-			}
-			res.Next()
-		}
-		res.ResetNext()
-		res.matches = m
-	}
-	return res
 }
 
 /* Build new result from FindAllStringSubmatchIndex on a string,
@@ -234,25 +214,15 @@ Examples
 */
 // PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
 
-var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)")
-var PassInlineMacroRxLookahead, _ = regexp.Compile("[`\\w]")
+var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)([^`\\w])")
 
 type PassInlineLiteralRxres struct {
 	*Reres
 }
 
-func passInlineMacroRxLookahead(suffix string) bool {
-	c := ""
-	if suffix != "" {
-		c = suffix[0:1]
-	}
-	b := PassInlineMacroRxLookahead.FindAllString(c, -1) == nil
-	return b
-}
-
 /* Results for PassInlineLiteralRx */
 func NewPassInlineLiteralRxres(s string) *PassInlineLiteralRxres {
-	res := &PassInlineLiteralRxres{NewReresLA(s, PassInlineLiteralRx, passInlineMacroRxLookahead)}
+	res := &PassInlineLiteralRxres{NewReresLAGroup(s, PassInlineLiteralRx)}
 	return res
 }
 

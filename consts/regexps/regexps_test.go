@@ -213,8 +213,8 @@ func TestRegexps(t *testing.T) {
 		So(r.HasAnyMatch(), ShouldBeTrue)
 		So(len(r.matches), ShouldEqual, 8)
 		r.Next()
-		So(r.FirstChar(), ShouldEqual, "]")
-		So(r.Attributes(), ShouldEqual, "")
+		So(r.FirstChar(), ShouldEqual, "")
+		So(r.Attributes(), ShouldEqual, "input")
 		So(r.Literal(), ShouldEqual, "`A few <\\{monospaced\\}> words`")
 		So(r.LiteralText(), ShouldEqual, "A few <\\{monospaced\\}> words")
 
