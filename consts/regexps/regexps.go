@@ -38,10 +38,30 @@ type Reres struct {
 	previous int
 }
 
+type lookahead func(suffix string) bool
+
 /* Build new result from FindAllStringSubmatchIndex on a string */
 func NewReres(s string, r *regexp.Regexp) *Reres {
 	matches := r.FindAllStringSubmatchIndex(s, -1)
 	return &Reres{r, s, matches, 0, 0}
+}
+
+/* Build new result from FindAllStringSubmatchIndex on a string,
+validated by a lookahead after each match */
+func NewReresLA(s string, r *regexp.Regexp, la lookahead) *Reres {
+	res := NewReres(s, r)
+	if la != nil && res.HasAnyMatch() {
+		m := [][]int{}
+		for res.HasNext() {
+			if la(res.Suffix()) {
+				m = append(m, res.matches[res.i])
+			}
+			res.Next()
+		}
+		res.ResetNext()
+		res.matches = m
+	}
+	return res
 }
 
 /* Check if there is any match */
