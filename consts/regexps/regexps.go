@@ -200,33 +200,24 @@ Examples
 // PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
 
 var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)")
-var PassInlineMacroRxLookahead, _ = regexp.Compile("^[`\\w]")
+var PassInlineMacroRxLookahead, _ = regexp.Compile("[`\\w]")
 
 type PassInlineLiteralRxres struct {
 	*Reres
 }
 
+func passInlineMacroRxLookahead(suffix string) bool {
+	c := ""
+	if suffix != "" {
+		c = suffix[0:1]
+	}
+	b := PassInlineMacroRxLookahead.FindAllString(c, -1) == nil
+	return b
+}
+
 /* Results for PassInlineLiteralRx */
 func NewPassInlineLiteralRxres(s string) *PassInlineLiteralRxres {
-	res := &PassInlineLiteralRxres{NewReres(s, PassInlineLiteralRx)}
-	if res.HasAnyMatch() {
-		m := [][]int{}
-		for res.HasNext() {
-			p := res.Suffix()
-			c := ""
-			if p != "" {
-				c = p[0:1]
-			}
-			b := PassInlineMacroRxLookahead.FindAllString(c, -1) != nil
-			//fmt.Printf("****%s****='%s'=>'%v':%v\n", res.FullMatch(), c, b, res.matches[res.i])
-			if !b {
-				m = append(m, res.matches[res.i])
-			}
-			res.Next()
-		}
-		res.ResetNext()
-		res.matches = m
-	}
+	res := &PassInlineLiteralRxres{NewReresLA(s, PassInlineLiteralRx, passInlineMacroRxLookahead)}
 	return res
 }
 
