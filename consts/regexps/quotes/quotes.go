@@ -90,7 +90,8 @@ var QuoteSubs []*QuoteSub = iniQuoteSubs()
 
 func iniQuoteSubs() []*QuoteSub {
 	res := []*QuoteSub{}
-	res = addQuoteSub(res, Strong, false, `(?m)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
+	// **strong**
+	res = addQuoteSub(res, Strong, false, `(?s)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
 	return res
 }
 
