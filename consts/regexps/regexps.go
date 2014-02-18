@@ -1,6 +1,7 @@
 package regexps
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 
@@ -47,7 +48,7 @@ func NewReres(s string, r *regexp.Regexp) *Reres {
 }
 
 /* Build new result from FindAllStringSubmatchIndex on a string,
-validated by a lookahead after each match */
+validated by last group being a lookahead after each match */
 func NewReresLA(s string, r *regexp.Regexp, la lookahead) *Reres {
 	res := NewReres(s, r)
 	if la != nil && res.HasAnyMatch() {
@@ -61,6 +62,40 @@ func NewReresLA(s string, r *regexp.Regexp, la lookahead) *Reres {
 		res.ResetNext()
 		res.matches = m
 	}
+	return res
+}
+
+/* Build new result from FindAllStringSubmatchIndex on a string,
+validated by last group being a lookahead after each match */
+func NewReresLAGroup(s string, r *regexp.Regexp) *Reres {
+	bf := bytes.NewBufferString(s)
+	by := bf.Bytes()
+	m := [][]int{}
+	lg := []int{}
+	res := &Reres{r, s, m, 0, 0}
+	shift := 0
+	for match := r.FindSubmatchIndex(by); match != nil && len(match) > 0; match = r.FindSubmatchIndex(by) {
+		if len(match) > 0 {
+			//fmt.Printf("%v============%v===\n", match, string(by))
+			match, lg = match[:len(match)-2], match[len(match)-2:]
+			for i, mi := range match {
+				match[i] = mi + shift
+			}
+			//fmt.Printf("%v===append\n", match)
+			if lg[0] < lg[1] {
+				by = by[lg[0]:]
+				shift = shift + lg[0]
+				delta := lg[1] - lg[0]
+				match[1] = match[1] - delta
+				m = append(m, match)
+			} else {
+				m = append(m, match)
+				break
+			}
+		}
+	}
+	res.matches = m
+	//fmt.Printf("*** %v======\n", res.matches)
 	return res
 }
 

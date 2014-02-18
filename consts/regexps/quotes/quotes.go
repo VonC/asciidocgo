@@ -32,7 +32,12 @@ type QuoteSubRxres struct {
 
 /* Results for QuoteSubRxres */
 func NewQuoteSubRxres(s string, qs *QuoteSub) *QuoteSubRxres {
-	res := &QuoteSubRxres{regexps.NewReres(s, qs.rx), qs}
+	res := &QuoteSubRxres{nil, qs}
+	if qs.constrained {
+		res.Reres = regexps.NewReresLAGroup(s, qs.rx)
+	} else {
+		res.Reres = regexps.NewReres(s, qs.rx)
+	}
 	return res
 }
 
@@ -77,7 +82,7 @@ func iniQuoteSubs() []*QuoteSub {
 	// **strong**
 	res = addQuoteSub(res, Strong, false, `(?s)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
 	// *strong*
-	res = addQuoteSub(res, Strong, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*(?:$|\W)`)
+	res = addQuoteSub(res, Strong, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*($|\W)`)
 	return res
 }
 

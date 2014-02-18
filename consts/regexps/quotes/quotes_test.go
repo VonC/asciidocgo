@@ -2,7 +2,6 @@ package quotes
 
 import (
 	"testing"
-
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -95,10 +94,38 @@ func TestQuotes(t *testing.T) {
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "bl*ck")
 			reres.Next()
-			So(reres.Prefix(), ShouldEqual, "eye")
+			So(reres.Prefix(), ShouldEqual, "-eye")
 			So(reres.PrefixQuote(), ShouldEqual, "-")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "2d*word")
+		})
+
+		Convey("consecutive constrained strong string containing an asterisk", func() {
+			reres := NewQuoteSubRxres("*bl*ck*-*2d*word*--", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "bl*ck")
+			So(reres.Suffix(), ShouldEqual, "-*2d*word*--")
+			reres.Next()
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "-")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2d*word")
+			So(reres.Suffix(), ShouldEqual, "--")
+
+			reres = NewQuoteSubRxres("*bl*ck**2d*word*--", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "bl*ck")
+			So(reres.Suffix(), ShouldEqual, "*2d*word*--")
+			reres.Next()
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2d*word")
+			So(reres.Suffix(), ShouldEqual, "--")
 		})
 	})
 }
