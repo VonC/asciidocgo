@@ -260,4 +260,31 @@ func TestRegexps(t *testing.T) {
 		So(r.MathSub(), ShouldEqual, "abc")
 		So(r.MathText(), ShouldEqual, "\\sqrt{4} = 2")
 	})
+
+	Convey("Regexps can simulate a lookahead at the end of a regexp", t, func() {
+		rx, _ := regexp.Compile(`a(b*)c($|de)`)
+		r := NewReresLAGroup("aabbbbcdefabbcabbbcdeabcdabbc", rx)
+
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 3)
+
+		So(r.Prefix(), ShouldEqual, "a")
+		So(r.FullMatch(), ShouldEqual, "abbbbc")
+		So(r.Group(1), ShouldEqual, "bbbb")
+		So(r.Suffix(), ShouldEqual, "defabbcabbbcdeabcdabbc")
+
+		r.Next()
+
+		So(r.Prefix(), ShouldEqual, "defabbc")
+		So(r.FullMatch(), ShouldEqual, "abbbc")
+		So(r.Group(1), ShouldEqual, "bbb")
+		So(r.Suffix(), ShouldEqual, "deabcdabbc")
+
+		r.Next()
+
+		So(r.Prefix(), ShouldEqual, "deabcd")
+		So(r.FullMatch(), ShouldEqual, "abbc")
+		So(r.Group(1), ShouldEqual, "bb")
+		So(r.Suffix(), ShouldEqual, "")
+	})
 }
