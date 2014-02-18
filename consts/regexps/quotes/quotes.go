@@ -30,9 +30,53 @@ type QuoteSubRxres struct {
 	qs *QuoteSub
 }
 
+var constraintRx, _ = regexp.Compile(`\W`)
+
+func quoteSubLookAhead(suffix string) bool {
+	if suffix == "" {
+		return true
+	}
+	c := suffix[0:1]
+	//fmt.Printf("c%v====\n", c)
+	r := constraintRx.FindStringSubmatch(c)
+	//fmt.Printf("c%v====%d\n", r, len(r))
+	return r != nil && len(r) > 0
+}
+
 /* Results for QuoteSubRxres */
 func NewQuoteSubRxres(s string, qs *QuoteSub) *QuoteSubRxres {
-	return &QuoteSubRxres{regexps.NewReres(s, qs.rx), qs}
+	res := &QuoteSubRxres{regexps.NewReres(s, qs.rx), qs}
+	if qs.constrained {
+		res = &QuoteSubRxres{regexps.NewReresLA(s, qs.rx, quoteSubLookAhead), qs}
+	}
+	return res
+}
+
+func (qsr *QuoteSubRxres) PrefixQuote() string {
+	if !qsr.HasAnyMatch() || !qsr.qs.constrained {
+		return ""
+	}
+	return qsr.Group(1)
+}
+
+func (qsr *QuoteSubRxres) Attribute() string {
+	if !qsr.HasAnyMatch() {
+		return ""
+	}
+	if qsr.qs.constrained {
+		return qsr.Group(2)
+	}
+	return qsr.Group(1)
+}
+
+func (qsr *QuoteSubRxres) Quote() string {
+	if !qsr.HasAnyMatch() {
+		return ""
+	}
+	if qsr.qs.constrained {
+		return qsr.Group(3)
+	}
+	return qsr.Group(2)
 }
 
 /* unconstrained quotes:: can appear anywhere
