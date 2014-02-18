@@ -9,7 +9,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 1)
+		So(len(QuoteSubs), ShouldEqual, 2)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -56,6 +56,23 @@ func TestQuotes(t *testing.T) {
 			So(reres.Attribute(), ShouldEqual, "blue")
 			So(reres.Quote(), ShouldEqual, "Hub")
 		})
+	})
 
+	Convey("Quotes subs should detect constrained *strong* quotes", t, func() {
+		qs := QuoteSubs[1]
+		Convey("single-line constrained strong string", func() {
+			reres := NewQuoteSubRxres(`*a few strong words*`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few strong words")
+		})
+		Convey("single-line constrained strong string", func() {
+			reres := NewQuoteSubRxres(`*a few strong failed words*a`, qs)
+			So(reres.HasAnyMatch(), ShouldBeFalse)
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "")
+		})
 	})
 }
