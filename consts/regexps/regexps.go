@@ -294,15 +294,3 @@ var UriSniffRx, _ = regexp.Compile(fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_AL
 
 /* Detects escaped brackets */
 var EscapedBracketRx, _ = regexp.Compile(`\\\]`)
-
-type QuoteSub struct {
-	constrained bool
-	rx          *regexp.Regexp
-}
-
-/* unconstrained quotes:: can appear anywhere
-   constrained quotes:: must be bordered by non-word characters
-   NOTE these substitutions are processed in the order they appear here and
-   the order in which they are replaced is important
-*/
-//QUOTE_SUBS = [
