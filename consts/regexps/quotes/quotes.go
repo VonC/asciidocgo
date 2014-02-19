@@ -84,7 +84,7 @@ func iniQuoteSubs() []*QuoteSub {
 	// *strong*
 	res = addQuoteSub(res, Strong, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*($|\W)`)
 	// ``double-quoted''
-	res = addQuoteSub(res, Double, true, "/(^|[^\\w;:}])(?:\\[([^\\]]+?)\\])?``(\\S|\\S.*?\\S)''(\\W|$)")
+	res = addQuoteSub(res, Double, true, "(?s)(^|[^\\w;:}])(?:\\[([^\\]]+?)\\])?``(\\S|\\S.*?\\S)''(\\W|$)")
 	return res
 }
 

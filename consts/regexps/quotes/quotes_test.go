@@ -132,7 +132,39 @@ func TestQuotes(t *testing.T) {
 	Convey("Quotes subs should detect constrained ``double-quoted'' quotes", t, func() {
 		qs := QuoteSubs[2]
 		Convey("single-line double-quoted string", func() {
-			So(qs, ShouldNotBeNil)
+			reres := NewQuoteSubRxres("``a few quoted words''", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few quoted words")
+		})
+		Convey("escaped single-line double-quoted string", func() {
+			reres := NewQuoteSubRxres("\\``a few quoted words''", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few quoted words")
+		})
+		Convey("multi-line double-quoted string", func() {
+			reres := NewQuoteSubRxres("``a few\nquoted words''", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few\nquoted words")
+		})
+		Convey("double-quoted string with inline single quote", func() {
+			reres := NewQuoteSubRxres("``Here's Johnny!''", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Here's Johnny!")
+		})
+		Convey("double-quoted string with inline backquote", func() {
+			reres := NewQuoteSubRxres("``Here`s Johnny!''", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Here`s Johnny!")
 		})
 	})
 }
