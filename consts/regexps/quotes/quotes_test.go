@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 3)
+		So(len(QuoteSubs), ShouldEqual, 4)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -165,6 +165,44 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "Here`s Johnny!")
+		})
+	})
+	Convey("Quotes subs should detect constrained 'emphasis' quotes", t, func() {
+		qs := QuoteSubs[3]
+		Convey("single-line constrained quote variation emphasized string", func() {
+			reres := NewQuoteSubRxres("'a few emphasized words'", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few emphasized words")
+		})
+		Convey("escaped single-line constrained quote variation emphasized string", func() {
+			reres := NewQuoteSubRxres("\\'a few emphasized words'", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few emphasized words")
+		})
+		Convey("multi-line constrained emphasized quote variation string", func() {
+			reres := NewQuoteSubRxres("'a few\nemphasized words'", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few\nemphasized words")
+		})
+		Convey("single-quoted string containing an emphasized phrase", func() {
+			reres := NewQuoteSubRxres("`I told him, 'Just go for it!''", qs)
+			So(reres.Prefix(), ShouldEqual, "`I told him,")
+			So(reres.PrefixQuote(), ShouldEqual, " ")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Just go for it!")
+		})
+		Convey("escaped single-quotes inside emphasized words are restored", func() {
+			reres := NewQuoteSubRxres("'Here\\'s Johnny!'", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Here\\'s Johnny!")
 		})
 	})
 }
