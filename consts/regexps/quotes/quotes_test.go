@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 11)
+		So(len(QuoteSubs), ShouldEqual, 12)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -420,6 +420,41 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "a few\nwords")
+		})
+	})
+	Convey("Quotes subs should detect unconstrained ^superscript^ quotes", t, func() {
+		qs := QuoteSubs[11]
+		Convey("single-line superscript chars", func() {
+			reres := NewQuoteSubRxres("x^2^ = x * x, e = mc^2^, there's a 1^st^ time for everything", qs)
+			So(reres.Prefix(), ShouldEqual, "x")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2")
+			reres.Next()
+			So(reres.Prefix(), ShouldEqual, " = x * x, e = mc")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2")
+			reres.Next()
+			So(reres.Prefix(), ShouldEqual, ", there's a 1")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "st")
+		})
+		Convey("escaped single-line superscript chars", func() {
+			reres := NewQuoteSubRxres(`x\^2^ = x * x`, qs)
+			So(reres.Prefix(), ShouldEqual, "x")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2")
+			So(reres.IsEscaped(), ShouldBeTrue)
+		})
+		Convey("multi-line superscript chars", func() {
+			reres := NewQuoteSubRxres("x^(n\n-\n1)^", qs)
+			So(reres.Prefix(), ShouldEqual, "x")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "(n\n-\n1)")
 		})
 	})
 }
