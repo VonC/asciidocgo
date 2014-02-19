@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 10)
+		So(len(QuoteSubs), ShouldEqual, 11)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -396,6 +396,30 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "--anything\ngoes ")
+		})
+	})
+	Convey("Quotes subs should detect constrained #unquoted# quotes", t, func() {
+		qs := QuoteSubs[10]
+		Convey("single-line constrained unquoted string", func() {
+			reres := NewQuoteSubRxres("#a few words#", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few words")
+		})
+		Convey("escaped single-line constrained unquoted string", func() {
+			reres := NewQuoteSubRxres(`\#a few words#`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few words")
+		})
+		Convey("multi-line constrained unquoted string", func() {
+			reres := NewQuoteSubRxres("#a few\nwords#", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few\nwords")
 		})
 	})
 }
