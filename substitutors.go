@@ -503,12 +503,7 @@ the backend templates */
 func subQuotes(text string) string {
 	result := text
 	for _, qs := range quotes.QuoteSubs {
-		var match *regexps.Reres = nil
-		if qs.Constrained() {
-			match = regexps.NewReresLAGroup(text, qs.Rx())
-		} else {
-			match = regexps.NewReres(text, qs.Rx())
-		}
+		match := quotes.NewQuoteSubRxres(text, qs)
 		transformQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
 	return result
@@ -519,8 +514,36 @@ func subQuotes(text string) string {
  type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
  scope  - The scope of the quoting (constrained or unconstrained)
 returns The rendered text for the quoted text region */
-func transformQuotedText(match *regexps.Reres, typeSub quotes.QuoteSubType, constrained bool) string {
-	return ""
+func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
+	res := ""
+	suffix := ""
+	for match.HasNext() {
+		res = res + match.Prefix()
+		unescaped_attrs := ""
+		if match.IsEscaped() {
+			if constrained && match.Attribute() != "" {
+				unescaped_attrs = match.Attribute()
+			} else {
+				res = res + match.FullMatch()[1:]
+				suffix = match.Suffix()
+				match.Next()
+				continue
+			}
+		}
+		if constrained {
+			if unescaped_attrs == "" {
+
+			} else {
+
+			}
+		} else {
+
+		}
+		suffix = match.Suffix()
+		match.Next()
+	}
+	res = res + suffix
+	return res
 }
 
 /* Internal: Unescape closing square brackets.
