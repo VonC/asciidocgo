@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 5)
+		So(len(QuoteSubs), ShouldEqual, 6)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -241,6 +241,30 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "Here`s Johnny!")
+		})
+	})
+	Convey("Quotes subs should detect unconstrained ++monospaced++ quotes", t, func() {
+		qs := QuoteSubs[5]
+		Convey("single-line unconstrained monospaced chars", func() {
+			reres := NewQuoteSubRxres("Git++Hub++", qs)
+			So(reres.Prefix(), ShouldEqual, "Git")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Hub")
+		})
+		Convey("escaped single-line unconstrained monospaced chars", func() {
+			reres := NewQuoteSubRxres("Git\\++Hub++", qs)
+			So(reres.Prefix(), ShouldEqual, "Git")
+			So(reres.PrefixQuote(), ShouldEqual, "") // TOFIX sould be + here? :  assert_equal 'Git+<code>Hub</code>+'
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Hub")
+		})
+		Convey("multi-line unconstrained monospaced chars", func() {
+			reres := NewQuoteSubRxres("Git++\nH\nu\nb++", qs)
+			So(reres.Prefix(), ShouldEqual, "Git")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "\nH\nu\nb")
 		})
 	})
 }
