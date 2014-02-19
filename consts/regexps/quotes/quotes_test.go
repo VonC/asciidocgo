@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 12)
+		So(len(QuoteSubs), ShouldEqual, 13)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -455,6 +455,31 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "(n\n-\n1)")
+		})
+	})
+	Convey("Quotes subs should detect unconstrained ~subscript~ quotes", t, func() {
+		qs := QuoteSubs[12]
+		Convey("single-line subscript chars", func() {
+			reres := NewQuoteSubRxres("H~2~O", qs)
+			So(reres.Prefix(), ShouldEqual, "H")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2")
+		})
+		Convey("escaped single-line subscript chars", func() {
+			reres := NewQuoteSubRxres(`H\~2~O`, qs)
+			So(reres.Prefix(), ShouldEqual, "H")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "2")
+			So(reres.IsEscaped(), ShouldBeTrue)
+		})
+		Convey("multi-line subscript chars", func() {
+			reres := NewQuoteSubRxres("project~ view\non\nGitHub~", qs)
+			So(reres.Prefix(), ShouldEqual, "project")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, " view\non\nGitHub")
 		})
 	})
 }
