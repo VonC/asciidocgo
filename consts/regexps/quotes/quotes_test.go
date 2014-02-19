@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 9)
+		So(len(QuoteSubs), ShouldEqual, 10)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -372,6 +372,30 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "a few\nemphasized words")
+		})
+	})
+	Convey("Quotes subs should detect unconstrained ##unquoted## quotes", t, func() {
+		qs := QuoteSubs[9]
+		Convey("single-line unconstrained unquoted string", func() {
+			reres := NewQuoteSubRxres("##--anything goes ##", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "--anything goes ")
+		})
+		Convey("escaped single-line unconstrained unquoted string", func() {
+			reres := NewQuoteSubRxres(`\##--anything goes ##`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "") // TOFIX? Why not \\, as in 365?
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "--anything goes ")
+		})
+		Convey("multi-line unconstrained unquoted string", func() {
+			reres := NewQuoteSubRxres("##--anything\ngoes ##", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "--anything\ngoes ")
 		})
 	})
 }
