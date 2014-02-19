@@ -25,6 +25,10 @@ type QuoteSub struct {
 	rx          *regexp.Regexp
 }
 
+func (qs *QuoteSub) TypeQS() QuoteSubType { return qs.typeqs }
+func (qs *QuoteSub) Constrained() bool    { return qs.constrained }
+func (qs *QuoteSub) Rx() *regexp.Regexp   { return qs.rx }
+
 type QuoteSubRxres struct {
 	*regexps.Reres
 	qs *QuoteSub

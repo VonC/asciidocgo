@@ -13,6 +13,9 @@ func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
 		qs := QuoteSubs[0]
+		So(qs.Rx().String(), ShouldEqual, `(?s)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
+		So(qs.TypeQS(), ShouldEqual, Strong)
+		So(qs.Constrained(), ShouldBeFalse)
 		Convey("single-line unconstrained strong chars", func() {
 			reres := NewQuoteSubRxres("**Git**Hub", qs)
 			So(reres.Prefix(), ShouldEqual, "")
