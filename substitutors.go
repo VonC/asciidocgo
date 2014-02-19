@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/VonC/asciidocgo/consts/regexps"
+	"github.com/VonC/asciidocgo/consts/regexps/quotes"
 )
 
 type _sub string
@@ -281,12 +282,15 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 		case "specialcharacters":
 			text = subSpecialCharacters(text)
 		case "quotes":
-		case "attributes":
-		case "replacements":
-		case "macros":
-		case "highlight":
-		case "callouts":
-		case "post_replacements":
+			text = subQuotes(text)
+			/*
+				case "attributes":
+				case "replacements":
+				case "macros":
+				case "highlight":
+				case "callouts":
+				case "post_replacements":
+			*/
 		}
 	}
 	if testsub == "test_ApplySubs_applyAllsubs" {
@@ -490,6 +494,33 @@ func subSpecialCharacters(text string) string {
 	}
 	res = res + suffix
 	return res
+}
+
+/* Substitute quoted text (includes emphasis, strong, monospaced, etc)
+ text - The String text to process
+returns The String text with quoted text rendered using
+the backend templates */
+func subQuotes(text string) string {
+	result := text
+	for _, qs := range quotes.QuoteSubs {
+		var match *regexps.Reres = nil
+		if qs.Constrained() {
+			match = regexps.NewReresLAGroup(text, qs.Rx())
+		} else {
+			match = regexps.NewReres(text, qs.Rx())
+		}
+		transformQuotedText(match, qs.TypeQS(), qs.Constrained())
+	}
+	return result
+}
+
+/* Internal: Transform (render) a quoted text region
+ match  - The MatchData for the quoted text region
+ type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
+ scope  - The scope of the quoting (constrained or unconstrained)
+returns The rendered text for the quoted text region */
+func transformQuotedText(match *regexps.Reres, typeSub quotes.QuoteSubType, constrained bool) string {
+	return ""
 }
 
 /* Internal: Unescape closing square brackets.
