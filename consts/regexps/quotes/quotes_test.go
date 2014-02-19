@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 6)
+		So(len(QuoteSubs), ShouldEqual, 7)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -265,6 +265,51 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "\nH\nu\nb")
+		})
+	})
+	Convey("Quotes subs should detect constrained +monospaced+ quotes", t, func() {
+		qs := QuoteSubs[6]
+		Convey("single-line constrained monospaced chars", func() {
+			reres := NewQuoteSubRxres("call +save()+ to persist the changes", qs)
+			So(reres.Prefix(), ShouldEqual, "call")
+			So(reres.PrefixQuote(), ShouldEqual, " ")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "save()")
+		})
+		Convey("single-line constrained monospaced chars with role", func() {
+			reres := NewQuoteSubRxres("call [method]+save()+ to persist the changes", qs)
+			So(reres.Prefix(), ShouldEqual, "call")
+			So(reres.PrefixQuote(), ShouldEqual, " ")
+			So(reres.Attribute(), ShouldEqual, "method")
+			So(reres.Quote(), ShouldEqual, "save()")
+		})
+		Convey("escaped single-line constrained monospaced chars", func() {
+			reres := NewQuoteSubRxres(`call \+save()+ to persist the changes`, qs)
+			So(reres.Prefix(), ShouldEqual, "call ")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "save()")
+		})
+		Convey("escaped single-line constrained monospaced chars with role", func() {
+			reres := NewQuoteSubRxres(`call [method]\+save()+ to persist the changes`, qs)
+			So(reres.Prefix(), ShouldEqual, "call [method]")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "save()")
+		})
+		Convey("escaped role on single-line constrained monospaced chars", func() {
+			reres := NewQuoteSubRxres(`call \[method]+save()+ to persist the changes`, qs)
+			So(reres.Prefix(), ShouldEqual, "call ")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "method")
+			So(reres.Quote(), ShouldEqual, "save()")
+		})
+		Convey("escaped role on escaped single-line constrained monospaced chars", func() {
+			reres := NewQuoteSubRxres(`call \[method]\+save()+ to persist the changes`, qs)
+			So(reres.Prefix(), ShouldEqual, "call \\[method]")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "save()")
 		})
 	})
 }
