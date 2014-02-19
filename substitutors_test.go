@@ -125,7 +125,7 @@ func TestSubstitutor(t *testing.T) {
 		s := &substitutors{}
 		testsub = "test_ApplySubs_extractPassthroughs"
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s[input]%s1%s
+		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s%s1%s
 [input]%s2%s
 \input`+"`"+`a few <monospaced> words`+"`"+` : \`+"`"+`a few <monospaced> words`+"`"+`
 %s3%s[input]%s4%s
