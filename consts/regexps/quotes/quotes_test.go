@@ -8,7 +8,7 @@ import (
 func TestQuotes(t *testing.T) {
 
 	Convey("Quotes subs have a fixed number of regexps", t, func() {
-		So(len(QuoteSubs), ShouldEqual, 7)
+		So(len(QuoteSubs), ShouldEqual, 9)
 	})
 
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
@@ -310,6 +310,68 @@ func TestQuotes(t *testing.T) {
 			So(reres.PrefixQuote(), ShouldEqual, "\\")
 			So(reres.Attribute(), ShouldEqual, "")
 			So(reres.Quote(), ShouldEqual, "save()")
+		})
+	})
+	Convey("Quotes subs should detect unconstrained __emphasis__ quotes", t, func() {
+		qs := QuoteSubs[7]
+		Convey("single-line unconstrained emphasized chars", func() {
+			reres := NewQuoteSubRxres("__Git__Hub", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Git")
+		})
+		Convey("escaped single-line unconstrained emphasized chars", func() {
+			reres := NewQuoteSubRxres(`\__Git__Hub`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "Git")
+		})
+		Convey("multi-line unconstrained emphasized chars", func() {
+			reres := NewQuoteSubRxres("__G\ni\nt\n__Hub", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "G\ni\nt\n")
+		})
+		Convey("unconstrained emphasis chars with role", func() {
+			reres := NewQuoteSubRxres("[gray]__Git__Hub", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "gray")
+			So(reres.Quote(), ShouldEqual, "Git")
+		})
+		Convey("escaped unconstrained emphasis chars with role", func() {
+			reres := NewQuoteSubRxres(`\[gray]__Git__Hub`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "gray")
+			So(reres.Quote(), ShouldEqual, "Git")
+		})
+	})
+	Convey("Quotes subs should detect constrained _emphasis_ quotes", t, func() {
+		qs := QuoteSubs[8]
+		Convey("single-line constrained emphasized underline variation string", func() {
+			reres := NewQuoteSubRxres("_a few emphasized words_", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few emphasized words")
+		})
+		Convey("escaped single-line constrained emphasized underline variation string", func() {
+			reres := NewQuoteSubRxres(`\_a few emphasized words_`, qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "\\")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few emphasized words")
+		})
+		Convey("multi-line constrained emphasized underline variation string", func() {
+			reres := NewQuoteSubRxres("_a few\nemphasized words_", qs)
+			So(reres.Prefix(), ShouldEqual, "")
+			So(reres.PrefixQuote(), ShouldEqual, "")
+			So(reres.Attribute(), ShouldEqual, "")
+			So(reres.Quote(), ShouldEqual, "a few\nemphasized words")
 		})
 	})
 }

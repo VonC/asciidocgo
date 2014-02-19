@@ -93,6 +93,10 @@ func iniQuoteSubs() []*QuoteSub {
 	res = addQuoteSub(res, Monospaced, false, `(?s)\\?(?:\[([^\]]+?)\])?\+\+(.+?)\+\+`)
 	// +monospaced+
 	res = addQuoteSub(res, Monospaced, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?\+(\S|\S.*?\S)\+(\W|$)`)
+	// __emphasis__
+	res = addQuoteSub(res, Emphasis, false, `(?s)\\?(?:\[([^\]]+?)\])?\_\_(.+?)\_\_`)
+	// _emphasis_
+	res = addQuoteSub(res, Emphasis, true, `(?s)(^|[^\w;:}])(?:\[([^\]]+?)\])?_(\S|\S.*?\S)_(\W|$)`)
 	return res
 }
 
