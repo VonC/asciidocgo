@@ -532,17 +532,28 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 		}
 		if constrained {
 			if unescaped_attrs == "" {
-
+				attributes := parseQuotedTextAttributes(match.Attribute())
+				id := attributes["id"]
+				delete(attributes, "id")
+				res = res + match.PrefixQuote() + id.(string) // TODO + #{Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render})
 			} else {
-
+				res = res + unescaped_attrs // TODO + #{Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render})
 			}
 		} else {
-
+			attributes := parseQuotedTextAttributes(match.Attribute())
+			id := attributes["id"]
+			delete(attributes, "id")
+			res = res + id.(string) // TODO + #{Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render})
 		}
 		suffix = match.Suffix()
 		match.Next()
 	}
 	res = res + suffix
+	return res
+}
+
+func parseQuotedTextAttributes(str string) map[string]interface{} {
+	res := make(map[string]interface{})
 	return res
 }
 
