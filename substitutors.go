@@ -222,8 +222,10 @@ type SubstDocumentable interface {
 }
 
 type passthrough struct {
-	text string
-	subs subArray
+	text       string
+	subs       subArray
+	attributes map[string]interface{}
+	typePT     string
 }
 
 /* Methods to perform substitutions on lines of AsciiDoc text.
@@ -348,7 +350,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				}
 			}
 			if textOri != "" {
-				p := passthrough{textOri, subsOri}
+				p := passthrough{textOri, subsOri, make(map[string]interface{}), ""}
 				s.passthroughs = append(s.passthroughs, p)
 				index := len(s.passthroughs) - 1
 				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -381,7 +383,6 @@ PassInlineLiteralRx:
 				reres.Next()
 				continue
 			}
-
 			if reres.IsEscaped() && reres.Attributes() != "" {
 				unescaped_attrs = "[" + reres.Attributes() + "]"
 				res = res + unescaped_attrs
@@ -389,7 +390,9 @@ PassInlineLiteralRx:
 				res = res + reres.FirstChar()
 			}
 
-			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}}
+			attributes := make(map[string]interface{})
+
+			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
 			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -443,8 +446,8 @@ MathInlineMacroRx:
 					mathSubs = resolvePassSubs(reres.MathSub())
 				}
 			}
-
-			p := passthrough{mathText, mathSubs}
+			attributes := make(map[string]interface{})
+			p := passthrough{mathText, mathSubs, attributes, mathType}
 			s.passthroughs = append(s.passthroughs, p)
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
