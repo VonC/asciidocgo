@@ -503,8 +503,8 @@ the backend templates */
 func subQuotes(text string) string {
 	result := text
 	for _, qs := range quotes.QuoteSubs {
-		match := quotes.NewQuoteSubRxres(text, qs)
-		transformQuotedText(match, qs.TypeQS(), qs.Constrained())
+		match := quotes.NewQuoteSubRxres(result, qs)
+		result = transformQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
 	return result
 }
