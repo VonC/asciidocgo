@@ -262,7 +262,7 @@ it's value will be overridden.
 
 - attributes: A Hash of attributes to assign to this node.
 */
-func (an *abstractNode) Update(attrs map[string]interface{}) {
+func (an *abstractNode) UpdateAttributes(attrs map[string]interface{}) {
 	for key, value := range attrs {
 		an.attributes[key] = value
 	}

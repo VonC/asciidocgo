@@ -170,7 +170,7 @@ func TestAbstractNode(t *testing.T) {
 		an.setAttr("key2", "val2", true)
 		Convey("New Attributes are added during an update", func() {
 			attrs := map[string]interface{}{"key3": "val3", "key4": "val4"}
-			an.Update(attrs)
+			an.UpdateAttributes(attrs)
 			So(an.Attr("key1", nil, false), ShouldEqual, "val1")
 			So(an.Attr("key2", nil, false), ShouldEqual, "val2")
 			So(an.Attr("key3", nil, false), ShouldEqual, "val3")
@@ -178,7 +178,7 @@ func TestAbstractNode(t *testing.T) {
 		})
 		Convey("Common Attributes are overrriden during an update", func() {
 			attrs := map[string]interface{}{"key2": "val2b", "key3": "val3"}
-			an.Update(attrs)
+			an.UpdateAttributes(attrs)
 			So(an.Attr("key1", nil, false), ShouldEqual, "val1")
 			So(an.Attr("key2", nil, false), ShouldEqual, "val2b")
 			So(an.Attr("key3", nil, false), ShouldEqual, "val3")
