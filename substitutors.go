@@ -391,6 +391,9 @@ PassInlineLiteralRx:
 			}
 
 			attributes := make(map[string]interface{})
+			if unescaped_attrs != "" && reres.Attributes() != "" {
+				attributes = parseAttributes(reres.Attributes())
+			}
 
 			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
 			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type
@@ -561,6 +564,16 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 	}
 	res = res + suffix
 	return res
+}
+
+/* Parse the attributes in the attribute line
+ attrline  - A String of unprocessed attributes (key/value pairs)
+ posattrs  - The keys for positional attributes
+returns an empty Hash if attrline is empty, otherwise a Hash of parsed attributes */
+func parseAttributes(attrline string) map[string]interface{} {
+	attributes := make(map[string]interface{})
+	// TODO implement
+	return attributes
 }
 
 func parseQuotedTextAttributes(str string) map[string]interface{} {
