@@ -572,7 +572,10 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 returns an empty Hash if attrline is empty, otherwise a Hash of parsed attributes */
 func parseAttributes(attrline string) map[string]interface{} {
 	attributes := make(map[string]interface{})
-	// TODO implement
+	if attrline == "" {
+		return attributes
+	}
+	// TODO implement parseAttributes posattrs and opt map[string]interface{}
 	return attributes
 }
 
