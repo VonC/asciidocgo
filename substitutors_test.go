@@ -192,4 +192,26 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 	})
+
+	Convey("A substitutors can Extract inline quotes", t, func() {
+		s := &substitutors{}
+		testsub = "test_ApplySubs_applyAllsubs"
+		Convey("test inline quote, constrained, no attribute", func() {
+			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ")
+			testsub = ""
+		})
+		Convey("test inline quote, unconstrained, escaped, no attribute", func() {
+			So(s.ApplySubs(`\[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "[gray]__Git__Hub")
+			testsub = ""
+		})
+		Convey("test inline quote, constrained, escaped, with attribute", func() {
+			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "gray Hub")
+			testsub = ""
+		})
+		Convey("test inline quote, unconstrained, unescaped, attribute", func() {
+			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "Hub")
+			testsub = ""
+		})
+
+	})
 }
