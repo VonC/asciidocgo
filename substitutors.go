@@ -502,7 +502,9 @@ returns The String text with quoted text rendered using
 the backend templates */
 func subQuotes(text string) string {
 	result := text
+	//fmt.Printf("subQuotes result='%v'\n", result)
 	for _, qs := range quotes.QuoteSubs {
+		//fmt.Printf("subQuotes rx='%v' on '%v' (%v)\n", qs.Rx(), result, qs.Constrained())
 		match := quotes.NewQuoteSubRxres(result, qs)
 		result = transformQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
@@ -515,9 +517,13 @@ func subQuotes(text string) string {
  scope  - The scope of the quoting (constrained or unconstrained)
 returns The rendered text for the quoted text region */
 func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
-	res := ""
+	res := match.Text()
+	if match.HasAnyMatch() {
+		res = ""
+	}
 	suffix := ""
 	for match.HasNext() {
+		//fmt.Printf("transformQuotedText hasNext for '%v'\n", match)
 		res = res + match.Prefix()
 		unescaped_attrs := ""
 		if match.IsEscaped() {
@@ -535,15 +541,17 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 				attributes := parseQuotedTextAttributes(match.Attribute())
 				id := attributes["id"]
 				delete(attributes, "id")
-				res = res + match.PrefixQuote() + id.(string) // TODO + #{Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render})
+				fmt.Sprintf("'%v'", id)
+				res = res + match.PrefixQuote() // TODO + #Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render
 			} else {
-				res = res + unescaped_attrs // TODO + #{Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render})
+				res = res + unescaped_attrs // TODO + Inline.new(self, :quoted, match[3], :type => type).render
 			}
 		} else {
 			attributes := parseQuotedTextAttributes(match.Attribute())
 			id := attributes["id"]
 			delete(attributes, "id")
-			res = res + id.(string) // TODO + #{Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render})
+			fmt.Sprintf("'%v'", id)
+			res = res // TODO + Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render
 		}
 		suffix = match.Suffix()
 		match.Next()

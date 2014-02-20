@@ -79,6 +79,11 @@ func NewReresLAGroup(s string, r *regexp.Regexp) *Reres {
 	return res
 }
 
+/* full initial text on which the regex was applied */
+func (rr *Reres) Text() string {
+	return rr.s
+}
+
 /* Check if there is any match */
 func (rr *Reres) HasAnyMatch() bool {
 	return len(rr.matches) > 0
