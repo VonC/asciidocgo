@@ -161,6 +161,11 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("If no math literal substitution detected, return text unchanged", func() {
 			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")
 		})
+
+		Convey("If no math literal substitution detected, return text unchanged", func() {
+			So(s.ApplySubs("asciimath:[x <> 0]", subArray{subValue.specialcharacters}), ShouldEqual, "asciimath:[x &lt;&gt; 0]")
+		})
+
 		testsub = ""
 	})
 	Convey("A substitutors can be substitute special characters", t, func() {
