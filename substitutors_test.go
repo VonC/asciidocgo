@@ -225,12 +225,20 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		s.document = &testSubstDocumentAble{s}
 		opts := &OptionsParseAttributes{}
-		Convey("Parsing no attributes return empty map", func() {
+		Convey("Parsing no attributes returns empty map", func() {
 			So(len(s.parseAttributes("", opts)), ShouldEqual, 0)
 		})
 		Convey("Parsing attributes with SubInput means calling document SubAttributes", func() {
 			opts.subInput = true
 			So(len(s.parseAttributes("test", opts)), ShouldEqual, 0)
+		})
+	})
+	Convey("A substitutors can substitute attribute references", t, func() {
+		s := &substitutors{}
+		s.document = &testSubstDocumentAble{s}
+		opts := &OptionsParseAttributes{}
+		Convey("Substitute empty attribute references returns empty empty string", func() {
+			So(s.SubAttributes("", opts), ShouldEqual, "")
 		})
 	})
 }

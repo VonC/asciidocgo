@@ -527,6 +527,9 @@ returns The String text with the attribute references replaced with attribute va
 NOTE it's necessary to perform this substitution line-by-line
 so that a missing key doesn't wipe out the whole block of data */
 func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) string {
+	if data == "" {
+		return data
+	}
 	return ""
 }
 
