@@ -288,4 +288,53 @@ func TestRegexps(t *testing.T) {
 		So(r.Group(1), ShouldEqual, "bb")
 		So(r.Suffix(), ShouldEqual, "")
 	})
+
+	Convey("Regexps can encapsulate AttributeReferenceRx results in a struct AttributeReferenceRxres", t, func() {
+		r := NewAttributeReferenceRxres(`
+			{foo}
+  {counter:pcount:1}
+  {set:foo:bar}
+  {set:name!}
+  a\{counter:pcount:1}
+  {set:foo:bar\}b
+  a\{set:name!\}b`)
+
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 7)
+
+		So(r.PreEscaped(), ShouldBeFalse)
+		So(r.Prefix(), ShouldEqual, "")
+		So(r.Reference(), ShouldEqual, "foo")
+		So(r.PostEscaped(), ShouldBeFalse)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeFalse)
+		So(r.Prefix(), ShouldEqual, "counter")
+		So(r.Reference(), ShouldEqual, "counter:pcount:1")
+		So(r.PostEscaped(), ShouldBeFalse)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeFalse)
+		So(r.Prefix(), ShouldEqual, "set")
+		So(r.Reference(), ShouldEqual, "set:foo:bar")
+		So(r.PostEscaped(), ShouldBeFalse)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeFalse)
+		So(r.Prefix(), ShouldEqual, "set")
+		So(r.Reference(), ShouldEqual, "set:name!")
+		So(r.PostEscaped(), ShouldBeFalse)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeTrue)
+		So(r.Prefix(), ShouldEqual, "counter")
+		So(r.Reference(), ShouldEqual, "counter:pcount:1")
+		So(r.PostEscaped(), ShouldBeFalse)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeFalse)
+		So(r.Prefix(), ShouldEqual, "set")
+		So(r.Reference(), ShouldEqual, "set:foo:bar")
+		So(r.PostEscaped(), ShouldBeTrue)
+		r.Next()
+		So(r.PreEscaped(), ShouldBeTrue)
+		So(r.Prefix(), ShouldEqual, "set")
+		So(r.Reference(), ShouldEqual, "set:name!")
+		So(r.PostEscaped(), ShouldBeTrue)
+	})
 }

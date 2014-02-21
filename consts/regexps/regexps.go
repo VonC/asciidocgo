@@ -164,6 +164,45 @@ func (rr *Reres) Group(i int) string {
 	return res
 }
 
+/* Matches an inline attribute reference.
+Examples
+  {foo}
+  {counter:pcount:1}
+  {set:foo:bar}
+  {set:name!}
+
+   AttributeReferenceRx = /(\\)?\{((set|counter2?):.+?|\w+(?:[\-]\w+)*)(\\)?\}/ */
+var AttributeReferenceRx, _ = regexp.Compile(`(\\)?\{((set|counter2?):.+?|\w+(?:[\-]\w+)*)(\\)?\}`)
+
+type AttributeReferenceRxres struct {
+	*Reres
+}
+
+/* Return true if first group is non empty and include an '\' */
+func (arr *AttributeReferenceRxres) PreEscaped() bool {
+	return arr.Group(1) == "\\"
+}
+
+/* Return true if last group is non empty and include an '\' */
+func (arr *AttributeReferenceRxres) PostEscaped() bool {
+	return arr.Group(4) == "\\"
+}
+
+/* Return prefix of the reference, as 'counter' in '{counter:pcount:1}' */
+func (arr *AttributeReferenceRxres) Prefix() string {
+	return arr.Group(3)
+}
+
+/* Return prefix of the reference, as in '{counter:pcount:1}' */
+func (arr *AttributeReferenceRxres) Reference() string {
+	return arr.Group(2)
+}
+
+/* Results for AttributeReferenceRx */
+func NewAttributeReferenceRxres(s string) *AttributeReferenceRxres {
+	return &AttributeReferenceRxres{NewReres(s, AttributeReferenceRx)}
+}
+
 /* The following pattern, which appears frequently, captures the contents
 between square brackets, ignoring escaped closing brackets
 (closing brackets prefixed with a backslash '\' character)
