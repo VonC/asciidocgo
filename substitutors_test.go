@@ -240,5 +240,8 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute empty attribute references returns empty empty string", func() {
 			So(s.SubAttributes("", opts), ShouldEqual, "")
 		})
+		Convey("Substitute attribute references detect references '{'", func() {
+			So(s.SubAttributes("a {test1} b\nc {test2} d", opts), ShouldEqual, "")
+		})
 	})
 }

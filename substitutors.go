@@ -530,6 +530,12 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 	if data == "" {
 		return data
 	}
+	lines := strings.Split(data, "\n")
+	for i, line := range lines {
+		if strings.Contains(line, "{") {
+			fmt.Sprintf("%d", i)
+		}
+	}
 	return ""
 }
 
