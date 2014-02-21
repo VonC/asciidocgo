@@ -189,7 +189,7 @@ func (arr *AttributeReferenceRxres) PostEscaped() bool {
 }
 
 /* Return prefix of the reference, as 'counter' in '{counter:pcount:1}' */
-func (arr *AttributeReferenceRxres) Prefix() string {
+func (arr *AttributeReferenceRxres) PrefixRef() string {
 	return arr.Group(3)
 }
 
