@@ -46,6 +46,7 @@ func TestRegexps(t *testing.T) {
 
 		Convey("Regexps can create a Reres struct", func() {
 			So(r, ShouldNotBeNil)
+			So(r.Text(), ShouldEqual, "xxxabbbbcyyy111aabbbcc222\\ac33")
 		})
 		Convey("Regexps can test for matches", func() {
 			So(r.HasAnyMatch(), ShouldBeTrue)
