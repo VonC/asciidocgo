@@ -531,12 +531,33 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 		return data
 	}
 	lines := strings.Split(data, "\n")
+	res := ""
 	for i, line := range lines {
+		lineres := line
 		if strings.Contains(line, "{") {
-			fmt.Sprintf("%d", i)
+			reres := regexps.NewAttributeReferenceRxres(line)
+			if !reres.HasAnyMatch() {
+				if i > 0 {
+					res = res + "\n"
+				}
+				res = res + line
+				continue
+			}
+			lineres = ""
+			suffix := ""
+			for reres.HasNext() {
+				lineres = lineres + reres.Prefix()
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			lineres = lineres + suffix
 		}
+		if i > 0 {
+			res = res + "\n"
+		}
+		res = res + lineres
 	}
-	return ""
+	return res
 }
 
 /* Internal: Transform (render) a quoted text region

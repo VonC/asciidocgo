@@ -241,7 +241,7 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubAttributes("", opts), ShouldEqual, "")
 		})
 		Convey("Substitute attribute references detect references '{'", func() {
-			So(s.SubAttributes("a {test1} b\nc {test2} d", opts), ShouldEqual, "")
+			So(s.SubAttributes("a {test1} b\nc {test2} d\n{noref", opts), ShouldEqual, "a  b\nc  d\n{noref")
 		})
 	})
 }
