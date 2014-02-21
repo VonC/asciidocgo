@@ -7,6 +7,7 @@ import (
 )
 
 type testSubstDocumentAble struct {
+	s *substitutors
 }
 
 func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
@@ -14,6 +15,12 @@ func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, in
 }
 func (tsd *testSubstDocumentAble) Basebackend(base interface{}) bool {
 	return true
+}
+func (tsd *testSubstDocumentAble) SubAttributes(data string, opts *OptionsParseAttributes) string {
+	if tsd.s != nil {
+		return tsd.s.SubAttributes(data, opts)
+	}
+	return ""
 }
 
 func TestSubstitutor(t *testing.T) {
@@ -213,5 +220,17 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 
+	})
+	Convey("A substitutors can parse attributes", t, func() {
+		s := &substitutors{}
+		s.document = &testSubstDocumentAble{s}
+		opts := &OptionsParseAttributes{}
+		Convey("Parsing no attributes return empty map", func() {
+			So(len(s.parseAttributes("", opts)), ShouldEqual, 0)
+		})
+		Convey("Parsing attributes with SubInput means calling document SubAttributes", func() {
+			opts.subInput = true
+			So(len(s.parseAttributes("test", opts)), ShouldEqual, 0)
+		})
 	})
 }

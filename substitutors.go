@@ -219,6 +219,7 @@ func (sa subArray) include(s *subsEnum) bool {
 type SubstDocumentable interface {
 	Attr(name string, defaultValue interface{}, inherit bool) interface{}
 	Basebackend(base interface{}) bool
+	SubAttributes(data string, opts *OptionsParseAttributes) string
 }
 
 type passthrough struct {
@@ -392,7 +393,7 @@ PassInlineLiteralRx:
 
 			attributes := make(map[string]interface{})
 			if unescaped_attrs != "" && reres.Attributes() != "" {
-				attributes = parseAttributes(reres.Attributes())
+				attributes = s.parseAttributes(reres.Attributes(), &OptionsParseAttributes{})
 			}
 
 			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
@@ -517,6 +518,18 @@ func subQuotes(text string) string {
 	return result
 }
 
+/* Public: Substitute attribute references
+Attribute references are in the format +{name}+.
+If an attribute referenced in the line is missing, the line is dropped.
+# text     - The String text to process
+returns The String text with the attribute references replaced with attribute values
+--
+NOTE it's necessary to perform this substitution line-by-line
+so that a missing key doesn't wipe out the whole block of data */
+func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) string {
+	return ""
+}
+
 /* Internal: Transform (render) a quoted text region
  match  - The MatchData for the quoted text region
  type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
@@ -566,14 +579,23 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 	return res
 }
 
+type OptionsParseAttributes struct {
+	subInput bool
+}
+
+func (opa *OptionsParseAttributes) SubInput() bool { return opa.subInput }
+
 /* Parse the attributes in the attribute line
  attrline  - A String of unprocessed attributes (key/value pairs)
  posattrs  - The keys for positional attributes
 returns an empty Hash if attrline is empty, otherwise a Hash of parsed attributes */
-func parseAttributes(attrline string) map[string]interface{} {
+func (s *substitutors) parseAttributes(attrline string, opts *OptionsParseAttributes) map[string]interface{} {
 	attributes := make(map[string]interface{})
 	if attrline == "" {
 		return attributes
+	}
+	if opts.SubInput() && s.Document() != nil {
+		attrline = s.Document().SubAttributes(attrline, opts)
 	}
 	// TODO implement parseAttributes posattrs and opt map[string]interface{}
 	return attributes
