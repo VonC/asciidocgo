@@ -547,6 +547,12 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 			suffix := ""
 			for reres.HasNext() {
 				lineres = lineres + reres.Prefix()
+				if reres.PreEscaped() || reres.PostEscaped() {
+					lineres = lineres + reres.Reference()
+					suffix = reres.Suffix()
+					reres.Next()
+					continue
+				}
 				suffix = reres.Suffix()
 				reres.Next()
 			}

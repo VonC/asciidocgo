@@ -243,5 +243,8 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute attribute references detect references '{'", func() {
 			So(s.SubAttributes("a {test1} b\nc {test2} d\n{noref", opts), ShouldEqual, "a  b\nc  d\n{noref")
 		})
+		Convey("Pre or Post escaped reference returns only the reference", func() {
+			So(s.SubAttributes("a \\{test1} b\nc {test2\\} d\n{noref", opts), ShouldEqual, "a test1 b\nc test2 d\n{noref")
+		})
 	})
 }
