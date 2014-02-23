@@ -553,6 +553,19 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 					reres.Next()
 					continue
 				}
+				if reres.Directive() != "" {
+					directive := reres.Directive()
+					offset := len(directive) + 1
+					expr := reres.Reference()[offset:]
+					switch directive {
+					case "set":
+						args := strings.Split(expr, ":")
+						/*_,*/ value := "" // TODO Parser.store_attribute(args[0], args[1] || '', @document)
+						if value == "" {
+
+						}
+					}
+				}
 				suffix = reres.Suffix()
 				reres.Next()
 			}
