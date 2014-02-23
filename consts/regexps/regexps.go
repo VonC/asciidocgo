@@ -188,8 +188,8 @@ func (arr *AttributeReferenceRxres) PostEscaped() bool {
 	return arr.Group(4) == "\\"
 }
 
-/* Return prefix of the reference, as 'counter' in '{counter:pcount:1}' */
-func (arr *AttributeReferenceRxres) PrefixRef() string {
+/* Return directive of the reference, as 'counter' in '{counter:pcount:1}' */
+func (arr *AttributeReferenceRxres) Directive() string {
 	return arr.Group(3)
 }
 
