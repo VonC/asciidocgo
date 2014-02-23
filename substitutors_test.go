@@ -11,6 +11,9 @@ type testSubstDocumentAble struct {
 }
 
 func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
+	if name == "attribute-undefined" {
+		return "drop-line"
+	}
 	return "mathtest"
 }
 func (tsd *testSubstDocumentAble) Basebackend(base interface{}) bool {
@@ -245,6 +248,14 @@ the text %s5%s should be passed through as %s6%s text
 		})
 		Convey("Pre or Post escaped reference returns only the reference", func() {
 			So(s.SubAttributes("a \\{test1} b\nc {test2\\} d\n{noref", opts), ShouldEqual, "a test1 b\nc test2 d\n{noref")
+		})
+		Convey("Reference with set directive drops the line if Parser.store_attribute returns empty", func() {
+			So(s.SubAttributes("a {set:foo:bar} b", opts), ShouldEqual, "")
+			s.document = nil
+		})
+		Convey("Reference with set directive and no document don't drops the line", func() {
+			s.document = nil
+			So(s.SubAttributes("a {set:foo:bar} b", opts), ShouldEqual, "a  b")
 		})
 	})
 }

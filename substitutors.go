@@ -5,8 +5,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/VonC/asciidocgo/consts/compliance"
 	"github.com/VonC/asciidocgo/consts/regexps"
 	"github.com/VonC/asciidocgo/consts/regexps/quotes"
+	"github.com/VonC/asciidocgo/debug"
 )
 
 type _sub string
@@ -533,6 +535,8 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 	lines := strings.Split(data, "\n")
 	res := ""
 	for i, line := range lines {
+		reject := false
+		reject_if_empty := false
 		lineres := line
 		if strings.Contains(line, "{") {
 			reres := regexps.NewAttributeReferenceRxres(line)
@@ -560,21 +564,35 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 					switch directive {
 					case "set":
 						args := strings.Split(expr, ":")
+						fmt.Sprintf("%v", args)
 						/*_,*/ value := "" // TODO Parser.store_attribute(args[0], args[1] || '', @document)
 						if value == "" {
-
+							//fmt.Printf("\ns.Document='%v'\n", s.Document())
+							//fmt.Printf("s.Document attr='%v'\n", s.Document().Attr("attribute-undefined", compliance.AttributeUndefined(), false))
+							if s.Document() != nil && s.Document().Attr("attribute-undefined", compliance.AttributeUndefined(), false).(string) == "drop-line" {
+								debug.Debug(fmt.Sprintf("Undefining attribute: %v, line marked for removal", expr)) //  #{key} TOFIX what is key here?
+								reject = true
+								lineres = ""
+								goto endline
+							}
 						}
+						reject_if_empty = true
+					case "counter'", "counter2":
 					}
+
 				}
 				suffix = reres.Suffix()
 				reres.Next()
 			}
 			lineres = lineres + suffix
 		}
-		if i > 0 {
-			res = res + "\n"
+	endline:
+		if !reject && (lineres != "" || !reject_if_empty) {
+			if i > 0 {
+				res = res + "\n"
+			}
+			res = res + lineres
 		}
-		res = res + lineres
 	}
 	return res
 }
