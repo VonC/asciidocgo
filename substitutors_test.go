@@ -297,5 +297,10 @@ the text %s5%s should be passed through as %s6%s text
 			s.document = testDocument
 			So(s.SubAttributes("a {test_attr_value} b", opts), ShouldEqual, "a mathtest b")
 		})
+		Convey("Reference with intrinsec attributes returns translated string", func() {
+			s.document = testDocument
+			So(s.SubAttributes("a {caret} b {quot} c {ldquo} d", opts), ShouldEqual, "a ^ b \" c "+string(rune(8220))+" d")
+			So(s.SubAttributes("a{space}b {two-colons} c {two-semicolons}ddd", opts), ShouldEqual, "a b :: c ;;ddd")
+		})
 	})
 }

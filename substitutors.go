@@ -524,6 +524,38 @@ func subQuotes(text string) string {
 	return result
 }
 
+var intrinsicAttributes = map[string]rune{
+	"startsb":        '[',
+	"endsb":          ']',
+	"vbar":           '|',
+	"caret":          '^',
+	"asterisk":       '*',
+	"tilde":          '~',
+	"plus":           43,
+	"apostrophe":     '\'',
+	"backslash":      '\\',
+	"backtick":       '`',
+	"empty":          0,
+	"sp":             ' ',
+	"space":          ' ',
+	"two-colons":     ':',
+	"two-semicolons": ';',
+	"nbsp":           160,
+	"deg":            176,
+	"zwsp":           8203,
+	"quot":           34,
+	"apos":           39,
+	"lsquo":          8216,
+	"rsquo":          8217,
+	"ldquo":          8220,
+	"rdquo":          8221,
+	"wj":             8288,
+	"brvbar":         166,
+	"amp":            '&',
+	"lt":             '<',
+	"gt":             '>',
+}
+
 /* Public: Substitute attribute references
 Attribute references are in the format +{name}+.
 If an attribute referenced in the line is missing, the line is dropped.
@@ -608,6 +640,12 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 
 				} else if key := strings.ToLower(reres.Reference()); s.Document() != nil && s.Document().HasAttr(key, nil, false) {
 					lineres = lineres + s.Document().Attr(key, nil, false).(string)
+				} else if val, ok := intrinsicAttributes[key]; ok {
+					val_string := string(val)
+					if key == "two-colons" || key == "two-semicolons" {
+						val_string = val_string + val_string
+					}
+					lineres = lineres + val_string
 				}
 				suffix = reres.Suffix()
 				reres.Next()
