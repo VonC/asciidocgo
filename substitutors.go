@@ -646,6 +646,20 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 						val_string = val_string + val_string
 					}
 					lineres = lineres + val_string
+				} else {
+					optAttributeMissing := ""
+					if opts != nil {
+						optAttributeMissing = opts.AttributeMissing()
+					}
+					if optAttributeMissing == "" && s.Document() != nil {
+						optAttributeMissing = s.Document().Attr("attribute-missing", compliance.AttributeMissing(), false).(string)
+					}
+					switch optAttributeMissing {
+					case "skip":
+						lineres = lineres + reres.FullMatch()
+					case "drop-line":
+						debug.Debug(fmt.Sprintf("Missing attribute: '%v', line marked for removal", key))
+					}
 				}
 				suffix = reres.Suffix()
 				reres.Next()
@@ -713,10 +727,12 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 }
 
 type OptionsParseAttributes struct {
-	subInput bool
+	subInput          bool
+	attribute_missing string
 }
 
-func (opa *OptionsParseAttributes) SubInput() bool { return opa.subInput }
+func (opa *OptionsParseAttributes) SubInput() bool           { return opa.subInput }
+func (opa *OptionsParseAttributes) AttributeMissing() string { return opa.attribute_missing }
 
 /* Parse the attributes in the attribute line
  attrline  - A String of unprocessed attributes (key/value pairs)

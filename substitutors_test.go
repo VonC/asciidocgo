@@ -15,6 +15,9 @@ func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, in
 	if name == "attribute-undefined" {
 		return "drop-line"
 	}
+	if name == "attribute-missing" {
+		return "skip"
+	}
 	return "mathtest"
 }
 func (tsd *testSubstDocumentAble) Basebackend(base interface{}) bool {
@@ -257,7 +260,7 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubAttributes("", opts), ShouldEqual, "")
 		})
 		Convey("Substitute attribute references detect references '{'", func() {
-			So(s.SubAttributes("a {test1} b\nc {test2} d\n{noref", opts), ShouldEqual, "a  b\nc  d\n{noref")
+			So(s.SubAttributes("a {test1} b\nc {test2} d\n{noref", opts), ShouldEqual, "a {test1} b\nc {test2} d\n{noref")
 		})
 		Convey("Pre or Post escaped reference returns only the reference", func() {
 			So(s.SubAttributes("a \\{test1} b\nc {test2\\} d\n{noref", opts), ShouldEqual, "a test1 b\nc test2 d\n{noref")
@@ -301,6 +304,10 @@ the text %s5%s should be passed through as %s6%s text
 			s.document = testDocument
 			So(s.SubAttributes("a {caret} b {quot} c {ldquo} d", opts), ShouldEqual, "a ^ b \" c "+string(rune(8220))+" d")
 			So(s.SubAttributes("a{space}b {two-colons} c {two-semicolons}ddd", opts), ShouldEqual, "a b :: c ;;ddd")
+		})
+		Convey("Reference with custom value look for attribute-missing attribute", func() {
+			s.document = testDocument // meaning "skip"
+			So(s.SubAttributes("a {test} b", opts), ShouldEqual, "a {test} b")
 		})
 	})
 }
