@@ -292,8 +292,9 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 			text = subSpecialCharacters(text)
 		case "quotes":
 			text = subQuotes(text)
+		case "attributes":
+			text = s.SubAttributes(text, nil)
 			/*
-				case "attributes":
 				case "replacements":
 				case "macros":
 				case "highlight":

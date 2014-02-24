@@ -312,4 +312,14 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubAttributes("a {test} b2", opts), ShouldEqual, "a  b2")
 		})
 	})
+	Convey("A substitutors can Extract Reference attributes", t, func() {
+		s := &substitutors{}
+		testDocument := &testSubstDocumentAble{s}
+		s.document = testDocument
+		testsub = "test_ApplySubs_applyAllsubs"
+		Convey("reference counter attribute", func() {
+			So(s.ApplySubs("a1 {counter:aaa:2} b1", subArray{subValue.attributes}), ShouldEqual, "a1 3 b1")
+			testsub = ""
+		})
+	})
 }
