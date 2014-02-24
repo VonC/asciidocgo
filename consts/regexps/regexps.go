@@ -193,7 +193,7 @@ func (arr *AttributeReferenceRxres) Directive() string {
 	return arr.Group(3)
 }
 
-/* Return prefix of the reference, as in '{counter:pcount:1}' */
+/* Return reference, as in 'counter:pcount:1' in {counter:pcount:1}' */
 func (arr *AttributeReferenceRxres) Reference() string {
 	return arr.Group(2)
 }
