@@ -2,6 +2,7 @@ package asciidocgo
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -24,6 +25,11 @@ func (tsd *testSubstDocumentAble) SubAttributes(data string, opts *OptionsParseA
 		return tsd.s.SubAttributes(data, opts)
 	}
 	return ""
+}
+
+func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
+	seed = seed + 1
+	return strconv.Itoa(seed)
 }
 
 func TestSubstitutor(t *testing.T) {
@@ -238,7 +244,8 @@ the text %s5%s should be passed through as %s6%s text
 	})
 	Convey("A substitutors can substitute attribute references", t, func() {
 		s := &substitutors{}
-		s.document = &testSubstDocumentAble{s}
+		testDocument := &testSubstDocumentAble{s}
+		s.document = testDocument
 		opts := &OptionsParseAttributes{}
 		Convey("Substitute empty attribute references returns empty empty string", func() {
 			So(s.SubAttributes("", opts), ShouldEqual, "")
@@ -256,6 +263,29 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Reference with set directive and no document don't drops the line", func() {
 			s.document = nil
 			So(s.SubAttributes("a {set:foo:bar} b", opts), ShouldEqual, "a  b")
+		})
+		Convey("Reference with counter directive returns incremented counter", func() {
+			s.document = testDocument
+			So(s.SubAttributes("a {counter:aaa:2} b", opts), ShouldEqual, "a 3 b")
+		})
+		Convey("Reference with non-integer counter directive panic", func() {
+			s.document = testDocument
+			recovered := false
+			defer func() {
+				recover()
+				recovered = true
+				So(recovered, ShouldBeTrue)
+			}()
+			s.SubAttributes("a {counter:aaa:bbb} b", opts)
+		})
+		Convey("Reference with unknown directive warns and returns the all reference", func() {
+			s.document = testDocument
+			So(s.SubAttributes("a {counter:test_default} b", opts), ShouldEqual, "a {counter:test_default} b")
+		})
+
+		Convey("Reference with counter2 directive skip the counter", func() {
+			s.document = testDocument
+			So(s.SubAttributes("a {counter2:aaa:3} b", opts), ShouldEqual, "a  b")
 		})
 	})
 }

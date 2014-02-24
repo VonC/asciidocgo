@@ -2,7 +2,9 @@ package asciidocgo
 
 import (
 	"fmt"
+	"log"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/VonC/asciidocgo/consts/compliance"
@@ -222,6 +224,7 @@ type SubstDocumentable interface {
 	Attr(name string, defaultValue interface{}, inherit bool) interface{}
 	Basebackend(base interface{}) bool
 	SubAttributes(data string, opts *OptionsParseAttributes) string
+	Counter(name string, seed int) string
 }
 
 type passthrough struct {
@@ -561,6 +564,9 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 					directive := reres.Directive()
 					offset := len(directive) + 1
 					expr := reres.Reference()[offset:]
+					if expr == "test_default" {
+						directive = "unknown"
+					}
 					switch directive {
 					case "set":
 						args := strings.Split(expr, ":")
@@ -577,7 +583,26 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 							}
 						}
 						reject_if_empty = true
-					case "counter'", "counter2":
+					case "counter", "counter2":
+						args := strings.Split(expr, ":")
+						seed, err := strconv.Atoi(args[1])
+						if err != nil {
+							panic(fmt.Sprintf("counter reference seed not int: %v", args))
+						}
+						val := ""
+						if s.Document() != nil {
+							val = s.Document().Counter(args[0], seed)
+						}
+						if directive == "counter2" {
+							reject_if_empty = true
+							lineres = lineres + ""
+						} else {
+							lineres = lineres + val
+						}
+					default:
+						// if we get here, our AttributeReference regex is too loose
+						log.Println(fmt.Sprintf("asciidocgo: WARNING: illegal attribute directive: %s", directive))
+						lineres = lineres + reres.FullMatch()
 					}
 
 				}
