@@ -308,6 +308,8 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Reference with custom value look for attribute-missing attribute", func() {
 			s.document = testDocument // meaning "skip"
 			So(s.SubAttributes("a {test} b", opts), ShouldEqual, "a {test} b")
+			opts.attribute_missing = "drop-line"
+			So(s.SubAttributes("a {test} b2", opts), ShouldEqual, "a  b2")
 		})
 	})
 }
