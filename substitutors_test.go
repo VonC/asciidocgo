@@ -322,4 +322,13 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 	})
+
+	Convey("A substitutors can Extract replaced text", t, func() {
+		s := &substitutors{}
+		testsub = "test_ApplySubs_applyAllsubs"
+		Convey("(C) copyright sign is replaced", func() {
+			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}), ShouldEqual, "text with (C) copyright") // TOFIX
+			testsub = ""
+		})
+	})
 }

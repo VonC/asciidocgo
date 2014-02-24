@@ -294,8 +294,9 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 			text = subQuotes(text)
 		case "attributes":
 			text = s.SubAttributes(text, nil)
+		case "replacements":
+			text = subReplacements(text)
 			/*
-				case "replacements":
 				case "macros":
 				case "highlight":
 				case "callouts":
@@ -522,6 +523,14 @@ func subQuotes(text string) string {
 		match := quotes.NewQuoteSubRxres(result, qs)
 		result = transformQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
+	return result
+}
+
+/* Substitute replacement characters (e.g., copyright, trademark, etc)
+ text - The String text to process
+returns The String text with the replacement characters substituted */
+func subReplacements(text string) string {
+	result := text
 	return result
 }
 
