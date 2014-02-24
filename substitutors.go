@@ -225,6 +225,7 @@ type SubstDocumentable interface {
 	Basebackend(base interface{}) bool
 	SubAttributes(data string, opts *OptionsParseAttributes) string
 	Counter(name string, seed int) string
+	HasAttr(name string, expect interface{}, inherit bool) bool
 }
 
 type passthrough struct {
@@ -605,6 +606,8 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 						lineres = lineres + reres.FullMatch()
 					}
 
+				} else if key := strings.ToLower(reres.Reference()); s.Document() != nil && s.Document().HasAttr(key, nil, false) {
+					lineres = lineres + s.Document().Attr(key, nil, false).(string)
 				}
 				suffix = reres.Suffix()
 				reres.Next()

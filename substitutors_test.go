@@ -26,6 +26,12 @@ func (tsd *testSubstDocumentAble) SubAttributes(data string, opts *OptionsParseA
 	}
 	return ""
 }
+func (tsd *testSubstDocumentAble) HasAttr(name string, expect interface{}, inherit bool) bool {
+	if name == "test_attr_value" {
+		return true
+	}
+	return false
+}
 
 func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 	seed = seed + 1
@@ -286,6 +292,10 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Reference with counter2 directive skip the counter", func() {
 			s.document = testDocument
 			So(s.SubAttributes("a {counter2:aaa:3} b", opts), ShouldEqual, "a  b")
+		})
+		Convey("Reference with no directive look for key", func() {
+			s.document = testDocument
+			So(s.SubAttributes("a {test_attr_value} b", opts), ShouldEqual, "a mathtest b")
 		})
 	})
 }
