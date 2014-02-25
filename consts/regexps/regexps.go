@@ -356,17 +356,19 @@ var UriSniffRx, _ = regexp.Compile(fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_AL
 var EscapedBracketRx, _ = regexp.Compile(`\\\]`)
 
 type Replacement struct {
-	rx       *regexp.Regexp
-	leading  bool
-	bounding bool
-	repl     string
+	rx                *regexp.Regexp
+	leading           bool
+	bounding          bool
+	repl              string
+	endsWithLookAhead bool
 }
 
-func (r *Replacement) Rx() *regexp.Regexp { return r.rx }
-func (r *Replacement) Leading() bool      { return r.leading }
-func (r *Replacement) Bounding() bool     { return r.bounding }
-func (r *Replacement) None() bool         { return !r.leading && !r.bounding }
-func (r *Replacement) Repl() string       { return r.repl }
+func (r *Replacement) Rx() *regexp.Regexp      { return r.rx }
+func (r *Replacement) Leading() bool           { return r.leading }
+func (r *Replacement) Bounding() bool          { return r.bounding }
+func (r *Replacement) None() bool              { return !r.leading && !r.bounding }
+func (r *Replacement) Repl() string            { return r.repl }
+func (r *Replacement) EndsWithLookAhead() bool { return r.endsWithLookAhead }
 
 var Replacements []*Replacement = iniReplacements()
 
@@ -382,41 +384,41 @@ func iniReplacements() []*Replacement {
 	var rx *regexp.Regexp = nil
 	// (C)
 	rx, _ = regexp.Compile(`\\?\(C\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(169)})
+	res = append(res, &Replacement{rx, false, false, rtos(169), false})
 	// (R)
 	rx, _ = regexp.Compile(`\\?\(R\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(174)})
+	res = append(res, &Replacement{rx, false, false, rtos(174), false})
 	// (TM)
 	rx, _ = regexp.Compile(`\\?\(TM\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(8482)})
+	res = append(res, &Replacement{rx, false, false, rtos(8482), false})
 	// foo -- bar
 	rx, _ = regexp.Compile(`(^|\n| |\\)--( |\n|$)`)
-	res = append(res, &Replacement{rx, false, false, rtos(8201, 8212, 8201)})
+	res = append(res, &Replacement{rx, false, false, rtos(8201, 8212, 8201), false})
 	// foo--bar
-	rx, _ = regexp.Compile(`(\w)\\?--(?:\w)`)
-	res = append(res, &Replacement{rx, true, false, rtos(8212)})
+	rx, _ = regexp.Compile(`(\w)\\?--(\w)`)
+	res = append(res, &Replacement{rx, true, false, rtos(8212), true})
 	// ellipsis
 	rx, _ = regexp.Compile(`\\?\.\.\.`)
-	res = append(res, &Replacement{rx, true, false, rtos(8230)})
+	res = append(res, &Replacement{rx, true, false, rtos(8230), false})
 	// apostrophe or a closing single quote (planned)
-	rx, _ = regexp.Compile(`([#{CC_ALPHA}])\\?'(?:$|[^'])`)
-	res = append(res, &Replacement{rx, true, false, rtos(8217)})
+	rx, _ = regexp.Compile(`([#{CC_ALPHA}])\\?'($|[^'])`)
+	res = append(res, &Replacement{rx, true, false, rtos(8217), true})
 	// an opening single quote (planned)
 	// #[/\B\\?'(?=[#{CC_ALPHA}])/, '&#8216;', :none],
 	// right arrow ->
 	rx, _ = regexp.Compile(`\\?-&gt;`)
-	res = append(res, &Replacement{rx, false, false, rtos(8594)})
+	res = append(res, &Replacement{rx, false, false, rtos(8594), false})
 	// right double arrow =>
 	rx, _ = regexp.Compile(`\\?=&gt;`)
-	res = append(res, &Replacement{rx, false, false, rtos(8658)})
+	res = append(res, &Replacement{rx, false, false, rtos(8658), false})
 	// left arrow <-
 	rx, _ = regexp.Compile(`\\?&lt;-`)
-	res = append(res, &Replacement{rx, false, false, rtos(8592)})
+	res = append(res, &Replacement{rx, false, false, rtos(8592), false})
 	// right left arrow <=
 	rx, _ = regexp.Compile(`\\?&lt;=`)
-	res = append(res, &Replacement{rx, false, false, rtos(8656)})
+	res = append(res, &Replacement{rx, false, false, rtos(8656), false})
 	// restore entities
 	rx, _ = regexp.Compile(`\\?(&)amp;((?:[a-zA-Z]+|#\d{2,5}|#x[a-fA-F0-9]{2,4});)`)
-	res = append(res, &Replacement{rx, false, true, ""})
+	res = append(res, &Replacement{rx, false, true, "", false})
 	return res
 }

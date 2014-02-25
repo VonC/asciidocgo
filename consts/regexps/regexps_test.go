@@ -1,6 +1,7 @@
 package regexps
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -336,5 +337,14 @@ func TestRegexps(t *testing.T) {
 		So(r.Directive(), ShouldEqual, "set")
 		So(r.Reference(), ShouldEqual, "set:name!")
 		So(r.PostEscaped(), ShouldBeTrue)
+	})
+
+	Convey("Regexps can replace special html characters", t, func() {
+		text := "a -- b"
+		for _, repl := range Replacements {
+			text = repl.Rx().ReplaceAllString(text, repl.Repl())
+			fmt.Sprintf("%v %v %v %v", repl.Leading(), repl.Bounding(), repl.None(), repl.EndsWithLookAhead())
+		}
+		So(text, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
 	})
 }
