@@ -350,7 +350,7 @@ func TestRegexps(t *testing.T) {
 				text2 = reres.Prefix() + repl.Repl() + reres.Suffix()
 			}
 		}
-		So(text1, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
-		So(text2, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
+		So(text1, ShouldEqual, "a"+Rtos(8201, 8212, 8201)+"b")
+		So(text2, ShouldEqual, "a"+Rtos(8201, 8212, 8201)+"b")
 	})
 }

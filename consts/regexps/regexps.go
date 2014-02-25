@@ -378,7 +378,7 @@ func (r *Replacement) Reres(text string) *Reres {
 
 var Replacements []*Replacement = iniReplacements()
 
-func rtos(runes ...rune) string {
+func Rtos(runes ...rune) string {
 	res := ""
 	for _, r := range runes {
 		res = res + string(r)
@@ -390,39 +390,39 @@ func iniReplacements() []*Replacement {
 	var rx *regexp.Regexp = nil
 	// (C)
 	rx, _ = regexp.Compile(`\\?\(C\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(169), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(169), false})
 	// (R)
 	rx, _ = regexp.Compile(`\\?\(R\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(174), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(174), false})
 	// (TM)
 	rx, _ = regexp.Compile(`\\?\(TM\)`)
-	res = append(res, &Replacement{rx, false, false, rtos(8482), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8482), false})
 	// foo -- bar
 	rx, _ = regexp.Compile(`(^|\n| |\\)--( |\n|$)`)
-	res = append(res, &Replacement{rx, false, false, rtos(8201, 8212, 8201), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8201, 8212, 8201), false})
 	// foo--bar
 	rx, _ = regexp.Compile(`(\w)\\?--(\w)`)
-	res = append(res, &Replacement{rx, true, false, rtos(8212), true})
+	res = append(res, &Replacement{rx, true, false, Rtos(8212), true})
 	// ellipsis
 	rx, _ = regexp.Compile(`\\?\.\.\.`)
-	res = append(res, &Replacement{rx, true, false, rtos(8230), false})
+	res = append(res, &Replacement{rx, true, false, Rtos(8230), false})
 	// apostrophe or a closing single quote (planned)
 	rx, _ = regexp.Compile(`([#{CC_ALPHA}])\\?'($|[^'])`)
-	res = append(res, &Replacement{rx, true, false, rtos(8217), true})
+	res = append(res, &Replacement{rx, true, false, Rtos(8217), true})
 	// an opening single quote (planned)
 	// #[/\B\\?'(?=[#{CC_ALPHA}])/, '&#8216;', :none],
 	// right arrow ->
 	rx, _ = regexp.Compile(`\\?-&gt;`)
-	res = append(res, &Replacement{rx, false, false, rtos(8594), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8594), false})
 	// right double arrow =>
 	rx, _ = regexp.Compile(`\\?=&gt;`)
-	res = append(res, &Replacement{rx, false, false, rtos(8658), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8658), false})
 	// left arrow <-
 	rx, _ = regexp.Compile(`\\?&lt;-`)
-	res = append(res, &Replacement{rx, false, false, rtos(8592), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8592), false})
 	// right left arrow <=
 	rx, _ = regexp.Compile(`\\?&lt;=`)
-	res = append(res, &Replacement{rx, false, false, rtos(8656), false})
+	res = append(res, &Replacement{rx, false, false, Rtos(8656), false})
 	// restore entities
 	rx, _ = regexp.Compile(`\\?(&)amp;((?:[a-zA-Z]+|#\d{2,5}|#x[a-fA-F0-9]{2,4});)`)
 	res = append(res, &Replacement{rx, false, true, "", false})
