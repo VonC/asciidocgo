@@ -369,6 +369,12 @@ func (r *Replacement) Bounding() bool          { return r.bounding }
 func (r *Replacement) None() bool              { return !r.leading && !r.bounding }
 func (r *Replacement) Repl() string            { return r.repl }
 func (r *Replacement) EndsWithLookAhead() bool { return r.endsWithLookAhead }
+func (r *Replacement) Reres(text string) *Reres {
+	if r.EndsWithLookAhead() {
+		return NewReresLAGroup(text, r.Rx())
+	}
+	return NewReres(text, r.Rx())
+}
 
 var Replacements []*Replacement = iniReplacements()
 

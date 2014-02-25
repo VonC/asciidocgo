@@ -340,11 +340,17 @@ func TestRegexps(t *testing.T) {
 	})
 
 	Convey("Regexps can replace special html characters", t, func() {
-		text := "a -- b"
+		text1 := "a -- b"
+		text2 := text1
 		for _, repl := range Replacements {
-			text = repl.Rx().ReplaceAllString(text, repl.Repl())
+			text1 = repl.Rx().ReplaceAllString(text1, repl.Repl())
 			fmt.Sprintf("%v %v %v %v", repl.Leading(), repl.Bounding(), repl.None(), repl.EndsWithLookAhead())
+			reres := repl.Reres(text2)
+			if reres.HasAnyMatch() {
+				text2 = reres.Prefix() + repl.Repl() + reres.Suffix()
+			}
 		}
-		So(text, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
+		So(text1, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
+		So(text2, ShouldEqual, "a"+rtos(8201, 8212, 8201)+"b")
 	})
 }
