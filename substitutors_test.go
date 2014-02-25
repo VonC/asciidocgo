@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"testing"
+
+	"github.com/VonC/asciidocgo/consts/regexps"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -327,7 +329,23 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("(C) copyright sign is replaced", func() {
-			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}), ShouldEqual, "text with (C) copyright") // TOFIX
+			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(169)+" copyright")
+			So(s.ApplySubs(`text with \(C) copyright`, subArray{subValue.replacements}), ShouldEqual, "text with (C) copyright")
+
+			So(s.ApplySubs("text with (R) Registered Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(174)+" Registered Trademark")
+			So(s.ApplySubs(`text with \(R) Registered Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (R) Registered Trademark")
+
+			So(s.ApplySubs("text with (TM) Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8482)+" Trademark")
+			So(s.ApplySubs(`text with \(TM) Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (TM) Trademark")
+
+			So(s.ApplySubs("text with -- dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with"+regexps.Rtos(8201, 8212, 8201)+"dash-dash")
+			So(s.ApplySubs(`text with \-- dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with -- dash-dash")
+
+			So(s.ApplySubs("text with linked a--b--c dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with linked a"+regexps.Rtos(8212)+"b"+regexps.Rtos(8212)+"c dash-dash")
+			So(s.ApplySubs(`text with linked a\--b\--c dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with linked a--b--c dash-dash")
+
+			So(s.ApplySubs("text with ... ellipsis", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8230)+" ellipsis")
+			So(s.ApplySubs(`text with \... ellipsis`, subArray{subValue.replacements}), ShouldEqual, "text with ... ellipsis")
 			testsub = ""
 		})
 	})

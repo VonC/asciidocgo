@@ -401,7 +401,7 @@ func iniReplacements() []*Replacement {
 	rx, _ = regexp.Compile(`(^|\n| |\\)--( |\n|$)`)
 	res = append(res, &Replacement{rx, false, false, Rtos(8201, 8212, 8201), false})
 	// foo--bar
-	rx, _ = regexp.Compile(`(\w)\\?--(\w)`)
+	rx, _ = regexp.Compile(`(\w)(\\?--)(\w)`)
 	res = append(res, &Replacement{rx, true, false, Rtos(8212), true})
 	// ellipsis
 	rx, _ = regexp.Compile(`\\?\.\.\.`)

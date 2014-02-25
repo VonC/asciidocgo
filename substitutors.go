@@ -531,7 +531,37 @@ func subQuotes(text string) string {
 returns The String text with the replacement characters substituted */
 func subReplacements(text string) string {
 	result := text
+	for _, repl := range regexps.Replacements {
+		reres := repl.Reres(result)
+		if reres.HasAnyMatch() {
+			result = ""
+			suffix := ""
+			for reres.HasNext() {
+				result = result + reres.Prefix()
+				result = result + doReplacement(reres, repl)
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			result = result + suffix
+		}
+	}
 	return result
+}
+
+func doReplacement(reres *regexps.Reres, repl *regexps.Replacement) string {
+	res := ""
+	if reres.IsEscaped() {
+		res = reres.FullMatch()[1:]
+	} else if reres.HasGroup(2) && reres.Group(2)[0] == '\\' {
+		res = reres.Group(1) + reres.Group(2)[1:]
+	} else if repl.None() {
+		res = repl.Repl()
+	} else if repl.Leading() {
+		res = reres.Group(1) + repl.Repl()
+	} else if repl.Bounding() {
+		res = reres.Group(1) + repl.Repl() + reres.Group(2)
+	}
+	return res
 }
 
 var intrinsicAttributes = map[string]rune{
