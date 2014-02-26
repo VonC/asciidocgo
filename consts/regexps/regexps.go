@@ -407,7 +407,7 @@ func iniReplacements() []*Replacement {
 	rx, _ = regexp.Compile(`\\?\.\.\.`)
 	res = append(res, &Replacement{rx, true, false, Rtos(8230), false})
 	// apostrophe or a closing single quote (planned)
-	rx, _ = regexp.Compile(`([#{CC_ALPHA}])\\?'($|[^'])`)
+	rx, _ = regexp.Compile(`([a-zA-Z])(\\?')($|[^'])`)
 	res = append(res, &Replacement{rx, true, false, Rtos(8217), true})
 	// an opening single quote (planned)
 	// #[/\B\\?'(?=[#{CC_ALPHA}])/, '&#8216;', :none],
