@@ -35,6 +35,9 @@ func (tsd *testSubstDocumentAble) HasAttr(name string, expect interface{}, inher
 	if name == "test_attr_value" {
 		return true
 	}
+	if name == "experimental" {
+		return true
+	}
 	return false
 }
 
@@ -375,6 +378,9 @@ the text %s5%s should be passed through as %s6%s text
 		s.document = testDocument
 		Convey("Substitute empty macros references returns empty empty string", func() {
 			So(s.SubMacros(""), ShouldEqual, "")
+		})
+		Convey("Substitute non-empty without macros references returns same text", func() {
+			So(s.SubMacros("test"), ShouldEqual, "test")
 		})
 	})
 }
