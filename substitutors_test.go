@@ -330,22 +330,41 @@ the text %s5%s should be passed through as %s6%s text
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("(C) copyright sign is replaced", func() {
 			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(169)+" copyright")
-			So(s.ApplySubs(`text with \(C) copyright`, subArray{subValue.replacements}), ShouldEqual, "text with (C) copyright")
+			So(s.ApplySubs(`text with \(C) escaped copyright`, subArray{subValue.replacements}), ShouldEqual, "text with (C) escaped copyright")
 
 			So(s.ApplySubs("text with (R) Registered Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(174)+" Registered Trademark")
-			So(s.ApplySubs(`text with \(R) Registered Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (R) Registered Trademark")
+			So(s.ApplySubs(`text with \(R) escaped Registered Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (R) escaped Registered Trademark")
 
 			So(s.ApplySubs("text with (TM) Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8482)+" Trademark")
-			So(s.ApplySubs(`text with \(TM) Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (TM) Trademark")
+			So(s.ApplySubs(`text with \(TM) escaped Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (TM) escaped Trademark")
 
 			So(s.ApplySubs("text with -- dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with"+regexps.Rtos(8201, 8212, 8201)+"dash-dash")
-			So(s.ApplySubs(`text with \-- dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with -- dash-dash")
+			So(s.ApplySubs(`text with \-- escaped dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with -- escaped dash-dash")
 
 			So(s.ApplySubs("text with linked a--b--c dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with linked a"+regexps.Rtos(8212)+"b"+regexps.Rtos(8212)+"c dash-dash")
-			So(s.ApplySubs(`text with linked a\--b\--c dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with linked a--b--c dash-dash")
+			So(s.ApplySubs(`text with linked a\--b\--c escaped dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with linked a--b--c escaped dash-dash")
 
 			So(s.ApplySubs("text with ... ellipsis", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8230)+" ellipsis")
-			So(s.ApplySubs(`text with \... ellipsis`, subArray{subValue.replacements}), ShouldEqual, "text with ... ellipsis")
+			So(s.ApplySubs(`text with \... escaped ellipsis`, subArray{subValue.replacements}), ShouldEqual, "text with ... escaped ellipsis")
+
+			So(s.ApplySubs("text with a'b'c' apostrophe or a closing single quote", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8217)+"b"+regexps.Rtos(8217)+"c"+regexps.Rtos(8217)+" apostrophe or a closing single quote")
+			So(s.ApplySubs(`text with a\'b\'c\' apostrophe or a closing single quote`, subArray{subValue.replacements}), ShouldEqual, "text with a'b'c' apostrophe or a closing single quote")
+
+			So(s.ApplySubs("text with a-&gt;b -&gt; right arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8594)+"b "+regexps.Rtos(8594)+" right arrow")
+			So(s.ApplySubs(`text with a\-&gt;b \-&gt; escaped right arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a-&gt;b -&gt; escaped right arrow")
+
+			So(s.ApplySubs("text with a=&gt;b =&gt; right double arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8658)+"b "+regexps.Rtos(8658)+" right double arrow")
+			So(s.ApplySubs(`text with a\=&gt;b \=&gt; escaped right double arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a=&gt;b =&gt; escaped right double arrow")
+
+			So(s.ApplySubs("text with a&lt;-b &lt;- left arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8592)+"b "+regexps.Rtos(8592)+" left arrow")
+			So(s.ApplySubs(`text with a\&lt;-b \&lt;- escaped left arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a&lt;-b &lt;- escaped left arrow")
+
+			So(s.ApplySubs("text with a&lt;=b &lt;= left double arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8656)+"b "+regexps.Rtos(8656)+" left double arrow")
+			So(s.ApplySubs(`text with a\&lt;=b \&lt;= escaped left double arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a&lt;=b &lt;= escaped left double arrow")
+
+			So(s.ApplySubs("text with &amp;abc; &amp;#123; &amp;#123456; &amp;#xA1b2; &amp;#xA1b2c3; restore entities", subArray{subValue.replacements}), ShouldEqual, "text with &abc; &#123; &amp;#123456; &#xA1b2; &amp;#xA1b2c3; restore entities")
+			So(s.ApplySubs(`text with \&amp;abc; \&amp;#123; \&amp;#123456; \&amp;#xA1b2; \&amp;#xA1b2c3; escaped restore entities`, subArray{subValue.replacements}), ShouldEqual, "text with &amp;abc; &amp;#123; \\&amp;#123456; &amp;#xA1b2; \\&amp;#xA1b2c3; escaped restore entities")
+
 			testsub = ""
 		})
 	})
