@@ -219,6 +219,31 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/*
+Matches either the kbd or btn inline macro.
+Examples
+   kbd:[F3]
+   kbd:[Ctrl+Shift+T]
+   kbd:[Ctrl+\]]
+   kbd:[Ctrl,T]
+   btn:[Save]
+KbdBtnInlineMacroRx = /\\?(?:kbd|btn):\[((?:\\\]|[^\]])+?)\]/ */
+var KbdBtnInlineMacroRx, _ = regexp.Compile(`\\?(?:kbd|btn):\[((?:\\\]|[^\]])+?)\]`)
+
+type KbdBtnInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for KbdBtnInlineMacroRx */
+func NewKbdBtnInlineMacroRxres(s string) *KbdBtnInlineMacroRxres {
+	return &KbdBtnInlineMacroRxres{NewReres(s, KbdBtnInlineMacroRx)}
+}
+
+/* Return key of the macro xxx in ':[xxx]' */
+func (kbimr *KbdBtnInlineMacroRxres) Key() string {
+	return kbimr.Group(1)
+}
+
 /* Matches a math inline macro, which may span multiple lines.
 Examples
   math:[x != 0]

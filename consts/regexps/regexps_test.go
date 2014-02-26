@@ -353,4 +353,28 @@ func TestRegexps(t *testing.T) {
 		So(text1, ShouldEqual, "a"+Rtos(8201, 8212, 8201)+"b")
 		So(text2, ShouldEqual, "a"+Rtos(8201, 8212, 8201)+"b")
 	})
+
+	Convey("Regexps can encapsulate KbdBtnInlineMacroRx results in a struct KbdBtnInlineMacroRxres", t, func() {
+		r := NewKbdBtnInlineMacroRxres(`
+   kbd:[F3]
+   kbd:[Ctrl+Shift+T]
+   kbd:[Ctrl+\]]
+   kbd:[Ctrl,T]
+   btn:[Save]`)
+
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 5)
+
+		So(r.Key(), ShouldEqual, "F3")
+		r.Next()
+		So(r.Key(), ShouldEqual, "Ctrl+Shift+T")
+		r.Next()
+		So(r.Key(), ShouldEqual, `Ctrl+\]`)
+		r.Next()
+		So(r.Key(), ShouldEqual, "Ctrl,T")
+		r.Next()
+		So(r.Key(), ShouldEqual, "Save")
+		r.Next()
+	})
+
 }
