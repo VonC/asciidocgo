@@ -750,6 +750,34 @@ func (s *substitutors) SubMacros(source string) string {
 	res := source
 	if experimental {
 		if found.macroish_short_form && (strings.Contains(source, "kbd:") || strings.Contains(source, "btn:")) {
+			reres := regexps.NewKbdBtnInlineMacroRxres(res)
+			if reres.HasNext() {
+				res = ""
+			}
+			suffix := ""
+			for reres.HasNext() {
+				res = res + reres.Prefix()
+				if reres.IsEscaped() {
+					res = res + reres.FullMatch()[1:]
+					suffix = reres.Suffix()
+					reres.Next()
+					continue
+				}
+				if strings.HasPrefix(reres.FullMatch(), "kbd") {
+					key := unescapeBrackets(reres.Key())
+					keys := []string{}
+					if key == "+" {
+						keys = append(keys, "+")
+					} else {
+						// need to use closure to work around lack of negative lookbehind
+						// keys = keys.split(KbdDelimiterRx).inject([]) {|c, key|
+						// Split into an array, and for each k, aggregate to result array c
+					}
+				}
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			res = res + suffix
 			fmt.Sprintf("%v", useLinkAttrs)
 		}
 	}
