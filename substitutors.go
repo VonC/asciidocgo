@@ -749,7 +749,9 @@ func (s *substitutors) SubMacros(source string) string {
 	}
 	res := source
 	if experimental {
-		fmt.Sprintf("%v", useLinkAttrs)
+		if found.macroish_short_form && (strings.Contains(source, "kbd:") || strings.Contains(source, "btn:")) {
+			fmt.Sprintf("%v", useLinkAttrs)
+		}
 	}
 	return res
 }

@@ -382,5 +382,8 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute non-empty without macros references returns same text", func() {
 			So(s.SubMacros("test"), ShouldEqual, "test")
 		})
+		Convey("Substitute kbd macro with single key", func() {
+			So(s.SubMacros("kbd:[F3]"), ShouldEqual, "kbd:[F3]")
+		})
 	})
 }
