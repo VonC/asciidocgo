@@ -368,4 +368,13 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 	})
+
+	Convey("A substitutors can substitute macros references", t, func() {
+		s := &substitutors{}
+		testDocument := &testSubstDocumentAble{s}
+		s.document = testDocument
+		Convey("Substitute empty macros references returns empty empty string", func() {
+			So(s.SubMacros(""), ShouldEqual, "")
+		})
+	})
 }

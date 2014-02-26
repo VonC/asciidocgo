@@ -296,8 +296,9 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 			text = s.SubAttributes(text, nil)
 		case "replacements":
 			text = subReplacements(text)
+		case "macros":
+			text = s.SubMacros(text)
 			/*
-				case "macros":
 				case "highlight":
 				case "callouts":
 				case "post_replacements":
@@ -714,6 +715,18 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 			res = res + lineres
 		}
 	}
+	return res
+}
+
+/* Substitute inline macros (e.g., links, images, etc)
+Replace inline macros, which may span multiple lines, in the provided text
+source - The String text to process
+returns The String with the inline macros rendered using the backend templates */
+func (s *substitutors) SubMacros(source string) string {
+	if source == "" {
+		return source
+	}
+	res := source
 	return res
 }
 
