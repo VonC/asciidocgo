@@ -718,6 +718,14 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 	return res
 }
 
+type found struct {
+	square_bracket      bool
+	round_bracket       bool
+	colon               bool
+	macroish            bool
+	macroish_short_form bool
+}
+
 /* Substitute inline macros (e.g., links, images, etc)
 Replace inline macros, which may span multiple lines, in the provided text
 source - The String text to process
@@ -726,7 +734,23 @@ func (s *substitutors) SubMacros(source string) string {
 	if source == "" {
 		return source
 	}
+	found := &found{}
+	found.square_bracket = strings.Contains(source, "[")
+	found.round_bracket = strings.Contains(source, "(")
+	found.colon = strings.Contains(source, ":")
+	foundColon := found.colon
+	found.macroish = found.square_bracket && foundColon
+	found.macroish_short_form = found.square_bracket && foundColon && strings.Contains(source, ":[")
+	var useLinkAttrs bool
+	var experimental bool
+	if s.Document() != nil {
+		useLinkAttrs = s.Document().HasAttr("linkattrs", nil, false)
+		experimental = s.Document().HasAttr("experimental", nil, false)
+	}
 	res := source
+	if experimental {
+		fmt.Sprintf("%v", useLinkAttrs)
+	}
 	return res
 }
 
