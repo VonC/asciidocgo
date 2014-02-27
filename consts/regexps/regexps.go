@@ -244,6 +244,22 @@ func (kbimr *KbdBtnInlineMacroRxres) Key() string {
 	return kbimr.Group(1)
 }
 
+/* Matches the delimiter used for kbd value.
+Examples
+   Ctrl + Alt+T
+   Ctrl,T
+KbdDelimiterRx = /(?:\+|,)(?=#{CC_BLANK}*[^\1])/ */
+var KbdDelimiterRx, _ = regexp.Compile(`(?:\+|,)([ \t]*)`)
+
+type KbdDelimiterRxres struct {
+	*Reres
+}
+
+/* Results for KbdDelimiterRx */
+func NewKbdDelimiterRxres(s string) *KbdDelimiterRxres {
+	return &KbdDelimiterRxres{NewReresLAGroup(s, KbdDelimiterRx)}
+}
+
 /* Matches a math inline macro, which may span multiple lines.
 Examples
   math:[x != 0]
