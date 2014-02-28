@@ -378,8 +378,7 @@ func TestRegexps(t *testing.T) {
 	})
 
 	Convey("Regexps can encapsulate KbdDelimiterRx results in a struct KbdDelimiterRxres", t, func() {
-		r := NewKbdDelimiterRxres(`
-   Ctrl + Alt+T`)
+		r := NewKbdDelimiterRxres(`Ctrl + Alt+T`)
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
 		So(len(r.matches), ShouldEqual, 2)
@@ -393,8 +392,13 @@ func TestRegexps(t *testing.T) {
 
 		So(r.HasAnyMatch(), ShouldBeTrue)
 		So(len(r.matches), ShouldEqual, 1)
-
 		So(r.FullMatch(), ShouldEqual, ",")
+
+		r = NewKbdDelimiterRxres(`Ctrl,  ,`)
+		So(r.HasAnyMatch(), ShouldBeFalse)
+		r = NewKbdDelimiterRxres(`Ctrl +  +a`)
+		So(len(r.matches), ShouldEqual, 1)
+		So(r.FullMatch(), ShouldEqual, "+")
 	})
 
 }
