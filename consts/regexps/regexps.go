@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/VonC/asciidocgo/utils"
 )
@@ -267,15 +268,22 @@ Examples
    Ctrl + Alt+T
    Ctrl,T
 KbdDelimiterRx = /(?:\+|,)(?=#{CC_BLANK}*[^\1])/ */
-var KbdDelimiterRx, _ = regexp.Compile(`(?:\+|,)([ \t]*)`)
+var KbdDelimiterRx, _ = regexp.Compile(`(?:\+|,)([ \t]*[^ \t])`)
 
 type KbdDelimiterRxres struct {
 	*Reres
 }
 
+func kbdla(lh string, match []int, s string) bool {
+	m := strings.TrimSpace(lh)
+	g1 := string(s[match[0]:match[1]])
+	//fmt.Printf("\nm='%v' vs. g1='%v'\n", m, g1)
+	return m != g1
+}
+
 /* Results for KbdDelimiterRx */
 func NewKbdDelimiterRxres(s string) *KbdDelimiterRxres {
-	return &KbdDelimiterRxres{NewReresLAGroup(s, KbdDelimiterRx)}
+	return &KbdDelimiterRxres{NewReresLAQual(s, KbdDelimiterRx, kbdla)}
 }
 
 /* Matches a math inline macro, which may span multiple lines.
