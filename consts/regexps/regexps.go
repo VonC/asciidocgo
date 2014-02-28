@@ -45,9 +45,24 @@ func NewReres(s string, r *regexp.Regexp) *Reres {
 	return &Reres{r, s, matches, 0, 0}
 }
 
+type Qualifier func(lh string, match []int, s string) bool
+
 /* Build new result from FindAllStringSubmatchIndex on a string,
 validated by last group being a lookahead after each match */
 func NewReresLAGroup(s string, r *regexp.Regexp) *Reres {
+	return newReresLA(s, r, nil)
+}
+
+/* Build new result from FindAllStringSubmatchIndex on a string,
+validated by last group being a lookahead after each match,
+if that last group match qualifies */
+func NewReresLAQual(s string, r *regexp.Regexp, q Qualifier) *Reres {
+	return newReresLA(s, r, q)
+}
+
+/* Build new result from FindAllStringSubmatchIndex on a string,
+validated by last group being a lookahead after each match */
+func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 	bf := bytes.NewBufferString(s)
 	by := bf.Bytes()
 	m := [][]int{}
@@ -63,11 +78,14 @@ func NewReresLAGroup(s string, r *regexp.Regexp) *Reres {
 			}
 			//fmt.Printf("%v===append\n", match)
 			if lg[0] < lg[1] {
+				lh := string(by[lg[0]:lg[1]])
 				by = by[lg[0]:]
 				shift = shift + lg[0]
 				delta := lg[1] - lg[0]
 				match[1] = match[1] - delta
-				m = append(m, match)
+				if q == nil || q(lh, match, s) {
+					m = append(m, match)
+				}
 			} else {
 				m = append(m, match)
 				break
