@@ -772,6 +772,25 @@ func (s *substitutors) SubMacros(source string) string {
 						// need to use closure to work around lack of negative lookbehind
 						// keys = keys.split(KbdDelimiterRx).inject([]) {|c, key|
 						// Split into an array, and for each k, aggregate to result array c
+						someKeys := regexps.KbdDelimiterRx.Split(key, -1)
+						for _, akey := range someKeys {
+							if akey == "" {
+								continue
+							}
+							if akey == "+" {
+								keys = append(keys, "+")
+								continue
+							}
+							if strings.HasSuffix(akey, "++") {
+								akey = strings.TrimSuffix(akey, "++")
+								akey = strings.TrimSpace(akey)
+								keys = append(keys, akey)
+								keys = append(keys, "+")
+								continue
+							}
+							akey = strings.TrimSpace(akey)
+							keys = append(keys, akey)
+						}
 					}
 				}
 				suffix = reres.Suffix()
@@ -824,7 +843,7 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 			id := attributes["id"]
 			delete(attributes, "id")
 			fmt.Sprintf("'%v'", id)
-			res = res // TODO + Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render
+			res = res + "" // TODO + Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render
 		}
 		suffix = match.Suffix()
 		match.Next()
