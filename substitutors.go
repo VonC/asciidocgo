@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/VonC/asciidocgo/consts/compliance"
+	"github.com/VonC/asciidocgo/consts/context"
 	"github.com/VonC/asciidocgo/consts/regexps"
 	"github.com/VonC/asciidocgo/consts/regexps/quotes"
 	"github.com/VonC/asciidocgo/debug"
@@ -228,6 +229,16 @@ type SubstDocumentable interface {
 	HasAttr(name string, expect interface{}, inherit bool) bool
 }
 
+type Convertable interface {
+	Convert() string
+}
+type AbstractNodable interface {
+}
+
+type InlineMaker interface {
+	NewInline(parent *AbstractNodable, c context.Context, text string /* opts */) *Convertable
+}
+
 type passthrough struct {
 	text       string
 	subs       subArray
@@ -242,6 +253,7 @@ type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
 	passthroughs []passthrough
 	document     SubstDocumentable
+	inlineMaker  InlineMaker
 }
 
 func (s *substitutors) Document() SubstDocumentable {
