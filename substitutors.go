@@ -233,10 +233,23 @@ type Convertable interface {
 	Convert() string
 }
 type AbstractNodable interface {
+	IsAbstractNodable()
 }
 
+type OptionsInline struct {
+	id         string
+	typeInline string
+	target     string
+	attributes map[string]interface{}
+}
+
+func (oi *OptionsInline) Id() string                         { return oi.id }
+func (oi *OptionsInline) TypeInline() string                 { return oi.typeInline }
+func (oi *OptionsInline) Target() string                     { return oi.target }
+func (oi *OptionsInline) Attributes() map[string]interface{} { return oi.attributes }
+
 type InlineMaker interface {
-	NewInline(parent *AbstractNodable, c context.Context, text string /* opts */) *Convertable
+	NewInline(parent AbstractNodable, c context.Context, text string, opts *OptionsInline) Convertable
 }
 
 type passthrough struct {
@@ -251,9 +264,10 @@ This module is intented to be mixed-in to Section and Block to provide
 operations for performing the necessary substitutions. */
 type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
-	passthroughs []passthrough
-	document     SubstDocumentable
-	inlineMaker  InlineMaker
+	passthroughs    []passthrough
+	document        SubstDocumentable
+	inlineMaker     InlineMaker
+	abstractNodable AbstractNodable
 }
 
 func (s *substitutors) Document() SubstDocumentable {
@@ -804,6 +818,10 @@ func (s *substitutors) SubMacros(source string) string {
 							keys = append(keys, akey)
 						}
 					}
+					optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+					optsInline.attributes["keys"] = keys
+					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Document, "", optsInline)
+					res = res + inline.Convert()
 				}
 				suffix = reres.Suffix()
 				reres.Next()

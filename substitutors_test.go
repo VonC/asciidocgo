@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/VonC/asciidocgo/consts/context"
 	"github.com/VonC/asciidocgo/consts/regexps"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -44,6 +45,20 @@ func (tsd *testSubstDocumentAble) HasAttr(name string, expect interface{}, inher
 func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 	seed = seed + 1
 	return strconv.Itoa(seed)
+}
+
+type testConvertable struct {
+}
+
+func (tc *testConvertable) Convert() string {
+	return "convert"
+}
+
+type testInlineMaker struct {
+}
+
+func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context, text string, opts *OptionsInline) Convertable {
+	return &testConvertable{}
 }
 
 func TestSubstitutor(t *testing.T) {
@@ -376,6 +391,8 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		testDocument := &testSubstDocumentAble{s}
 		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+
 		Convey("Substitute empty macros references returns empty empty string", func() {
 			So(s.SubMacros(""), ShouldEqual, "")
 		})
@@ -383,13 +400,13 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("test"), ShouldEqual, "test")
 		})
 		Convey("Substitute kbd macro with single key", func() {
-			So(s.SubMacros("kbd:[F3]"), ShouldEqual, "")
+			So(s.SubMacros("kbd:[F3]"), ShouldEqual, "convert")
 		})
 		Convey("Substitute kbd macro with escaped single key", func() {
 			So(s.SubMacros(`\kbd:[F3]`), ShouldEqual, "kbd:[F3]")
 		})
 		Convey("Substitute kbd macro with single '+' key", func() {
-			So(s.SubMacros("kbd:[+]"), ShouldEqual, "")
+			So(s.SubMacros("kbd:[+]"), ShouldEqual, "convert")
 		})
 	})
 }
