@@ -798,24 +798,34 @@ func (s *substitutors) SubMacros(source string) string {
 						// need to use closure to work around lack of negative lookbehind
 						// keys = keys.split(KbdDelimiterRx).inject([]) {|c, key|
 						// Split into an array, and for each k, aggregate to result array c
-						someKeys := regexps.KbdDelimiterRx.Split(key, -1)
-						for _, akey := range someKeys {
+						reresKbd := regexps.NewKbdDelimiterRxres(key)
+						lastKey := false
+						for reresKbd.HasNext() || lastKey {
+							akey := reresKbd.Prefix()
 							if akey == "" {
-								continue
+								goto nextKbd
 							}
 							if akey == "+" {
 								keys = append(keys, "+")
-								continue
+								goto nextKbd
 							}
 							if strings.HasSuffix(akey, "++") {
 								akey = strings.TrimSuffix(akey, "++")
 								akey = strings.TrimSpace(akey)
 								keys = append(keys, akey)
 								keys = append(keys, "+")
-								continue
+								reresKbd.Next()
+								goto nextKbd
 							}
 							akey = strings.TrimSpace(akey)
 							keys = append(keys, akey)
+						nextKbd:
+							reresKbd.Next()
+							if !reresKbd.HasNext() && !lastKey {
+								lastKey = true
+							} else {
+								lastKey = false
+							}
 						}
 					}
 					optsInline := &OptionsInline{attributes: make(map[string]interface{})}
