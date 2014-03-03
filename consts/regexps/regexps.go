@@ -487,7 +487,7 @@ func iniReplacements() []*Replacement {
 	// left arrow <-
 	rx, _ = regexp.Compile(`\\?&lt;-`)
 	res = append(res, &Replacement{rx, false, false, Rtos(8592), false})
-	// right left arrow <=
+	// left double arrow <=
 	rx, _ = regexp.Compile(`\\?&lt;=`)
 	res = append(res, &Replacement{rx, false, false, Rtos(8656), false})
 	// restore entities
