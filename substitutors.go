@@ -798,10 +798,19 @@ func (s *substitutors) SubMacros(source string) string {
 						// need to use closure to work around lack of negative lookbehind
 						// keys = keys.split(KbdDelimiterRx).inject([]) {|c, key|
 						// Split into an array, and for each k, aggregate to result array c
+						//fmt.Printf("***** key='%v'\n", key)
 						reresKbd := regexps.NewKbdDelimiterRxres(key)
 						lastKey := false
+						akeySuffix := ""
 						for reresKbd.HasNext() || lastKey {
-							akey := reresKbd.Prefix()
+							akey := ""
+							if !lastKey {
+								akey = reresKbd.Prefix()
+								akeySuffix = reresKbd.Suffix()
+							} else {
+								akey = akeySuffix
+							}
+							//fmt.Printf("***** akey='%v' vs. '%v': '%v'\n", akey, akeySuffix, lastKey)
 							if akey == "" {
 								goto nextKbd
 							}
@@ -814,13 +823,14 @@ func (s *substitutors) SubMacros(source string) string {
 								akey = strings.TrimSpace(akey)
 								keys = append(keys, akey)
 								keys = append(keys, "+")
-								reresKbd.Next()
 								goto nextKbd
 							}
 							akey = strings.TrimSpace(akey)
 							keys = append(keys, akey)
 						nextKbd:
-							reresKbd.Next()
+							if reresKbd.HasNext() {
+								reresKbd.Next()
+							}
 							if !reresKbd.HasNext() && !lastKey {
 								lastKey = true
 							} else {
