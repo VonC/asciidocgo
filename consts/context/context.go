@@ -10,6 +10,7 @@ const (
 	// Used by substitutors in SubMacros()
 	Kbd
 	Button
+	Menu
 	Unknown
 )
 
@@ -25,6 +26,8 @@ func (c Context) String() string {
 		return "kbd"
 	case Button:
 		return "button"
+	case Menu:
+		return "menu"
 	}
 	return "unknown"
 }

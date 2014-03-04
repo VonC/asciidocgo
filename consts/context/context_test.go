@@ -13,6 +13,7 @@ func TestContext(t *testing.T) {
 		So(Paragraph.String(), ShouldEqual, "paragraph")
 		So(Kbd.String(), ShouldEqual, "kbd")
 		So(Button.String(), ShouldEqual, "button")
+		So(Menu.String(), ShouldEqual, "menu")
 		So(Unknown.String(), ShouldEqual, "unknown")
 	})
 
