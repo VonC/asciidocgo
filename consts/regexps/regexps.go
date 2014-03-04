@@ -332,7 +332,26 @@ Examples
    menu:View[Page Style, No Style]
    MenuInlineMacroRx = /\\?menu:(\w|\w.*?\S)\[#{CC_BLANK}*(.+?)?\]/
 */
-var MenuInlineMacroRx, _ = regexp.Compile(`(?sm)\\?menu:(\w|\w.*?\S)\[[ \t]*(.+?)?`)
+var MenuInlineMacroRx, _ = regexp.Compile(`(?sm)\\?menu:(\w|\w.*?\S)\[[ \t]*(.+?)?\]`)
+
+type MenuInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for KbdBtnInlineMacroRx */
+func NewMenuInlineMacroRxres(s string) *MenuInlineMacroRxres {
+	return &MenuInlineMacroRxres{NewReres(s, MenuInlineMacroRx)}
+}
+
+/* Return name of the macro in 'menu:name[xxx]' */
+func (mimr *MenuInlineMacroRxres) MenuName() string {
+	return mimr.Group(1)
+}
+
+/* Return items of the macro xxx in 'menu:name[xxx]' */
+func (mimr *MenuInlineMacroRxres) MenuItems() string {
+	return mimr.Group(2)
+}
 
 var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)([^`\\w])")
 

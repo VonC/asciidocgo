@@ -401,4 +401,21 @@ func TestRegexps(t *testing.T) {
 		So(r.FullMatch(), ShouldEqual, "+")
 	})
 
+	Convey("Regexps can encapsulate MenuInlineMacroRx results in a struct MenuInlineMacroRxres", t, func() {
+		r := NewMenuInlineMacroRxres(`menu:File[New...]
+   menu:View[Page Style > No Style]
+   menu:View[Page Style, No Style]`)
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 3)
+
+		So(r.MenuName(), ShouldEqual, "File")
+		So(r.MenuItems(), ShouldEqual, "New...")
+		r.Next()
+		So(r.MenuName(), ShouldEqual, "View")
+		So(r.MenuItems(), ShouldEqual, "Page Style > No Style")
+		r.Next()
+		So(r.MenuName(), ShouldEqual, "View")
+		So(r.MenuItems(), ShouldEqual, "Page Style, No Style")
+	})
+
 }
