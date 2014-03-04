@@ -401,13 +401,22 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("test"), ShouldEqual, "test")
 		})
 		Convey("Substitute kbd macro with single key", func() {
-			So(s.SubMacros("kbd:[F3]"), ShouldEqual, "convert")
+			So(s.SubMacros("kbd:[F3]"), ShouldEqual, "[]")
 		})
 		Convey("Substitute kbd macro with escaped single key", func() {
 			So(s.SubMacros(`\kbd:[F3]`), ShouldEqual, "kbd:[F3]")
 		})
 		Convey("Substitute kbd macro with single '+' key", func() {
-			So(s.SubMacros("kbd:[+]"), ShouldEqual, "convert")
+			So(s.SubMacros("kbd:[+]"), ShouldEqual, "[+]")
+		})
+		Convey("Substitute kbd macro ignores first empty key, detects others", func() {
+			So(s.SubMacros("kbd:[+ Alt+T]"), ShouldEqual, "[Alt T]")
+		})
+		Convey("Substitute kbd macro detects '+' key", func() {
+			So(s.SubMacros("kbd:[Ctrl,+]"), ShouldEqual, "[Ctrl +]")
+		})
+		Convey("Substitute kbd macro detects '++' suffixed key", func() {
+			So(s.SubMacros("kbd:[Ctrl,abc++]"), ShouldEqual, "[Ctrl abc +]")
 		})
 	})
 }
