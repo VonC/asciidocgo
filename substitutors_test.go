@@ -421,5 +421,9 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute kbd macro detects '++' suffixed key", func() {
 			So(s.SubMacros("kbd:[Ctrl,abc++]"), ShouldEqual, "[Ctrl abc +]")
 		})
+
+		Convey("Substitute btn macro detects the label", func() {
+			So(s.SubMacros("btn:[alabel]"), ShouldEqual, "alabel")
+		})
 	})
 }

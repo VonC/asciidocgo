@@ -842,6 +842,10 @@ func (s *substitutors) SubMacros(source string) string {
 					optsInline.attributes["keys"] = keys
 					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Kbd, "", optsInline)
 					res = res + inline.Convert()
+				} else if strings.HasPrefix(reres.FullMatch(), "btn") {
+					label := unescapeBrackets(reres.Key())
+					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Button, label, nil)
+					res = res + inline.Convert()
 				}
 				suffix = reres.Suffix()
 				reres.Next()
