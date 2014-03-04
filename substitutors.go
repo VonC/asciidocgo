@@ -840,7 +840,7 @@ func (s *substitutors) SubMacros(source string) string {
 					}
 					optsInline := &OptionsInline{attributes: make(map[string]interface{})}
 					optsInline.attributes["keys"] = keys
-					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Document, "", optsInline)
+					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Kbd, "", optsInline)
 					res = res + inline.Convert()
 				}
 				suffix = reres.Suffix()
