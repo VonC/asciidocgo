@@ -425,5 +425,9 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute btn macro detects the label", func() {
 			So(s.SubMacros("btn:[alabel]"), ShouldEqual, "alabel")
 		})
+
+		Convey("Substitute menu macro detects the label", func() {
+			So(s.SubMacros("menu:[alabel]"), ShouldEqual, "menu:[alabel]")
+		})
 	})
 }

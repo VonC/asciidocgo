@@ -853,6 +853,10 @@ func (s *substitutors) SubMacros(source string) string {
 			res = res + suffix
 			fmt.Sprintf("%v", useLinkAttrs)
 		}
+
+		if found.macroish && (strings.Contains(res, "menu:")) {
+			fmt.Sprintf("test")
+		}
 	}
 	return res
 }
