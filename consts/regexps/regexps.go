@@ -325,6 +325,15 @@ Examples
 */
 // PassInlineLiteralRx = /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/m
 
+/* Matches a menu inline macro.
+    # Examples
+   menu:File[New...]
+   menu:View[Page Style > No Style]
+   menu:View[Page Style, No Style]
+   MenuInlineMacroRx = /\\?menu:(\w|\w.*?\S)\[#{CC_BLANK}*(.+?)?\]/
+*/
+var MenuInlineMacroRx, _ = regexp.Compile(`(?sm)\\?menu:(\w|\w.*?\S)\[[ \t]*(.+?)?`)
+
 var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)([^`\\w])")
 
 type PassInlineLiteralRxres struct {

@@ -427,7 +427,7 @@ the text %s5%s should be passed through as %s6%s text
 		})
 
 		Convey("Substitute menu macro detects the label", func() {
-			So(s.SubMacros("menu:[alabel]"), ShouldEqual, "menu:[alabel]")
+			So(s.SubMacros("menu:name[items]"), ShouldEqual, "menu:name[items]")
 		})
 	})
 }
