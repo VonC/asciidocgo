@@ -48,18 +48,21 @@ func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 }
 
 type testConvertable struct {
-	keys interface{}
+	data interface{}
 }
 
 func (tc *testConvertable) Convert() string {
-	return fmt.Sprintf("%v", tc.keys)
+	return fmt.Sprintf("%v", tc.data)
 }
 
 type testInlineMaker struct {
 }
 
 func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context, text string, opts *OptionsInline) Convertable {
-	return &testConvertable{opts.Attributes()["keys"]}
+	if c == context.Kbd {
+		return &testConvertable{opts.Attributes()["keys"]}
+	}
+	return &testConvertable{text}
 }
 
 func TestSubstitutor(t *testing.T) {
