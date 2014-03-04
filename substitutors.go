@@ -243,9 +243,9 @@ type OptionsInline struct {
 	attributes map[string]interface{}
 }
 
-func (oi *OptionsInline) Id() string                         { return oi.id }
+/*func (oi *OptionsInline) Id() string                         { return oi.id }
 func (oi *OptionsInline) TypeInline() string                 { return oi.typeInline }
-func (oi *OptionsInline) Target() string                     { return oi.target }
+func (oi *OptionsInline) Target() string                     { return oi.target }*/
 func (oi *OptionsInline) Attributes() map[string]interface{} { return oi.attributes }
 
 type InlineMaker interface {
