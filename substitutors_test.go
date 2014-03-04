@@ -59,10 +59,15 @@ type testInlineMaker struct {
 }
 
 func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context, text string, opts *OptionsInline) Convertable {
-	if c == context.Kbd {
+	switch c {
+	case context.Kbd:
 		return &testConvertable{opts.Attributes()["keys"]}
+	case context.Button:
+		return &testConvertable{text}
+	case context.Menu:
+		return &testConvertable{opts.Attributes()}
 	}
-	return &testConvertable{text}
+	return &testConvertable{"unknown context"}
 }
 
 func TestSubstitutor(t *testing.T) {
@@ -426,8 +431,17 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("btn:[alabel]"), ShouldEqual, "alabel")
 		})
 
-		Convey("Substitute menu macro detects the label", func() {
-			So(s.SubMacros("menu:name[items]"), ShouldEqual, "menu:name[items]")
+		Convey("Substitute menu macro with escape return menu macro", func() {
+			So(s.SubMacros(`\menu:name0[items0]`), ShouldEqual, "menu:name0[items0]")
+		})
+		Convey("Substitute menu macro detects the item", func() {
+			So(s.SubMacros("menu:name[items]"), ShouldEqual, "map[menu:name submenu:[] menuitem:items]")
+		})
+
+		Convey("Substitute menu macro detects the items", func() {
+			So(s.SubMacros("menu:name[item1 item2 item3  ]"), ShouldEqual, "map[menu:name submenu:[] menuitem:item1 item2 item3]")
+			So(s.SubMacros("menu:name[item1b ,  item2b,  item3b]"), ShouldEqual, "map[menu:name submenu:[item1b item2b] menuitem:item3b]")
+			So(s.SubMacros("menu:name[item1c  &gt; item2c &gt;  item3c]"), ShouldEqual, "map[menu:name submenu:[item1c item2c] menuitem:item3c]")
 		})
 	})
 }

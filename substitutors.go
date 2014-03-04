@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/VonC/asciidocgo/consts/compliance"
 	"github.com/VonC/asciidocgo/consts/context"
@@ -855,7 +856,55 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 
 		if found.macroish && (strings.Contains(res, "menu:")) {
-			fmt.Sprintf("test")
+			reres := regexps.NewMenuInlineMacroRxres(res)
+			if reres.HasNext() {
+				res = ""
+			}
+			suffix := ""
+			for reres.HasNext() {
+				res = res + reres.Prefix()
+				if reres.IsEscaped() {
+					res = res + reres.FullMatch()[1:]
+					suffix = reres.Suffix()
+					reres.Next()
+					continue
+				}
+
+				menu := reres.MenuName()
+				items := reres.MenuItems()
+
+				subMenus := []string{}
+				menuItem := ""
+
+				if items != "" {
+					delim := ""
+					if strings.Contains(items, "&gt;") {
+						delim = "&gt;"
+					} else if strings.Contains(items, ",") {
+						delim = ","
+					}
+					if delim != "" {
+						sm := strings.Split(items, delim)
+						for _, asm := range sm {
+							subMenus = append(subMenus, strings.TrimSpace(asm))
+						}
+						menuItem = subMenus[len(subMenus)-1]
+						subMenus = subMenus[:len(subMenus)-1]
+					} else {
+						menuItem = strings.TrimRightFunc(items, unicode.IsSpace)
+					}
+				}
+				optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+				optsInline.attributes["menu"] = menu
+				optsInline.attributes["submenu"] = subMenus
+				optsInline.attributes["menuitem"] = menuItem
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.Menu, "", optsInline)
+				res = res + inline.Convert()
+
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			res = res + suffix
 		}
 	}
 	return res
