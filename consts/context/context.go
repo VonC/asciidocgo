@@ -7,6 +7,9 @@ const (
 	Document Context = iota
 	Section
 	Paragraph
+	// Used by substitutors in SubMacros()
+	Kbd
+	Button
 	Unknown
 )
 
@@ -18,6 +21,10 @@ func (c Context) String() string {
 		return "section"
 	case Paragraph:
 		return "paragraph"
+	case Kbd:
+		return "kbd"
+	case Button:
+		return "button"
 	}
 	return "unknown"
 }

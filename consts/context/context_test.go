@@ -11,6 +11,8 @@ func TestContext(t *testing.T) {
 		So(Document.String(), ShouldEqual, "document")
 		So(Section.String(), ShouldEqual, "section")
 		So(Paragraph.String(), ShouldEqual, "paragraph")
+		So(Kbd.String(), ShouldEqual, "kbd")
+		So(Button.String(), ShouldEqual, "button")
 		So(Unknown.String(), ShouldEqual, "unknown")
 	})
 
