@@ -863,6 +863,7 @@ func (s *substitutors) SubMacros(source string) string {
 			suffix := ""
 			for reres.HasNext() {
 				res = res + reres.Prefix()
+				// honor the escape
 				if reres.IsEscaped() {
 					res = res + reres.FullMatch()[1:]
 					suffix = reres.Suffix()
@@ -894,6 +895,47 @@ func (s *substitutors) SubMacros(source string) string {
 						menuItem = strings.TrimRightFunc(items, unicode.IsSpace)
 					}
 				}
+				optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+				optsInline.attributes["menu"] = menu
+				optsInline.attributes["submenu"] = subMenus
+				optsInline.attributes["menuitem"] = menuItem
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.Menu, "", optsInline)
+				res = res + inline.Convert()
+
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			res = res + suffix
+		}
+
+		if strings.Contains(res, `"`) && strings.Contains(res, "&gt;") {
+
+			reres := regexps.NewMenuInlineRxres(res)
+			if reres.HasNext() {
+				res = ""
+			}
+			suffix := ""
+			for reres.HasNext() {
+				res = res + reres.Prefix()
+
+				// honor the escape
+				if reres.IsEscaped() {
+					res = res + reres.FullMatch()[1:]
+					suffix = reres.Suffix()
+					reres.Next()
+					continue
+				}
+
+				input := reres.MenuInput()
+				subMenus := []string{}
+				menuItem := ""
+				sm := strings.Split(input, "&gt;")
+				for _, asm := range sm {
+					subMenus = append(subMenus, strings.TrimSpace(asm))
+				}
+				menu := subMenus
+				menuItem = subMenus[len(subMenus)-1]
+				subMenus = subMenus[:len(subMenus)-1]
 				optsInline := &OptionsInline{attributes: make(map[string]interface{})}
 				optsInline.attributes["menu"] = menu
 				optsInline.attributes["submenu"] = subMenus

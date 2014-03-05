@@ -443,5 +443,10 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("menu:name[item1b ,  item2b,  item3b]"), ShouldEqual, "map[menu:name submenu:[item1b item2b] menuitem:item3b]")
 			So(s.SubMacros("menu:name[item1c  &gt; item2c &gt;  item3c]"), ShouldEqual, "map[menu:name submenu:[item1c item2c] menuitem:item3c]")
 		})
+		Convey("Substitute menu macro detects the inline items with &gt;", func() {
+			So(s.SubMacros(`menu \"File &gt; New" test`), ShouldEqual, `menu "File &gt; New" test`)
+			So(s.SubMacros(`menu "File1 &gt; New1" test1`), ShouldEqual, "menu map[menu:[File1 New1] submenu:[File1] menuitem:New1] test1")
+			So(s.SubMacros(`menu "File2 &gt; New2   &gt;    Item2" test2`), ShouldEqual, "menu map[menu:[File2 New2 Item2] submenu:[File2 New2] menuitem:Item2] test2")
+		})
 	})
 }
