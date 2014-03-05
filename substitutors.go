@@ -1069,10 +1069,20 @@ type OptionsParseAttributes struct {
 	subInput          bool
 	unescapeInput     bool
 	attribute_missing string
+	into              map[string]interface{}
+	subResult         bool
+	subResultSet      bool
 }
 
-func (opa *OptionsParseAttributes) SubInput() bool           { return opa.subInput }
-func (opa *OptionsParseAttributes) AttributeMissing() string { return opa.attribute_missing }
+func (opa *OptionsParseAttributes) SubInput() bool               { return opa.subInput }
+func (opa *OptionsParseAttributes) UnescapeInput() bool          { return opa.unescapeInput }
+func (opa *OptionsParseAttributes) AttributeMissing() string     { return opa.attribute_missing }
+func (opa *OptionsParseAttributes) Into() map[string]interface{} { return opa.into }
+func (opa *OptionsParseAttributes) SubResult() bool              { return opa.subResult || !opa.subResultSet }
+func (opa *OptionsParseAttributes) SetSubResult(aSubResult bool) {
+	opa.subResult = aSubResult
+	opa.subResultSet = true
+}
 
 /* Parse the attributes in the attribute line
  attrline  - A String of unprocessed attributes (key/value pairs)
@@ -1086,9 +1096,24 @@ func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts 
 	if opts.SubInput() && s.Document() != nil {
 		attrline = s.Document().SubAttributes(attrline, opts)
 	}
-	fmt.Sprintf("%v", posAttrs)
-	// TODO implement parseAttributes posattrs and opt map[string]interface{}
-	return attributes
+	if opts.UnescapeInput() {
+		attrline = unescapeBracketedText(attrline)
+	}
+	var block ApplyNormalSubsable = nil
+	if opts.SubResult() {
+		// substitutions are only performed on attribute values
+		// if block is not nil
+		block = s
+	}
+	into := opts.Into()
+	if into != nil {
+		return s.attributeListMaker.NewAttributeList(attrline, block, "").ParseInto(into, posAttrs)
+	}
+	return s.attributeListMaker.NewAttributeList(attrline, block, "").Parse(posAttrs)
+}
+
+func (s *substitutors) ApplyNormalSubs(lines string) string {
+	return ""
 }
 
 func parseQuotedTextAttributes(str string) map[string]interface{} {
