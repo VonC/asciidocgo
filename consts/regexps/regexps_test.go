@@ -418,4 +418,18 @@ func TestRegexps(t *testing.T) {
 		So(r.MenuItems(), ShouldEqual, "Page Style, No Style")
 	})
 
+	Convey("Regexps can encapsulate MenuInlineRx results in a struct MenuInlineRxres", t, func() {
+		r := NewMenuInlineRxres(`menu \"File &gt; New"
+			menu "File1 &gt; New1" test
+			menu "File2 &gt; New2   &gt;    Item2"`)
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 3)
+
+		So(r.MenuInput(), ShouldEqual, "File &gt; New")
+		r.Next()
+		So(r.MenuInput(), ShouldEqual, "File1 &gt; New1")
+		r.Next()
+		So(r.MenuInput(), ShouldEqual, "File2 &gt; New2   &gt;    Item2")
+	})
+
 }

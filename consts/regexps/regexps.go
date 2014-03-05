@@ -353,6 +353,26 @@ func (mimr *MenuInlineMacroRxres) MenuItems() string {
 	return mimr.Group(2)
 }
 
+/* # Matches an implicit menu inline macro.
+ Examples
+   "File > New..."
+MenuInlineRx = /\\?"(\w[^"]*?#{CC_BLANK}*&gt;#{CC_BLANK}*[^" \t][^"]*)"/ */
+var MenuInlineRx, _ = regexp.Compile(`(?sm)\\?"(\w[^"]*?[ \t]*&gt;[ \t]*[^" \t][^"]*)"`)
+
+type MenuInlineRxres struct {
+	*Reres
+}
+
+/* Results for MenuInlineRx */
+func NewMenuInlineRxres(s string) *MenuInlineRxres {
+	return &MenuInlineRxres{NewReres(s, MenuInlineRx)}
+}
+
+/* Return input of the macro in '"File &gt; New"' */
+func (mir *MenuInlineRxres) MenuInput() string {
+	return mir.Group(1)
+}
+
 var PassInlineLiteralRx, _ = regexp.Compile("(?sm)(^|[^`\\w])(?:\\[([^\\]]+?)\\])?(\\\\?`([^`\\s]|[^`\\s].*?\\S)`)([^`\\w])")
 
 type PassInlineLiteralRxres struct {
