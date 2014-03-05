@@ -47,6 +47,10 @@ func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 	return strconv.Itoa(seed)
 }
 
+func (tsd *testSubstDocumentAble) Extensions() Extensionables {
+	return nil
+}
+
 type testConvertable struct {
 	data interface{}
 }

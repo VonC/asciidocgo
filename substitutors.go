@@ -222,12 +222,25 @@ func (sa subArray) include(s *subsEnum) bool {
 	return false
 }
 
+type InlineMacroable interface {
+	Config(key string) interface{}
+	Regexp() *regexp.Regexp
+	ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string
+	PossAttrs() []string
+}
+
+type Extensionables interface {
+	HasInlineMacros() bool
+	InlineMacros() []InlineMacroable
+}
+
 type SubstDocumentable interface {
 	Attr(name string, defaultValue interface{}, inherit bool) interface{}
 	Basebackend(base interface{}) bool
 	SubAttributes(data string, opts *OptionsParseAttributes) string
 	Counter(name string, seed int) string
 	HasAttr(name string, expect interface{}, inherit bool) bool
+	Extensions() Extensionables
 }
 
 type Convertable interface {
