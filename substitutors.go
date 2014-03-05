@@ -273,15 +273,29 @@ type passthrough struct {
 	typePT     string
 }
 
+type AttributeListable interface {
+	ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{}
+	Parse(posAttrs []string) map[string]interface{}
+}
+
+type ApplyNormalSubsable interface {
+	ApplyNormalSubs(lines string) string
+}
+
+type AttributeListMaker interface {
+	NewAttributeList(attrline string, block ApplyNormalSubsable, delimiter string) AttributeListable
+}
+
 /* Methods to perform substitutions on lines of AsciiDoc text.
 This module is intented to be mixed-in to Section and Block to provide
 operations for performing the necessary substitutions. */
 type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
-	passthroughs    []passthrough
-	document        SubstDocumentable
-	inlineMaker     InlineMaker
-	abstractNodable AbstractNodable
+	passthroughs       []passthrough
+	document           SubstDocumentable
+	inlineMaker        InlineMaker
+	abstractNodable    AbstractNodable
+	attributeListMaker AttributeListMaker
 }
 
 func (s *substitutors) Document() SubstDocumentable {
