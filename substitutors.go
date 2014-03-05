@@ -442,7 +442,7 @@ PassInlineLiteralRx:
 
 			attributes := make(map[string]interface{})
 			if unescaped_attrs != "" && reres.Attributes() != "" {
-				attributes = s.parseAttributes(reres.Attributes(), &OptionsParseAttributes{})
+				attributes = s.parseAttributes(reres.Attributes(), []string{}, &OptionsParseAttributes{})
 			}
 
 			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
@@ -1026,7 +1026,7 @@ func (opa *OptionsParseAttributes) AttributeMissing() string { return opa.attrib
  attrline  - A String of unprocessed attributes (key/value pairs)
  posattrs  - The keys for positional attributes
 returns an empty Hash if attrline is empty, otherwise a Hash of parsed attributes */
-func (s *substitutors) parseAttributes(attrline string, opts *OptionsParseAttributes) map[string]interface{} {
+func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts *OptionsParseAttributes) map[string]interface{} {
 	attributes := make(map[string]interface{})
 	if attrline == "" {
 		return attributes
@@ -1034,6 +1034,7 @@ func (s *substitutors) parseAttributes(attrline string, opts *OptionsParseAttrib
 	if opts.SubInput() && s.Document() != nil {
 		attrline = s.Document().SubAttributes(attrline, opts)
 	}
+	fmt.Sprintf("%v", posAttrs)
 	// TODO implement parseAttributes posattrs and opt map[string]interface{}
 	return attributes
 }
