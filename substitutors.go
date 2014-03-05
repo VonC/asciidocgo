@@ -804,7 +804,7 @@ func (s *substitutors) SubMacros(source string) string {
 					continue
 				}
 				if strings.HasPrefix(reres.FullMatch(), "kbd") {
-					key := unescapeBrackets(reres.Key())
+					key := unescapeBracketedText(reres.Key())
 					keys := []string{}
 					if key == "+" {
 						keys = append(keys, "+")
@@ -857,7 +857,7 @@ func (s *substitutors) SubMacros(source string) string {
 					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Kbd, "", optsInline)
 					res = res + inline.Convert()
 				} else if strings.HasPrefix(reres.FullMatch(), "btn") {
-					label := unescapeBrackets(reres.Key())
+					label := unescapeBracketedText(reres.Key())
 					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Button, label, nil)
 					res = res + inline.Convert()
 				}
@@ -1044,10 +1044,25 @@ func parseQuotedTextAttributes(str string) map[string]interface{} {
 	return res
 }
 
+/* Internal: Strip bounding whitespace, fold endlines and
+unescaped closing square brackets from text extracted from brackets */
+func unescapeBracketedText(text string) string {
+	if text == "" {
+		return text
+	}
+	// DONE in this Go implementation make \] a regex
+	text = strings.TrimSpace(text)
+	// TODO move eolrx in regexps
+	eolrx, _ := regexp.Compile("[\r\n]+")
+	text = eolrx.ReplaceAllString(text, " ")
+	text = regexps.EscapedBracketRx.ReplaceAllString(text, "]")
+	return text
+}
+
 /* Internal: Unescape closing square brackets.
    Intended for text extracted from square brackets. */
 func unescapeBrackets(str string) string {
-	// FIXME make \] a regex
+	// DONE in this Go implementation: make \] a regex
 	if str == "" {
 		return str
 	}
