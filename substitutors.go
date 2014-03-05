@@ -962,6 +962,43 @@ func (s *substitutors) SubMacros(source string) string {
 			res = res + suffix
 		}
 	}
+
+	// FIXME this location is somewhat arbitrary,
+	//       probably need to be able to control ordering
+	// TODO this handling needs some cleanup
+	if s.Document() != nil && s.Document().Extensions() != nil && s.Document().Extensions().HasInlineMacros() /*  && found[:macroish] */ {
+		for _, extension := range s.Document().Extensions().InlineMacros() {
+			reres := regexps.NewReres(res, extension.Regexp())
+			if reres.HasNext() {
+				res = ""
+			}
+			suffix := ""
+			for reres.HasNext() {
+				res = res + reres.Prefix()
+				if reres.IsEscaped() {
+					res = res + reres.FullMatch()[1:]
+					suffix = reres.Suffix()
+					reres.Next()
+					continue
+				}
+				target := reres.Group(1)
+				attributes := make(map[string]interface{})
+				if extension.Config("format").(string) != "short" {
+					if extension.Config("content_model").(string) == "attributes" {
+						opts := &OptionsParseAttributes{subInput: true, unescapeInput: true}
+						attributes = s.parseAttributes(reres.Group(2), extension.PossAttrs(), opts)
+					} else {
+						attributes["text"] = unescapeBrackets(reres.Group(2))
+					}
+				}
+				res = res + extension.ProcessMethod(s, target, attributes)
+
+				suffix = reres.Suffix()
+				reres.Next()
+			}
+			res = res + suffix
+		}
+	}
 	return res
 }
 
@@ -1016,6 +1053,7 @@ func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubTyp
 
 type OptionsParseAttributes struct {
 	subInput          bool
+	unescapeInput     bool
 	attribute_missing string
 }
 
