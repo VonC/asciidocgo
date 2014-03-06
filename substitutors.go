@@ -980,9 +980,13 @@ func (s *substitutors) SubMacros(source string) string {
 	// FIXME this location is somewhat arbitrary,
 	//       probably need to be able to control ordering
 	// TODO this handling needs some cleanup
+	//fmt.Printf("s='%v'\n", s)
+	//fmt.Printf("s.Document()='%v'\n", s.Document())
+	//fmt.Printf("s.Document().Extensions()='%v'\n", s.Document().Extensions())
 	if s.Document() != nil && s.Document().Extensions() != nil && s.Document().Extensions().HasInlineMacros() /*  && found[:macroish] */ {
 		for _, extension := range s.Document().Extensions().InlineMacros() {
 			reres := regexps.NewReres(res, extension.Regexp())
+			//fmt.Printf("\nres='%v' for regex='%v': reres='%v'\n", res, extension.Regexp(), reres)
 			if reres.HasNext() {
 				res = ""
 			}
@@ -1094,7 +1098,9 @@ func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts 
 		return attributes
 	}
 	if opts.SubInput() && s.Document() != nil {
+		//fmt.Printf("\nSubAttributes(attrline) '%v'\n", attrline)
 		attrline = s.Document().SubAttributes(attrline, opts)
+		//fmt.Printf("\nSubAttributes(attrline)>'%v'\n", attrline)
 	}
 	if opts.UnescapeInput() {
 		attrline = unescapeBracketedText(attrline)
