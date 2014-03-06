@@ -11,6 +11,7 @@ const (
 	Kbd
 	Button
 	Menu
+	Image
 	Unknown
 )
 
@@ -28,6 +29,8 @@ func (c Context) String() string {
 		return "button"
 	case Menu:
 		return "menu"
+	case Image:
+		return "image"
 	}
 	return "unknown"
 }
