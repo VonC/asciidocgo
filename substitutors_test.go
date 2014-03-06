@@ -576,4 +576,21 @@ the text %s5%s should be passed through as %s6%s text
 			So(unescapeBracketedText(""), ShouldEqual, "")
 		})
 	})
+
+	Convey("A substitutors can substitute image or icon macros references", t, func() {
+		s := &substitutors{}
+
+		testDocument := newTestSubstDocumentAble(s)
+		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
+
+		Convey("Substitute escaped image macros references returns same text", func() {
+			So(s.SubMacros(`\image:filename1.png[Alt Text]`), ShouldEqual, "image:filename1.png[Alt Text]")
+		})
+		Convey("Substitute non-escaped image macros references returns target and attributes", func() {
+			So(s.SubMacros(`image:filename2.png[Alt2 Text2]`), ShouldEqual, "unknown context")
+			So(s.SubMacros(`icon:filename3.png[Alt3 Text3]`), ShouldEqual, "unknown context")
+		})
+	})
 }

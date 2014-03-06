@@ -3,6 +3,7 @@ package asciidocgo
 import (
 	"fmt"
 	"log"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1019,6 +1020,59 @@ func (s *substitutors) SubMacros(source string) string {
 			}
 			res = res + suffix
 		}
+	}
+
+	if found.macroish && (strings.Contains(res, "image:") || strings.Contains(res, "icon:")) {
+		reres := regexps.NewImageInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			rawAttrs := unescapeBracketedText(reres.ImageAttributes())
+			typeMacro := ""
+			var posAttrs []string
+			if strings.HasPrefix(reres.FullMatch(), "icon:") {
+				typeMacro = "icon"
+				posAttrs = []string{"size"}
+			}
+			if strings.HasPrefix(reres.FullMatch(), "image:") {
+				typeMacro = "image"
+				posAttrs = []string{"alt", "width", "height"}
+			}
+			target := s.SubAttributes(reres.ImageTarget(), nil)
+			if s.Document() != nil && typeMacro != "icon" {
+				s.Document().Register("images", target)
+			}
+			attrs := s.parseAttributes(rawAttrs, posAttrs, &OptionsParseAttributes{})
+			if _, ok := attrs["alt"]; !ok {
+				ftarget := filepath.Base(target)
+				etarget := filepath.Ext(target)
+				if etarget != "" {
+					ftarget = ftarget[:len(ftarget)-len(etarget)]
+				}
+				attrs["alt"] = ftarget
+			}
+
+			optsInline := &OptionsInline{attributes: attrs}
+			optsInline.target = target
+			optsInline.typeInline = typeMacro
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Image, "", optsInline)
+			res = res + inline.Convert()
+
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
 	}
 	return res
 }
