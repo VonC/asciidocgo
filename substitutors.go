@@ -226,7 +226,7 @@ type InlineMacroable interface {
 	Config(key string) interface{}
 	Regexp() *regexp.Regexp
 	ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string
-	PossAttrs() []string
+	PosAttrs() []string
 }
 
 type Extensionables interface {
@@ -1000,7 +1000,7 @@ func (s *substitutors) SubMacros(source string) string {
 				if extension.Config("format").(string) != "short" {
 					if extension.Config("content_model").(string) == "attributes" {
 						opts := &OptionsParseAttributes{subInput: true, unescapeInput: true}
-						attributes = s.parseAttributes(reres.Group(2), extension.PossAttrs(), opts)
+						attributes = s.parseAttributes(reres.Group(2), extension.PosAttrs(), opts)
 					} else {
 						attributes["text"] = unescapeBrackets(reres.Group(2))
 					}
