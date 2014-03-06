@@ -2,6 +2,7 @@ package asciidocgo
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"testing"
 
@@ -11,7 +12,14 @@ import (
 )
 
 type testSubstDocumentAble struct {
-	s *substitutors
+	s  *substitutors
+	te *testExtensionables
+}
+
+func newTestSubstDocumentAble(s *substitutors) *testSubstDocumentAble {
+	tsd := &testSubstDocumentAble{s: s}
+	tsd.te = &testExtensionables{}
+	return tsd
 }
 
 func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
@@ -47,8 +55,46 @@ func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 	return strconv.Itoa(seed)
 }
 
+type testInlineMacro struct {
+	rx                     *regexp.Regexp
+	rxshort                *regexp.Regexp
+	shortFormat            bool
+	contentModelAttributes bool
+	posAttrs               []string
+}
+
+func (tim *testInlineMacro) IsShortFormat() bool            { return tim.shortFormat }
+func (tim *testInlineMacro) IsContentModelAttributes() bool { return tim.contentModelAttributes }
+func (tim *testInlineMacro) Regexp() *regexp.Regexp {
+	if tim.rx == nil {
+		tim.rx, _ = regexp.Compile(`\\?test:(\S+?)\[((?:\\\]|[^\]])*?)\]`)
+	}
+	if tim.rxshort == nil {
+		tim.rxshort, _ = regexp.Compile(`\\?testShort:\[((?:\\\]|[^\]])*?)\]`)
+	}
+	if tim.shortFormat {
+		return tim.rxshort
+	}
+	return tim.rx
+}
+func (tim *testInlineMacro) ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string {
+	return fmt.Sprintf("%v", attributes)
+}
+func (tim *testInlineMacro) PosAttrs() []string { return tim.posAttrs }
+
+type testExtensionables struct {
+	inlineMacros []InlineMacroable
+}
+
+func (te *testExtensionables) HasInlineMacros() bool {
+	return len(te.inlineMacros) > 0
+}
+func (te *testExtensionables) InlineMacros() []InlineMacroable {
+	return te.inlineMacros
+}
+
 func (tsd *testSubstDocumentAble) Extensions() Extensionables {
-	return nil
+	return tsd.te
 }
 
 type testConvertable struct {
@@ -75,21 +121,31 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 }
 
 type testAttributeListable struct {
+	attrline string
+	block    ApplyNormalSubsable
 }
 
 func (tal *testAttributeListable) ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{} {
-	return nil
+	into["*testpi: "+tal.attrline+"*"] = posAttrs
+	return into
 }
 
 func (tal *testAttributeListable) Parse(posAttrs []string) map[string]interface{} {
-	return nil
+	res := make(map[string]interface{})
+	b := ""
+	if tal.block != nil {
+		b = tal.block.ApplyNormalSubs("block")
+	}
+	res["*testp: "+tal.attrline+"*"+b+"*"] = posAttrs
+	return res
 }
 
 type testAttributeListMaker struct {
 }
 
 func (talm *testAttributeListMaker) NewAttributeList(attrline string, block ApplyNormalSubsable, delimiter string) AttributeListable {
-	return &testAttributeListable{}
+	tal := &testAttributeListable{attrline: attrline, block: block}
+	return tal
 }
 
 func TestSubstitutor(t *testing.T) {
@@ -228,7 +284,7 @@ the text %s5%s should be passed through as %s6%s text
    %s1%s
    %s2%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
-		s.document = &testSubstDocumentAble{}
+		s.document = newTestSubstDocumentAble(nil)
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s3%s
    math:[x != 0]
@@ -293,7 +349,7 @@ the text %s5%s should be passed through as %s6%s text
 	})
 	Convey("A substitutors can parse attributes", t, func() {
 		s := &substitutors{}
-		s.document = &testSubstDocumentAble{s}
+		s.document = newTestSubstDocumentAble(s)
 		s.attributeListMaker = &testAttributeListMaker{}
 		opts := &OptionsParseAttributes{}
 		Convey("Parsing no attributes returns empty map", func() {
@@ -301,12 +357,29 @@ the text %s5%s should be passed through as %s6%s text
 		})
 		Convey("Parsing attributes with SubInput means calling document SubAttributes", func() {
 			opts.subInput = true
-			So(len(s.parseAttributes("test", []string{}, opts)), ShouldEqual, 0)
+			attrs := s.parseAttributes("test", []string{}, opts)
+			So(len(attrs), ShouldEqual, 1)
+			So(fmt.Sprintf("%v", attrs), ShouldEqual, "map[*testp: test*block*:[]]")
+		})
+		Convey("Parsing attributes with SubInput means calling document ParseInto", func() {
+			into := make(map[string]interface{})
+			intoAttrs := []string{"intoa1", "intoa2"}
+			into["into1"] = intoAttrs
+			opts.into = into
+			attrs := s.parseAttributes("test2", []string{}, opts)
+			So(len(attrs), ShouldEqual, 2)
+			So(fmt.Sprintf("%v", attrs), ShouldEqual, "map[into1:[intoa1 intoa2] *testpi: test2*:[]]")
+		})
+		Convey("Parsing attributes with SubResult means using substitutor as block", func() {
+			opts.SetSubResult(true)
+			attrs := s.parseAttributes("test3", []string{}, opts)
+			So(len(attrs), ShouldEqual, 3)
+			So(fmt.Sprintf("%v", attrs), ShouldEqual, "map[into1:[intoa1 intoa2] *testpi: test2*:[] *testpi: test3*:[]]")
 		})
 	})
 	Convey("A substitutors can substitute attribute references", t, func() {
 		s := &substitutors{}
-		testDocument := &testSubstDocumentAble{s}
+		testDocument := newTestSubstDocumentAble(s)
 		s.document = testDocument
 		opts := &OptionsParseAttributes{}
 		Convey("Substitute empty attribute references returns empty empty string", func() {
@@ -367,7 +440,7 @@ the text %s5%s should be passed through as %s6%s text
 	})
 	Convey("A substitutors can Extract Reference attributes", t, func() {
 		s := &substitutors{}
-		testDocument := &testSubstDocumentAble{s}
+		testDocument := newTestSubstDocumentAble(s)
 		s.document = testDocument
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("reference counter attribute", func() {
@@ -422,7 +495,7 @@ the text %s5%s should be passed through as %s6%s text
 
 	Convey("A substitutors can substitute macros references", t, func() {
 		s := &substitutors{}
-		testDocument := &testSubstDocumentAble{s}
+		testDocument := newTestSubstDocumentAble(s)
 		s.document = testDocument
 		s.inlineMaker = &testInlineMaker{}
 		s.attributeListMaker = &testAttributeListMaker{}
