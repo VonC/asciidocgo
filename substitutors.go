@@ -223,7 +223,8 @@ func (sa subArray) include(s *subsEnum) bool {
 }
 
 type InlineMacroable interface {
-	Config(key string) interface{}
+	IsShortFormat() bool
+	IsContentModelAttributes() bool
 	Regexp() *regexp.Regexp
 	ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string
 	PosAttrs() []string
@@ -1001,8 +1002,9 @@ func (s *substitutors) SubMacros(source string) string {
 				}
 				target := reres.Group(1)
 				attributes := make(map[string]interface{})
-				if extension.Config("format").(string) != "short" {
-					if extension.Config("content_model").(string) == "attributes" {
+				if extension.IsShortFormat() == false {
+					// meaning 2 groups in the regex
+					if extension.IsContentModelAttributes() {
 						opts := &OptionsParseAttributes{subInput: true, unescapeInput: true}
 						attributes = s.parseAttributes(reres.Group(2), extension.PosAttrs(), opts)
 					} else {
