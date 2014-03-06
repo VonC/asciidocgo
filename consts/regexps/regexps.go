@@ -238,6 +238,35 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches an image or icon inline macro.
+Examples
+   image:filename.png[Alt Text]
+   image:http://example.com/images/filename.png[Alt Text]
+   image:filename.png[More [Alt\] Text] (alt text becomes "More [Alt] Text")
+   icon:github[large]
+    ImageInlineMacroRx = /\\?(?:image|icon):([^:\[][^\[]*)\[((?:\\\]|[^\]])*?)\]/ */
+
+var ImageInlineMacroRx, _ = regexp.Compile(`\\?(?:image|icon):([^:\[][^\[]*)\[((?:\\\]|[^\]])*?)\]`)
+
+type ImageInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for ImageInlineMacroRx */
+func NewImageInlineMacroRxres(s string) *ImageInlineMacroRxres {
+	return &ImageInlineMacroRxres{NewReres(s, ImageInlineMacroRx)}
+}
+
+/* Return target of the macro in 'image:target[attr1 attr2]' */
+func (iimr *ImageInlineMacroRxres) ImageTarget() string {
+	return iimr.Group(1)
+}
+
+/* Return attributes of the macro in 'image:target[attr1 attr2]' */
+func (iimr *ImageInlineMacroRxres) ImageAttributes() string {
+	return iimr.Group(2)
+}
+
 /*
 Matches either the kbd or btn inline macro.
 Examples

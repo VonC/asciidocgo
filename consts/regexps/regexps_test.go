@@ -432,4 +432,29 @@ func TestRegexps(t *testing.T) {
 		So(r.MenuInput(), ShouldEqual, "File2 &gt; New2   &gt;    Item2")
 	})
 
+	Convey("Regexps can encapsulate ImageInlineMacroRx results in a struct ImageInlineMacroRxres", t, func() {
+		r := NewImageInlineMacroRxres(`\image:filename1.png[Alt Text]
+   image:filename2.png[Alt2 Text2]
+   image:http://example.com/images/filename3.png[Alt3 Text3]
+   image:filename4.png[More4 [Alt4\] Text4] (alt text becomes "More [Alt] Text")
+   icon:github[large]`)
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 5)
+
+		So(r.ImageTarget(), ShouldEqual, "filename1.png")
+		So(r.ImageAttributes(), ShouldEqual, "Alt Text")
+		r.Next()
+		So(r.ImageTarget(), ShouldEqual, "filename2.png")
+		So(r.ImageAttributes(), ShouldEqual, "Alt2 Text2")
+		r.Next()
+		So(r.ImageTarget(), ShouldEqual, "http://example.com/images/filename3.png")
+		So(r.ImageAttributes(), ShouldEqual, "Alt3 Text3")
+		r.Next()
+		So(r.ImageTarget(), ShouldEqual, "filename4.png")
+		So(r.ImageAttributes(), ShouldEqual, `More4 [Alt4\] Text4`)
+		r.Next()
+		So(r.ImageTarget(), ShouldEqual, "github")
+		So(r.ImageAttributes(), ShouldEqual, "large")
+	})
+
 }
