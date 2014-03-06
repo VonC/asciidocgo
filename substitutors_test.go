@@ -547,4 +547,31 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros(`menu "File2 &gt; New2   &gt;    Item2" test2`), ShouldEqual, "menu map[menu:[File2 New2 Item2] submenu:[File2 New2] menuitem:Item2] test2")
 		})
 	})
+	Convey("A substitutors can substitute extension inline macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.attributeListMaker = &testAttributeListMaker{}
+		/*
+			fmt.Printf("\ns.document '%v'\n", s.document)
+			fmt.Printf("\ntestDocument.te '%v'\n", testDocument.te)
+			fmt.Printf("\ntestDocument.te.inlineMacros '%v'\n", testDocument.te.inlineMacros)
+			fmt.Printf("\ntestDocument.te.HasInlineMacros() '%v'\n", testDocument.te.HasInlineMacros())
+			fmt.Printf("\ntestDocument.te.inlineMacros[0] '%v'\n", testDocument.te.inlineMacros[0])
+			fmt.Printf("\ntestDocument.te.inlineMacros[0].Regexp() '%v'\n", testDocument.te.inlineMacros[0].Regexp())
+		*/
+		Convey("Substitute escaped test inline macro should return macro", func() {
+			So(s.SubMacros(`\test:target1[attr1 attr2]`), ShouldEqual, "test:target1[attr1 attr2]")
+		})
+		Convey("Substitute non-escaped test inline macro should return attributes", func() {
+			So(s.SubMacros(`test:target1[attr1 attr2]`), ShouldEqual, "map[text:attr1 attr2]")
+		})
+		Convey("Substitute non-escaped test inline macro with 'attributes' content model should return attributes", func() {
+			tim.contentModelAttributes = true
+			So(s.SubMacros(`test:target2[attr21 attr22]`), ShouldEqual, "map[*testp: attr21 attr22*block*:[]]")
+			So(unescapeBracketedText(""), ShouldEqual, "")
+		})
+	})
 }
