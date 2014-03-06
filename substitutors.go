@@ -1124,7 +1124,7 @@ func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts 
 }
 
 func (s *substitutors) ApplyNormalSubs(lines string) string {
-	return ""
+	return s.ApplySubs(lines, nil)
 }
 
 func parseQuotedTextAttributes(str string) map[string]interface{} {
