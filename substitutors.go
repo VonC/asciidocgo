@@ -242,6 +242,7 @@ type SubstDocumentable interface {
 	Counter(name string, seed int) string
 	HasAttr(name string, expect interface{}, inherit bool) bool
 	Extensions() Extensionables
+	Register(typeDoc string, value string)
 }
 
 type Convertable interface {

@@ -54,6 +54,8 @@ func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 	seed = seed + 1
 	return strconv.Itoa(seed)
 }
+func (tsd *testSubstDocumentAble) Register(typeDoc string, value string) {
+}
 
 type testInlineMacro struct {
 	rx                     *regexp.Regexp
