@@ -1106,10 +1106,13 @@ func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts 
 		block = s
 	}
 	into := opts.Into()
+	alm := s.attributeListMaker
 	if into != nil {
-		return s.attributeListMaker.NewAttributeList(attrline, block, "").ParseInto(into, posAttrs)
+		al := alm.NewAttributeList(attrline, block, "")
+		return al.ParseInto(into, posAttrs)
 	}
-	return s.attributeListMaker.NewAttributeList(attrline, block, "").Parse(posAttrs)
+	al := alm.NewAttributeList(attrline, block, "")
+	return al.Parse(posAttrs)
 }
 
 func (s *substitutors) ApplyNormalSubs(lines string) string {

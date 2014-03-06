@@ -74,6 +74,24 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 	return &testConvertable{"unknown context"}
 }
 
+type testAttributeListable struct {
+}
+
+func (tal *testAttributeListable) ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{} {
+	return nil
+}
+
+func (tal *testAttributeListable) Parse(posAttrs []string) map[string]interface{} {
+	return nil
+}
+
+type testAttributeListMaker struct {
+}
+
+func (talm *testAttributeListMaker) NewAttributeList(attrline string, block ApplyNormalSubsable, delimiter string) AttributeListable {
+	return &testAttributeListable{}
+}
+
 func TestSubstitutor(t *testing.T) {
 
 	Convey("A substitutors can be initialized", t, func() {
@@ -182,6 +200,7 @@ func TestSubstitutor(t *testing.T) {
 			"`Here`s Johnny!"
 		s := &substitutors{}
 		testsub = "test_ApplySubs_extractPassthroughs"
+		s.attributeListMaker = &testAttributeListMaker{}
 
 		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s%s1%s
 [input]%s2%s
@@ -275,6 +294,7 @@ the text %s5%s should be passed through as %s6%s text
 	Convey("A substitutors can parse attributes", t, func() {
 		s := &substitutors{}
 		s.document = &testSubstDocumentAble{s}
+		s.attributeListMaker = &testAttributeListMaker{}
 		opts := &OptionsParseAttributes{}
 		Convey("Parsing no attributes returns empty map", func() {
 			So(len(s.parseAttributes("", []string{}, opts)), ShouldEqual, 0)
@@ -405,6 +425,7 @@ the text %s5%s should be passed through as %s6%s text
 		testDocument := &testSubstDocumentAble{s}
 		s.document = testDocument
 		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
 
 		Convey("Substitute empty macros references returns empty empty string", func() {
 			So(s.SubMacros(""), ShouldEqual, "")
