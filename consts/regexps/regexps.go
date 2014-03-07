@@ -72,12 +72,12 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 	shift := 0
 	for match := r.FindSubmatchIndex(by); match != nil && len(match) > 0; match = r.FindSubmatchIndex(by) {
 		if len(match) > 0 {
-			//fmt.Printf("%v============%v===\n", match, string(by))
+			// fmt.Printf("\n%v============%v===\n", match, string(by))
 			match, lg = match[:len(match)-2], match[len(match)-2:]
 			for i, mi := range match {
 				match[i] = mi + shift
 			}
-			//fmt.Printf("%v===append\n", match)
+			// fmt.Printf("\n%v===append\n", match)
 			if lg[0] < lg[1] {
 				lh := string(by[lg[0]:lg[1]])
 				by = by[lg[0]:]
@@ -89,12 +89,17 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 				}
 			} else {
 				m = append(m, match)
-				break
+				if lg[0] > -1 && lg[1] > -1 {
+					break
+				} else {
+					by = by[match[1]:]
+					shift = shift + match[1]
+				}
 			}
 		}
 	}
 	res.matches = m
-	//fmt.Printf("*** %v======\n", res.matches)
+	//fmt.Printf("\n*** %v======\n", res.matches)
 	return res
 }
 
