@@ -272,6 +272,41 @@ func (iimr *ImageInlineMacroRxres) ImageAttributes() string {
 	return iimr.Group(2)
 }
 
+/* Matches an indexterm inline macro, which may span multiple lines.
+Examples
+  indexterm:[Tigers,Big cats]
+  (((Tigers,Big cats)))
+  indexterm2:[Tigers]
+  ((Tigers))
+
+   IndextermInlineMacroRx = /\\?(?:(indexterm2?):\[(.*?[^\\])\]|\(\((.+?)\)\)(?!\)))/m */
+
+var IndextermInlineMacroRx, _ = regexp.Compile(`\\?(?:(indexterm2?):\[(.*?[^\\])\]|\(\((.+?)\)\)([^\)]|$))`)
+
+type IndextermInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for IndextermInlineMacroRx */
+func NewIndextermInlineMacroRxres(s string) *IndextermInlineMacroRxres {
+	return &IndextermInlineMacroRxres{NewReresLAGroup(s, IndextermInlineMacroRx)}
+}
+
+/* Return name indexterm of the macro in 'indexterm:[Tigers,Big cats]' */
+func (itimr *IndextermInlineMacroRxres) IndextermMacroName() string {
+	return itimr.Group(1)
+}
+
+/* Return terms of the macro in 'indexterm:[Tigers,Big cats]' */
+func (itimr *IndextermInlineMacroRxres) IndextermTextOrTerms() string {
+	return itimr.Group(2)
+}
+
+/* Return text in brackets of the macro in '((Tigers))' */
+func (itimr *IndextermInlineMacroRxres) IndextermTextInBrackets() string {
+	return itimr.Group(3)
+}
+
 /*
 Matches either the kbd or btn inline macro.
 Examples
