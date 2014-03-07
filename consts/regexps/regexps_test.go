@@ -464,7 +464,7 @@ func TestRegexps(t *testing.T) {
 			So(r.HasAnyMatch(), ShouldBeTrue)
 			So(len(r.matches), ShouldEqual, 3)
 
-			fmt.Printf("\nr='%v'\n", r.matches)
+			//fmt.Printf("\nr='%v'\n", r.matches)
 			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.IndextermMacroName(), ShouldEqual, "indexterm")
 			So(r.IndextermTextOrTerms(), ShouldEqual, "Tigers,Big cats")
@@ -488,7 +488,7 @@ func TestRegexps(t *testing.T) {
 			So(len(r.matches), ShouldEqual, 2)
 			So(r.IndextermMacroName(), ShouldEqual, "")
 			So(r.IndextermTextOrTerms(), ShouldEqual, "")
-			So(r.IndextermTextInBrackets(), ShouldEqual, "(Tigers,Big cats)")
+			So(r.IndextermTextInBrackets(), ShouldEqual, "(Tigers,Big cats))")
 			r.Next()
 			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.IndextermMacroName(), ShouldEqual, "")
