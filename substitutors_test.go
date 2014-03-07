@@ -118,6 +118,9 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 		return &testConvertable{text}
 	case context.Menu:
 		return &testConvertable{opts.Attributes()}
+	case context.Image:
+		msg := fmt.Sprintf("Context '%v': target '%v' type '%v' attrs: '%v'", c, opts.Target(), opts.TypeInline(), opts.Attributes())
+		return &testConvertable{msg}
 	}
 	return &testConvertable{"unknown context"}
 }
@@ -589,8 +592,8 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros(`\image:filename1.png[Alt Text]`), ShouldEqual, "image:filename1.png[Alt Text]")
 		})
 		Convey("Substitute non-escaped image macros references returns target and attributes", func() {
-			So(s.SubMacros(`image:filename2.png[Alt2 Text2]`), ShouldEqual, "unknown context")
-			So(s.SubMacros(`icon:filename3.png[Alt3 Text3]`), ShouldEqual, "unknown context")
+			So(s.SubMacros(`image:filename2.png[Alt2 Text2]`), ShouldEqual, "Context 'image': target 'filename2.png' type 'image' attrs: 'map[*testp: Alt2 Text2*block*:[alt width height] alt:filename2]'")
+			So(s.SubMacros(`icon:filename3.png[Alt3 Text3]`), ShouldEqual, "Context 'image': target 'filename3.png' type 'icon' attrs: 'map[*testp: Alt3 Text3*block*:[size] alt:filename3]'")
 		})
 	})
 }
