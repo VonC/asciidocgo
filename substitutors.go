@@ -1074,6 +1074,14 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		res = res + suffix
 	}
+
+	if found.macroish_short_form || found.round_bracket {
+		/* indexterm:[Tigers,Big cats]
+		   (((Tigers,Big cats)))
+		   indexterm2:[Tigers]
+		   ((Tigers)) */
+
+	}
 	return res
 }
 
