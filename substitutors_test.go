@@ -608,4 +608,23 @@ the text %s5%s should be passed through as %s6%s text
 		\]hi  `, true), ShouldEqual, `ab]aa   			  d]f        		]hi`)
 	})
 
+	Convey("A substitutors can splitSimpleCsv", t, func() {
+		So(len(splitSimpleCsv("")), ShouldEqual, 0)
+		So(fmt.Sprintf("%v", splitSimpleCsv("aaa")), ShouldEqual, "[aaa]")
+		var res []string
+
+		res = splitSimpleCsv("aaa  ,    bb,cc,  ddd  ,eee , ")
+		So(fmt.Sprintf("%v", res), ShouldEqual, "[aaa bb cc ddd eee ]")
+		So(len(res), ShouldEqual, 6)
+
+		res = splitSimpleCsv(`aa " 12 3 " a  ,    bb,c"c1"c,  d"dd  ,ee"e , `)
+		So(fmt.Sprintf("%v", res), ShouldEqual, "[aa  12 3  a bb cc1c ddd  ,eee ]")
+		So(len(res), ShouldEqual, 5)
+		So(res[0], ShouldEqual, "aa  12 3  a")
+		So(res[1], ShouldEqual, "bb")
+		So(res[2], ShouldEqual, "cc1c")
+		So(res[3], ShouldEqual, "ddd  ,eee")
+		So(res[4], ShouldEqual, "")
+	})
+
 }

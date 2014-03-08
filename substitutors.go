@@ -1235,6 +1235,45 @@ func unescapeBrackets(str string) string {
 	return str
 }
 
+// Internal: Split text formatted as CSV with support
+// for double-quoted values (in which commas are ignored)
+func splitSimpleCsv(str string) []string {
+	values := []string{}
+	if str == "" {
+		return values
+	}
+	if strings.Contains(str, `"`) {
+		current := []string{}
+		quoteOpen := false
+		for _, c := range str {
+			switch c {
+			case ',':
+				if quoteOpen {
+					current = append(current, string(c))
+				} else {
+					cur := strings.Join(current, "")
+					cur = strings.TrimSpace(cur)
+					values = append(values, cur)
+					current = []string{}
+				}
+			case '"':
+				quoteOpen = !quoteOpen
+			default:
+				current = append(current, string(c))
+			}
+		}
+		cur := strings.Join(current, "")
+		cur = strings.TrimSpace(cur)
+		values = append(values, cur)
+	} else {
+		its := strings.Split(str, ",")
+		for _, it := range its {
+			values = append(values, strings.TrimSpace(it))
+		}
+	}
+	return values
+}
+
 func resolvePassSubs(str string) subArray {
 	// TODO resolve_subs subs, :inline, nil, 'passthrough macro'
 	return subArray{}
