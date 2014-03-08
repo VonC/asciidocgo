@@ -596,4 +596,16 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros(`icon:filename3.png[Alt3 Text3]`), ShouldEqual, "Context 'image': target 'filename3.png' type 'icon' attrs: 'map[*testp: Alt3 Text3*block*:[size] alt:filename3]'")
 		})
 	})
+
+	Convey("A substitutors can normalizeString", t, func() {
+		So(normalizeString("", false), ShouldEqual, "")
+		So(normalizeString(" aaa  ", false), ShouldEqual, "aaa")
+		So(normalizeString(` abcaa  
+			  def       
+		ghi  `, false), ShouldEqual, `abcaa   			  def        		ghi`)
+		So(normalizeString(` ab\]aa  
+			  d]f       
+		\]hi  `, true), ShouldEqual, `ab]aa   			  d]f        		]hi`)
+	})
+
 }

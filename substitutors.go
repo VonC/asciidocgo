@@ -1210,6 +1210,20 @@ func unescapeBracketedText(text string) string {
 	return text
 }
 
+/* Internal: Strip bounding whitespace and fold endlines */
+func normalizeString(str string, bracketsUnescaped bool) string {
+	if str == "" {
+		return str
+	}
+	res := regexps.EolRx.ReplaceAllString(str, " ")
+	// fmt.Printf("\nstr='%v' v`\nres='%v'\n", []byte(str), []byte(res))
+	res = strings.TrimSpace(res)
+	if bracketsUnescaped {
+		return unescapeBrackets(res)
+	}
+	return res
+}
+
 /* Internal: Unescape closing square brackets.
    Intended for text extracted from square brackets. */
 func unescapeBrackets(str string) string {
