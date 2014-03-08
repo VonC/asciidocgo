@@ -30,6 +30,8 @@ var ORDERED_LIST_KEYWORDS = map[string]rune{
 	//'decimal': '1'
 }
 
+var EolRx, _ = regexp.Compile(`(?sm)[\r\n]+)`)
+
 /* Encapsulate a regex and a string,
 for managing results from FindAllStringSubmatchIndex */
 type Reres struct {
