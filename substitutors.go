@@ -243,7 +243,7 @@ type SubstDocumentable interface {
 	Counter(name string, seed int) string
 	HasAttr(name string, expect interface{}, inherit bool) bool
 	Extensions() Extensionables
-	Register(typeDoc string, value string)
+	Register(typeDoc string, value []string)
 }
 
 type Convertable interface {
@@ -1051,7 +1051,7 @@ func (s *substitutors) SubMacros(source string) string {
 			}
 			target := s.SubAttributes(reres.ImageTarget(), nil)
 			if s.Document() != nil && typeMacro != "icon" {
-				s.Document().Register("images", target)
+				s.Document().Register("images", []string{target})
 			}
 			attrs := s.parseAttributes(rawAttrs, posAttrs, &OptionsParseAttributes{})
 			if _, ok := attrs["alt"]; !ok {
