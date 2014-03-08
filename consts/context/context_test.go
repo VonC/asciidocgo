@@ -15,6 +15,7 @@ func TestContext(t *testing.T) {
 		So(Button.String(), ShouldEqual, "button")
 		So(Menu.String(), ShouldEqual, "menu")
 		So(Image.String(), ShouldEqual, "image")
+		So(IndexTerm.String(), ShouldEqual, "indexterm")
 		So(Unknown.String(), ShouldEqual, "unknown")
 	})
 

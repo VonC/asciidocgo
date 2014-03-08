@@ -12,6 +12,7 @@ const (
 	Button
 	Menu
 	Image
+	IndexTerm
 	Unknown
 )
 
@@ -31,6 +32,8 @@ func (c Context) String() string {
 		return "menu"
 	case Image:
 		return "image"
+	case IndexTerm:
+		return "indexterm"
 	}
 	return "unknown"
 }
