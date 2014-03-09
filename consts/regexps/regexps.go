@@ -42,6 +42,11 @@ type Reres struct {
 	previous int
 }
 
+func (r *Reres) String() string {
+	msg := fmt.Sprintf("Regexp res for '%v': (%v-%v; len %v) %v", r.r, r.i, r.previous, len(r.s), r.matches)
+	return msg
+}
+
 /* Build new result from FindAllStringSubmatchIndex on a string */
 func NewReres(s string, r *regexp.Regexp) *Reres {
 	matches := r.FindAllStringSubmatchIndex(s, -1)
@@ -74,13 +79,20 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 	shift := 0
 	for match := r.FindSubmatchIndex(by); match != nil && len(match) > 0; match = r.FindSubmatchIndex(by) {
 		if len(match) > 0 {
-			// fmt.Printf("\n%v============%v===\n", match, string(by))
+			//fmt.Printf("\nMatch '%v' '%v'\n-------\n", match, string(by))
 			match, lg = match[:len(match)-2], match[len(match)-2:]
 			for i, mi := range match {
 				match[i] = mi + shift
+				/*
+					ss := ""
+					if mi > -1 {
+						ss = s[mi+shift:]
+					}
+					fmt.Printf("\ni=%v: shift=%v match[i]=%v: s[match[%v]]='%v'\n", i, shift, mi, mi+shift, ss)
+				*/
 			}
-			// fmt.Printf("\n%v===append\n", match)
-			if lg[0] < lg[1] {
+			//fmt.Printf("\nAppend '%v'\n===\n", match)
+			if lg[0] <= lg[1] && lg[0] > -1 {
 				lh := string(by[lg[0]:lg[1]])
 				by = by[lg[0]:]
 				shift = shift + lg[0]
@@ -94,8 +106,9 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 				if lg[0] > -1 && lg[1] > -1 {
 					break
 				} else {
-					by = by[match[1]:]
-					shift = shift + match[1]
+					//fmt.Printf("\nBY (%v-%v)'%v' '%v'\n'%v'\n-------\n", len(by), match[1]-shift, by, string(by), match)
+					by = by[match[1]-shift:]
+					shift = shift + (match[1] - shift)
 				}
 			}
 		}
