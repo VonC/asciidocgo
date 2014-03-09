@@ -635,7 +635,7 @@ the text %s5%s should be passed through as %s6%s text
 		s.document = testDocument
 		s.attributeListMaker = &testAttributeListMaker{}
 		Convey("Substitute escaped index term inline macro should return macro", func() {
-			So(s.SubMacros("\\indexterm:[Tigers,Big cats]\n  \\(((Tigers,Big cats))) \n   \\indexterm2:[Tigers] \n \\((Tigers)))"), ShouldEqual, "test:target1[attr1 attr2]")
+			So(s.SubMacros("\\indexterm:[Tigers,Big cats]\n  \\(((Tigers,Big cats))) \n   \\indexterm2:[Tigers] \n \\((Tigers)))"), ShouldEqual, "indexterm:[Tigers,Big cats]\n  (((Tigers,Big cats))) \n   indexterm2:[Tigers] \n ((Tigers)))")
 		})
 	})
 

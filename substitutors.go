@@ -1087,6 +1087,7 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		suffix := ""
 		for reres.HasNext() {
+			//fmt.Println("\nreres matches '%v'\n", reres)
 			res = res + reres.Prefix()
 			// honor the escape
 			if reres.IsEscaped() {
