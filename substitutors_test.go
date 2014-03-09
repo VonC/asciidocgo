@@ -627,4 +627,16 @@ the text %s5%s should be passed through as %s6%s text
 		So(res[4], ShouldEqual, "")
 	})
 
+	Convey("A substitutors can substitute extension index term inline macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.attributeListMaker = &testAttributeListMaker{}
+		Convey("Substitute escaped index term inline macro should return macro", func() {
+			So(s.SubMacros("\\indexterm:[Tigers,Big cats]\n  \\(((Tigers,Big cats))) \n   \\indexterm2:[Tigers] \n \\((Tigers)))"), ShouldEqual, "test:target1[attr1 attr2]")
+		})
+	})
+
 }

@@ -1081,6 +1081,58 @@ func (s *substitutors) SubMacros(source string) string {
 		   indexterm2:[Tigers]
 		   ((Tigers)) */
 
+		reres := regexps.NewIndextermInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			numBrackets := 0
+			textInBrackets := ""
+			macroName := reres.IndextermMacroName()
+			if macroName != "" {
+				textInBrackets = reres.IndextermTextInBrackets()
+				if strings.HasPrefix(textInBrackets, "(") && strings.HasSuffix(textInBrackets, ")") {
+					textInBrackets = textInBrackets[1 : len(textInBrackets)-1]
+					numBrackets = 3
+				} else {
+					numBrackets = 2
+				}
+			}
+
+			// non-visible
+			var terms []string
+			if macroName == "indexterm" || numBrackets == 3 {
+				if macroName != "" {
+					// (((Tigers,Big cats)))
+					terms = splitSimpleCsv(normalizeString(textInBrackets, false))
+				} else {
+					// indexterm:[Tigers,Big cats]
+					terms = splitSimpleCsv(normalizeString(reres.IndextermTextOrTerms(), true))
+				}
+				if s.Document() != nil {
+					s.Document().Register("indexterms", terms)
+				}
+				attrs := make(map[string]interface{})
+				attrs["terms"] = terms
+				optsInline := &OptionsInline{attributes: attrs}
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.IndexTerm, "", optsInline)
+				res = res + inline.Convert()
+			}
+
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
 	}
 	return res
 }
