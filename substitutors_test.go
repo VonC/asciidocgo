@@ -660,8 +660,12 @@ the text %s5%s should be passed through as %s6%s text
 		s.document = testDocument
 		s.inlineMaker = &testInlineMaker{}
 		s.attributeListMaker = &testAttributeListMaker{}
-		Convey("Substitute raw url macro should return macro", func() {
+		Convey("Substitute escaped raw url macro should return macro unescaped", func() {
 			So(s.SubMacros("\\http://google.com[Google]\n  \\http://google.com[Google\nHomepage]"), ShouldEqual, "http://google.com[Google]\n  http://google.com[Google\nHomepage]")
+		})
+
+		Convey("Substitute invalid raw url macro should return macro unchanged", func() {
+			So(s.SubMacros("link:http://google.com"), ShouldEqual, "link:http://google.com")
 		})
 	})
 

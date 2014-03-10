@@ -1178,6 +1178,15 @@ func (s *substitutors) SubMacros(source string) string {
 				reres.Next()
 				continue
 			}
+			// not a valid macro syntax w/o trailing square brackets
+			// we probably shouldn't even get here...
+			// our regex is doing too much
+			if reres.LinkPrefix() == "link:" && reres.LinkText() == "" {
+				res = res + reres.FullMatch()
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
 			suffix = reres.Suffix()
 			reres.Next()
 		}
