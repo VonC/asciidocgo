@@ -104,6 +104,7 @@ type testConvertable struct {
 }
 
 func (tc *testConvertable) Convert() string {
+	//fmt.Printf("\ntc.data: '%v'\n", tc.data)
 	return fmt.Sprintf("%v", tc.data)
 }
 
@@ -120,6 +121,10 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 		return &testConvertable{opts.Attributes()}
 	case context.Image:
 		msg := fmt.Sprintf("Context '%v': target '%v' type '%v' attrs: '%v'", c, opts.Target(), opts.TypeInline(), opts.Attributes())
+		return &testConvertable{msg}
+	case context.IndexTerm:
+		msg := fmt.Sprintf("ContextIT '%v': text '%v' ===> type '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Attributes())
+		//fmt.Printf("\n msg='%v'", msg)
 		return &testConvertable{msg}
 	}
 	return &testConvertable{"unknown context"}
@@ -633,9 +638,18 @@ the text %s5%s should be passed through as %s6%s text
 		tim := &testInlineMacro{}
 		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
 		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
 		s.attributeListMaker = &testAttributeListMaker{}
 		Convey("Substitute escaped index term inline macro should return macro", func() {
 			So(s.SubMacros("\\indexterm:[Tigers,Big cats]\n  \\(((Tigers,Big cats))) \n   \\indexterm2:[Tigers] \n \\((Tigers)))"), ShouldEqual, "indexterm:[Tigers,Big cats]\n  (((Tigers,Big cats))) \n   indexterm2:[Tigers] \n ((Tigers)))")
+		})
+		Convey("Substitute index term inline macro with text in brackets should return substituted macro", func() {
+			So(s.SubMacros("(((Tigers,Big cats))) "), ShouldEqual, "ContextIT 'indexterm': text '' ===> type '' attrs: 'map[terms:[Tigers Big cats]]' ")
+			So(s.SubMacros("((Tigers2,Big2 Tig, cats2)) "), ShouldEqual, "ContextIT 'indexterm': text 'Tigers2,Big2 Tig, cats2' ===> type 'visible' attrs: 'map[]' ")
+		})
+		Convey("Substitute index term inline macro with text or termsshould return substituted macro", func() {
+			So(s.SubMacros("indexterm:[Tigers,Big cats]"), ShouldEqual, "ContextIT 'indexterm': text '' ===> type '' attrs: 'map[terms:[Tigers Big cats]]'")
+			So(s.SubMacros("indexterm2:[Tigers]"), ShouldEqual, "ContextIT 'indexterm': text 'Tigers' ===> type 'visible' attrs: 'map[]'")
 		})
 	})
 

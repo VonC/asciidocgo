@@ -1100,7 +1100,7 @@ func (s *substitutors) SubMacros(source string) string {
 			numBrackets := 0
 			textInBrackets := ""
 			macroName := reres.IndextermMacroName()
-			if macroName != "" {
+			if macroName == "" {
 				textInBrackets = reres.IndextermTextInBrackets()
 				if strings.HasPrefix(textInBrackets, "(") && strings.HasSuffix(textInBrackets, ")") {
 					textInBrackets = textInBrackets[1 : len(textInBrackets)-1]
@@ -1109,11 +1109,12 @@ func (s *substitutors) SubMacros(source string) string {
 					numBrackets = 2
 				}
 			}
+			//fmt.Printf("\n(%v) textInBrackets '%v'\n", numBrackets, textInBrackets)
 
 			// non-visible
 			var terms []string
 			if macroName == "indexterm" || numBrackets == 3 {
-				if macroName != "" {
+				if macroName == "" {
 					// (((Tigers,Big cats)))
 					terms = splitSimpleCsv(normalizeString(textInBrackets, false))
 				} else {
@@ -1127,6 +1128,22 @@ func (s *substitutors) SubMacros(source string) string {
 				attrs["terms"] = terms
 				optsInline := &OptionsInline{attributes: attrs}
 				inline := s.inlineMaker.NewInline(s.abstractNodable, context.IndexTerm, "", optsInline)
+				//fmt.Printf("\ninline '%v'\n", inline)
+				res = res + inline.Convert()
+			} else {
+				text := ""
+				if macroName == "" {
+					// ((Tigers))
+					text = normalizeString(textInBrackets, false)
+				} else {
+					text = normalizeString(reres.IndextermTextOrTerms(), true)
+				}
+				if s.Document() != nil {
+					s.Document().Register("indexterms", []string{text})
+				}
+				optsInline := &OptionsInline{}
+				optsInline.typeInline = "visible"
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.IndexTerm, text, optsInline)
 				res = res + inline.Convert()
 			}
 
@@ -1263,7 +1280,8 @@ func unescapeBracketedText(text string) string {
 	return text
 }
 
-/* Internal: Strip bounding whitespace and fold endlines */
+/* Internal: Strip bounding whitespace and fold endlines
+bracketsUnescaped is false by default */
 func normalizeString(str string, bracketsUnescaped bool) string {
 	if str == "" {
 		return str
