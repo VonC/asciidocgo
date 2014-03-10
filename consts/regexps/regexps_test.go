@@ -530,4 +530,39 @@ func TestRegexps(t *testing.T) {
 			So(r.IndextermTextInBrackets(), ShouldEqual, "Tigers)")
 		})
 	})
+
+	Convey("Regexps can encapsulate LinkInlineRx results in a struct LinkInlineRxres", t, func() {
+		Convey("Escaped LinkInlineRxres should be escaped", func() {
+			r := NewLinkInlineRxres("\\http://google.com")
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(r.IsLinkEscaped(), ShouldBeTrue)
+			So(r.LinkPrefix(), ShouldEqual, "")
+			So(r.LinkTarget(), ShouldEqual, "\\http://google.com")
+			So(r.LinkText(), ShouldEqual, "")
+		})
+		Convey("a single-line raw url should be interpreted as a link", func() {
+			r := NewLinkInlineRxres("http://google.com")
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(r.IsLinkEscaped(), ShouldBeFalse)
+			So(r.LinkPrefix(), ShouldEqual, "")
+			So(r.LinkTarget(), ShouldEqual, "http://google.com")
+			So(r.LinkText(), ShouldEqual, "")
+		})
+		Convey("a single-line raw url with text should be interpreted as a link", func() {
+			r := NewLinkInlineRxres("http://google.com[Google]")
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(r.IsLinkEscaped(), ShouldBeFalse)
+			So(r.LinkPrefix(), ShouldEqual, "")
+			So(r.LinkTarget(), ShouldEqual, "http://google.com")
+			So(r.LinkText(), ShouldEqual, "Google")
+		})
+		Convey("a multi-line raw url with text should be interpreted as a link", func() {
+			r := NewLinkInlineRxres("http://google.com[Google\nHomepage]")
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(r.IsLinkEscaped(), ShouldBeFalse)
+			So(r.LinkPrefix(), ShouldEqual, "")
+			So(r.LinkTarget(), ShouldEqual, "http://google.com")
+			So(r.LinkText(), ShouldEqual, "Google\nHomepage")
+		})
+	})
 }

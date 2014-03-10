@@ -366,6 +366,44 @@ func NewKbdDelimiterRxres(s string) *KbdDelimiterRxres {
 	return &KbdDelimiterRxres{NewReresLAQual(s, KbdDelimiterRx, kbdla)}
 }
 
+/* Matches an implicit link and some of the link inline macro.
+ Examples
+   http://github.com
+   http://github.com[GitHub]
+
+ FIXME revisit! the main issue is we need different rules for implicit vs explicit
+LinkInlineRx = %r{(^|link:|&lt;|[\s>\(\)\[\];])(\\?(?:https?|file|ftp|irc)://[^\s\[\]<]*[^\s.,\[\]<])(?:\[((?:\\\]|[^\]])*?)\])?} */
+var LinkInlineRx, _ = regexp.Compile(`(^|link:|&lt;|[\s>\(\)\[\];])(\\?(?:https?|file|ftp|irc)://[^\s\[\]<]*[^\s.,\[\]<])(?:\[((?:\\\]|[^\]])*?)\])?`)
+
+type LinkInlineRxres struct {
+	*Reres
+}
+
+/* Results for LinkInlineRx */
+func NewLinkInlineRxres(s string) *LinkInlineRxres {
+	return &LinkInlineRxres{NewReres(s, LinkInlineRx)}
+}
+
+/* Return true if '\' found in 'link:\http:xxx[yyy]' */
+func (lir *LinkInlineRxres) IsLinkEscaped() bool {
+	return strings.HasPrefix(lir.Group(2), "\\")
+}
+
+/* Return 'link:' in 'link:http:xxx[yyy]' */
+func (lir *LinkInlineRxres) LinkPrefix() string {
+	return lir.Group(1)
+}
+
+/* Return 'xxx' in 'link:http:xxx[yyy]' */
+func (lir *LinkInlineRxres) LinkTarget() string {
+	return lir.Group(2)
+}
+
+/* Return 'yyy' in 'link:http:xxx[yyy]' */
+func (lir *LinkInlineRxres) LinkText() string {
+	return lir.Group(3)
+}
+
 /* Matches a math inline macro, which may span multiple lines.
 Examples
   math:[x != 0]
