@@ -103,13 +103,9 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 				}
 			} else {
 				m = append(m, match)
-				if lg[0] > -1 && lg[1] > -1 {
-					break
-				} else {
-					//fmt.Printf("\nBY (%v-%v)'%v' '%v'\n'%v'\n-------\n", len(by), match[1]-shift, by, string(by), match)
-					by = by[match[1]-shift:]
-					shift = shift + (match[1] - shift)
-				}
+				//fmt.Printf("\nBY (%v-%v)'%v' '%v'\n'%v'\n-------\n", len(by), match[1]-shift, by, string(by), match)
+				by = by[match[1]-shift:]
+				shift = shift + (match[1] - shift)
 			}
 		}
 	}

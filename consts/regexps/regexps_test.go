@@ -289,6 +289,40 @@ func TestRegexps(t *testing.T) {
 		So(r.Group(1), ShouldEqual, "bb")
 		So(r.Suffix(), ShouldEqual, "")
 	})
+	Convey("Regexps can simulate a lookahead at the end of a regexp choice", t, func() {
+		rx, _ := regexp.Compile(`a(b*)c|d(e*)([^f])`)
+		r := NewReresLAGroup("aabbbbcdaefdeeeabbc", rx)
+
+		So(r.HasAnyMatch(), ShouldBeTrue)
+		So(len(r.matches), ShouldEqual, 4)
+		//fmt.Println(r)
+
+		So(r.Prefix(), ShouldEqual, "a")
+		So(r.FullMatch(), ShouldEqual, "abbbbc")
+		So(r.Group(1), ShouldEqual, "bbbb")
+		So(r.Suffix(), ShouldEqual, "daefdeeeabbc")
+
+		r.Next()
+
+		So(r.Prefix(), ShouldEqual, "")
+		So(r.FullMatch(), ShouldEqual, "d")
+		So(r.Group(1), ShouldEqual, "")
+		So(r.Suffix(), ShouldEqual, "aefdeeeabbc")
+
+		r.Next()
+
+		So(r.Prefix(), ShouldEqual, "aef")
+		So(r.FullMatch(), ShouldEqual, "deee")
+		So(r.Group(2), ShouldEqual, "eee")
+		So(r.Suffix(), ShouldEqual, "abbc")
+
+		r.Next()
+
+		So(r.Prefix(), ShouldEqual, "")
+		So(r.FullMatch(), ShouldEqual, "abbc")
+		So(r.Group(1), ShouldEqual, "bb")
+		So(r.Suffix(), ShouldEqual, "")
+	})
 
 	Convey("Regexps can encapsulate AttributeReferenceRx results in a struct AttributeReferenceRxres", t, func() {
 		r := NewAttributeReferenceRxres(`
