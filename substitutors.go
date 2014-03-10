@@ -1152,6 +1152,37 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		res = res + suffix
 	}
+
+	if foundColon && strings.Contains(res, "://") {
+		// inline urls, target[text]
+		// (optionally prefixed with link: and optionally surrounded by <>)
+		reres := regexps.NewLinkInlineRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			//fmt.Println("\nreres matches '%v'\n", reres)
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsLinkEscaped() {
+				// BUG? next "#{m[1]}#{m[2][1..-1]}#{m[3]}"
+				// With (\\?(?:https?|file|ftp|irc)://[^\s\[\]<]*[^\s.,\[\]<])(?:\[((?:\\\]|[^\]])*?)\])
+				// doesn't look like the [] of a http://google.com[Google]
+				// would be in there. I had to add them in the next line:
+				res = res + reres.LinkPrefix() + reres.LinkTarget()[1:]
+				if reres.LinkText() != "" {
+					res = res + "[" + reres.LinkText() + "]"
+				}
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
+	}
 	return res
 }
 

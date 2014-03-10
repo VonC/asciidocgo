@@ -652,5 +652,17 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("indexterm2:[Tigers]"), ShouldEqual, "ContextIT 'indexterm': text 'Tigers' ===> type 'visible' attrs: 'map[]'")
 		})
 	})
+	Convey("A substitutors can substitute raw url macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
+		Convey("Substitute raw url macro should return macro", func() {
+			So(s.SubMacros("\\http://google.com[Google]\n  \\http://google.com[Google\nHomepage]"), ShouldEqual, "http://google.com[Google]\n  http://google.com[Google\nHomepage]")
+		})
+	})
 
 }
