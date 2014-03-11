@@ -1231,17 +1231,17 @@ func (s *substitutors) SubMacros(source string) string {
 				s.Document().Register("links", []string{targetLink})
 			}
 
-			attrs := make(map[string]string)
+			attrs := make(map[string]interface{})
 			// text = m[3] ? sub_attributes(m[3].gsub('\]', ']')) : ''
 			textLink := ""
 			if reres.LinkText() != "" {
 				if useLinkAttrs && (strings.HasPrefix(reres.LinkText(), `"`) || strings.Contains(reres.LinkText(), ",")) {
-					//rawAttrs := s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
-					//attrs = s.parseAttributes(rawAttrs, []string{}, nil) // TOFIX: parseAttributes should return []string directly
+					rawAttrs := s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
+					attrs = s.parseAttributes(rawAttrs, []string{}, nil) // TOFIX: parseAttributes should return []string directly
 					// attrs = parse_attributes(sub_attributes(m[3].gsub('\]', ']')), [])
 					// text = attrs[1]
 					// So parse_attributes is an array or map[string]string?
-					textLink = attrs["1"]
+					textLink = attrs["1"].(string)
 				} else {
 					textLink = s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
 				}
