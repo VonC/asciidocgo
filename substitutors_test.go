@@ -126,6 +126,9 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 		msg := fmt.Sprintf("ContextIT '%v': text '%v' ===> type '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Attributes())
 		//fmt.Printf("\n msg='%v'", msg)
 		return &testConvertable{msg}
+	case context.Anchor:
+		msg := fmt.Sprintf("ContextIT '%v': text '%v' ===> type '%v' target '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.Attributes())
+		return &testConvertable{msg}
 	}
 	return &testConvertable{"unknown context"}
 }
@@ -666,6 +669,10 @@ the text %s5%s should be passed through as %s6%s text
 
 		Convey("Substitute invalid raw url macro should return macro unchanged", func() {
 			So(s.SubMacros("link:http://google.com"), ShouldEqual, "link:http://google.com")
+		})
+
+		Convey("Substitute valid raw url macro without text should return target link", func() {
+			So(s.SubMacros("&lt;http://google.com"), ShouldEqual, "&lt;ContextIT 'anchor': text 'http://google.com' ===> type 'link' target 'http://google.com' attrs: 'map[]'")
 		})
 	})
 
