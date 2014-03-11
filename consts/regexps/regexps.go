@@ -585,6 +585,14 @@ func (pr *PassInlineMacroRxres) InlineSub() string {
      data:info */
 var UriSniffRx, _ = regexp.Compile(fmt.Sprintf("^([%v][%v.+-]*:/{0,2}).*", CC_ALPHA, CC_ALNUM))
 
+/* Detects the end of an implicit URI in the text
+ Examples
+   (http://google.com)
+   &gt;http://google.com&lt;
+   (See http://google.com):
+UriTerminator = /[);:]$/ */
+var UriTerminator, _ = regexp.Compile(`[);:]$`)
+
 /* Detects escaped brackets */
 var EscapedBracketRx, _ = regexp.Compile(`\\\]`)
 
