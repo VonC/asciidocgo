@@ -13,6 +13,7 @@ const (
 	Menu
 	Image
 	IndexTerm
+	Anchor
 	Unknown
 )
 
@@ -34,6 +35,8 @@ func (c Context) String() string {
 		return "image"
 	case IndexTerm:
 		return "indexterm"
+	case Anchor:
+		return "anchor"
 	}
 	return "unknown"
 }
