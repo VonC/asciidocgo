@@ -1187,6 +1187,87 @@ func (s *substitutors) SubMacros(source string) string {
 				reres.Next()
 				continue
 			}
+
+			prefixLink := ""
+			if reres.LinkPrefix() != "link:" {
+				prefixLink = reres.LinkPrefix()
+			}
+			targetLink := reres.LinkTarget()
+			suffixLink := ""
+			targetLinkEnd := regexps.UriTerminator.FindString(targetLink)
+
+			if reres.LinkText() != "" && targetLinkEnd != "" {
+				switch targetLinkEnd {
+				case ")":
+					// strip the trailing )
+					targetLink = targetLink[:len(targetLink)-1]
+					suffixLink = ")"
+				case ";":
+					// strip the <> around the link
+					if strings.HasPrefix(prefixLink, "&lt;") && strings.HasSuffix(targetLink, "&gt;") {
+						prefixLink = prefixLink[4:]
+						targetLink = targetLink[:len(targetLink)-4]
+					} else if strings.HasSuffix(targetLink, ");") {
+						// strip the ); from the end of the link
+						targetLink = targetLink[:len(targetLink)-2]
+						suffixLink = ");"
+					} else {
+						targetLink = targetLink[:len(targetLink)-1]
+						suffixLink = ";"
+					}
+				case ":":
+					// strip the ): from the end of the link
+					if strings.HasSuffix(targetLink, "):") {
+						// strip the ); from the end of the link
+						targetLink = targetLink[:len(targetLink)-2]
+						suffixLink = "):"
+					} else {
+						targetLink = targetLink[:len(targetLink)-1]
+						suffixLink = ":"
+					}
+				}
+			}
+			if s.Document() != nil {
+				s.Document().Register("links", []string{targetLink})
+			}
+
+			attrs := make(map[string]string)
+			// text = m[3] ? sub_attributes(m[3].gsub('\]', ']')) : ''
+			textLink := ""
+			if reres.LinkText() != "" {
+				if useLinkAttrs && (strings.HasPrefix(reres.LinkText(), `"`) || strings.Contains(reres.LinkText(), ",")) {
+					//rawAttrs := s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
+					//attrs = s.parseAttributes(rawAttrs, []string{}, nil) // TOFIX: parseAttributes should return []string directly
+					// attrs = parse_attributes(sub_attributes(m[3].gsub('\]', ']')), [])
+					// text = attrs[1]
+					// So parse_attributes is an array or map[string]string?
+					textLink = attrs["1"]
+				} else {
+					textLink = s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
+				}
+
+				if strings.HasSuffix(textLink, "^") {
+					textLink = textLink[:len(textLink)-1]
+					if _, hasWindowAttr := attrs["window"]; !hasWindowAttr {
+						attrs["window"] = "_blank"
+					}
+				}
+			}
+
+			if textLink == "" {
+				if s.Document() != nil && s.Document().HasAttr("hide-uri-scheme", nil, false) {
+					textLink = regexps.UriSniffRx.ReplaceAllString(targetLink, "")
+				} else {
+					textLink = targetLink
+				}
+			}
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "link"
+			optsInline.target = targetLink
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, textLink, optsInline)
+			res = res + prefixLink + inline.Convert() + suffixLink
+
 			suffix = reres.Suffix()
 			reres.Next()
 		}
