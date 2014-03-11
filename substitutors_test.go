@@ -135,12 +135,12 @@ type testAttributeListable struct {
 	block    ApplyNormalSubsable
 }
 
-func (tal *testAttributeListable) ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{} {
+func (tal *testAttributeListable) ParseInto(into map[string]string, posAttrs []string) map[string]string {
 	into["*testpi: "+tal.attrline+"*"] = posAttrs
 	return into
 }
 
-func (tal *testAttributeListable) Parse(posAttrs []string) map[string]interface{} {
+func (tal *testAttributeListable) Parse(posAttrs []string) map[string]string {
 	res := make(map[string]interface{})
 	b := ""
 	if tal.block != nil {

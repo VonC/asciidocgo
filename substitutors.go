@@ -277,8 +277,8 @@ type passthrough struct {
 }
 
 type AttributeListable interface {
-	ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{}
-	Parse(posAttrs []string) map[string]interface{}
+	ParseInto(into map[string]string, posAttrs []string) map[string]string
+	Parse(posAttrs []string) map[string]string
 }
 
 type ApplyNormalSubsable interface {
@@ -457,7 +457,7 @@ PassInlineLiteralRx:
 				res = res + reres.FirstChar()
 			}
 
-			attributes := make(map[string]interface{})
+			attributes := make(map[string]string)
 			if unescaped_attrs != "" && reres.Attributes() != "" {
 				attributes = s.parseAttributes(reres.Attributes(), []string{}, &OptionsParseAttributes{})
 			}
@@ -1348,8 +1348,8 @@ func (opa *OptionsParseAttributes) SetSubResult(aSubResult bool) {
  attrline  - A String of unprocessed attributes (key/value pairs)
  posattrs  - The keys for positional attributes
 returns an empty Hash if attrline is empty, otherwise a Hash of parsed attributes */
-func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts *OptionsParseAttributes) map[string]interface{} {
-	attributes := make(map[string]interface{})
+func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts *OptionsParseAttributes) map[string]string {
+	attributes := make(map[string]string)
 	if attrline == "" {
 		return attributes
 	}
