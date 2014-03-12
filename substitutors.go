@@ -227,7 +227,7 @@ type InlineMacroable interface {
 	IsShortFormat() bool
 	IsContentModelAttributes() bool
 	Regexp() *regexp.Regexp
-	ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string
+	ProcessMethod(self interface{}, target string, attributes map[string]string) string
 	PosAttrs() []string
 }
 
@@ -257,13 +257,13 @@ type OptionsInline struct {
 	id         string
 	typeInline string
 	target     string
-	attributes map[string]interface{}
+	attributes map[string]string
 }
 
 /*func (oi *OptionsInline) Id() string                         { return oi.id }*/
-func (oi *OptionsInline) TypeInline() string                 { return oi.typeInline }
-func (oi *OptionsInline) Target() string                     { return oi.target }
-func (oi *OptionsInline) Attributes() map[string]interface{} { return oi.attributes }
+func (oi *OptionsInline) TypeInline() string            { return oi.typeInline }
+func (oi *OptionsInline) Target() string                { return oi.target }
+func (oi *OptionsInline) Attributes() map[string]string { return oi.attributes }
 
 type InlineMaker interface {
 	NewInline(parent AbstractNodable, c context.Context, text string, opts *OptionsInline) Convertable
@@ -272,7 +272,7 @@ type InlineMaker interface {
 type passthrough struct {
 	text       string
 	subs       subArray
-	attributes map[string]interface{}
+	attributes map[string]string
 	typePT     string
 }
 
@@ -417,7 +417,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				}
 			}
 			if textOri != "" {
-				p := passthrough{textOri, subsOri, make(map[string]interface{}), ""}
+				p := passthrough{textOri, subsOri, make(map[string]string), ""}
 				s.passthroughs = append(s.passthroughs, p)
 				index := len(s.passthroughs) - 1
 				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -516,7 +516,7 @@ MathInlineMacroRx:
 					mathSubs = resolvePassSubs(reres.MathSub())
 				}
 			}
-			attributes := make(map[string]interface{})
+			attributes := make(map[string]string)
 			p := passthrough{mathText, mathSubs, attributes, mathType}
 			s.passthroughs = append(s.passthroughs, p)
 			index := len(s.passthroughs) - 1
@@ -869,7 +869,7 @@ func (s *substitutors) SubMacros(source string) string {
 							}
 						}
 					}
-					optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+					optsInline := &OptionsInline{attributes: make(map[string]string)}
 					optsInline.attributes["keys"] = keys
 					inline := s.inlineMaker.NewInline(s.abstractNodable, context.Kbd, "", optsInline)
 					res = res + inline.Convert()
@@ -925,7 +925,7 @@ func (s *substitutors) SubMacros(source string) string {
 						menuItem = strings.TrimRightFunc(items, unicode.IsSpace)
 					}
 				}
-				optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+				optsInline := &OptionsInline{attributes: make(map[string]string)}
 				optsInline.attributes["menu"] = menu
 				optsInline.attributes["submenu"] = subMenus
 				optsInline.attributes["menuitem"] = menuItem
@@ -1003,7 +1003,7 @@ func (s *substitutors) SubMacros(source string) string {
 					continue
 				}
 				target := reres.Group(1)
-				attributes := make(map[string]interface{})
+				attributes := make(map[string]string)
 				if extension.IsShortFormat() == false {
 					// meaning 2 groups in the regex
 					if extension.IsContentModelAttributes() {

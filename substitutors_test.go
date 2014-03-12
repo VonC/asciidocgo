@@ -79,7 +79,7 @@ func (tim *testInlineMacro) Regexp() *regexp.Regexp {
 	}
 	return tim.rx
 }
-func (tim *testInlineMacro) ProcessMethod(self interface{}, target string, attributes map[string]interface{}) string {
+func (tim *testInlineMacro) ProcessMethod(self interface{}, target string, attributes map[string]string) string {
 	return fmt.Sprintf("%v", attributes)
 }
 func (tim *testInlineMacro) PosAttrs() []string { return tim.posAttrs }
