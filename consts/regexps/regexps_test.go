@@ -565,4 +565,37 @@ func TestRegexps(t *testing.T) {
 			So(r.LinkText(), ShouldEqual, "Google\nHomepage")
 		})
 	})
+
+	Convey("Regexps can encapsulate LinkInlineMacroRx results in a struct LinkInlineMacroRxres", t, func() {
+		Convey("Escaped LinkInlineMacroRx should be escaped", func() {
+			r := NewLinkInlineMacroRxres(`\link:path[label]
+			 \mailto:doc.writer@example.com[]
+			 link:path2[label2]
+			 mailto:doc2.writer@example2.com[xxx]`)
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 4)
+
+			So(r.IsEscaped(), ShouldBeTrue)
+			So(r.LinkInlineTarget(), ShouldEqual, "path")
+			So(r.LinkInlineText(), ShouldEqual, "label")
+
+			r.Next()
+
+			So(r.IsEscaped(), ShouldBeTrue)
+			So(r.LinkInlineTarget(), ShouldEqual, "doc.writer@example.com")
+			So(r.LinkInlineText(), ShouldEqual, "")
+
+			r.Next()
+
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.LinkInlineTarget(), ShouldEqual, "path2")
+			So(r.LinkInlineText(), ShouldEqual, "label2")
+
+			r.Next()
+
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.LinkInlineTarget(), ShouldEqual, "doc2.writer@example2.com")
+			So(r.LinkInlineText(), ShouldEqual, "xxx")
+		})
+	})
 }

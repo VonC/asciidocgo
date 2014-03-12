@@ -404,6 +404,33 @@ func (lir *LinkInlineRxres) LinkText() string {
 	return lir.Group(3)
 }
 
+/* Match a link or e-mail inline macro.
+ Examples
+   link:path[label]
+   mailto:doc.writer@example.com[]
+
+LinkInlineMacroRx = /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/ */
+var LinkInlineMacroRx, _ = regexp.Compile(`\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])`)
+
+type LinkInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for LinkInlineMacroRx */
+func NewLinkInlineMacroRxres(s string) *LinkInlineMacroRxres {
+	return &LinkInlineMacroRxres{NewReres(s, LinkInlineMacroRx)}
+}
+
+/* Return 'xxx' in 'link:xxx[yyy]' */
+func (limr *LinkInlineMacroRxres) LinkInlineTarget() string {
+	return limr.Group(1)
+}
+
+/* Return 'yyy' in 'link:xxx[yyy]' */
+func (limr *LinkInlineMacroRxres) LinkInlineText() string {
+	return limr.Group(2)
+}
+
 /* Matches a math inline macro, which may span multiple lines.
 Examples
   math:[x != 0]
