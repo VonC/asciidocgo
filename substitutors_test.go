@@ -12,8 +12,10 @@ import (
 )
 
 type testSubstDocumentAble struct {
-	s  *substitutors
-	te *testExtensionables
+	s             *substitutors
+	te            *testExtensionables
+	linkAttrs     bool
+	hideUriScheme bool
 }
 
 func newTestSubstDocumentAble(s *substitutors) *testSubstDocumentAble {
@@ -28,6 +30,18 @@ func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, in
 	}
 	if name == "attribute-missing" {
 		return "skip"
+	}
+	if name == "linkattrs" {
+		if tsd.linkAttrs {
+			return "linkattrs"
+		}
+		return ""
+	}
+	if name == "hide-uri-scheme" {
+		if tsd.hideUriScheme {
+			return "hide-uri-scheme"
+		}
+		return ""
 	}
 	return "mathtest"
 }
@@ -46,6 +60,12 @@ func (tsd *testSubstDocumentAble) HasAttr(name string, expect interface{}, inher
 	}
 	if name == "experimental" {
 		return true
+	}
+	if name == "linkattrs" {
+		return tsd.linkAttrs
+	}
+	if name == "hide-uri-scheme" {
+		return tsd.hideUriScheme
 	}
 	return false
 }
@@ -140,6 +160,7 @@ type testAttributeListable struct {
 
 func (tal *testAttributeListable) ParseInto(into map[string]interface{}, posAttrs []string) map[string]interface{} {
 	into["*testpi: "+tal.attrline+"*"] = posAttrs
+	//fmt.Printf("\ninto='%v'\n", into)
 	return into
 }
 
@@ -150,6 +171,13 @@ func (tal *testAttributeListable) Parse(posAttrs []string) map[string]interface{
 		b = tal.block.ApplyNormalSubs("block")
 	}
 	res["*testp: "+tal.attrline+"*"+b+"*"] = posAttrs
+	if tal.attrline == "\"text,url" {
+		res["1"] = tal.attrline[1:] + "*" + b + "*"
+	}
+	if tal.attrline == "\"text2,url2^" {
+		res["1"] = "*" + b + "*" + tal.attrline[1:]
+	}
+	//fmt.Printf("\npars='%v'\n", res)
 	return res
 }
 
@@ -673,6 +701,28 @@ the text %s5%s should be passed through as %s6%s text
 
 		Convey("Substitute valid raw url macro without text should return target link", func() {
 			So(s.SubMacros("&lt;http://google.com"), ShouldEqual, "&lt;ContextIT 'anchor': text 'http://google.com' ===> type 'link' target 'http://google.com' attrs: 'map[]'")
+		})
+		Convey("Substitute raw url macro with text and uri terminator should return target link and suffix", func() {
+			So(s.SubMacros("&lt;http://google.com)[texturl]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'texturl' ===> type 'link' target 'http://google.com' attrs: 'map[]')")
+			So(s.SubMacros("&lt;http://google.com;[texturl2]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'texturl2' ===> type 'link' target 'http://google.com' attrs: 'map[]';")
+			So(s.SubMacros("&lt;http://google.com:[texturl3]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'texturl3' ===> type 'link' target 'http://google.com' attrs: 'map[]':")
+		})
+		Convey("Substitute raw url macro with text and uri terminator ';' should return target link updated and suffix", func() {
+			So(s.SubMacros("&lt;http://google.com&gt;[texturl2]"), ShouldEqual, "ContextIT 'anchor': text 'texturl2' ===> type 'link' target 'http://google.com' attrs: 'map[]'")
+			So(s.SubMacros("&lt;http://google.com);[texturl3]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'texturl3' ===> type 'link' target 'http://google.com' attrs: 'map[]');")
+		})
+		Convey("Substitute raw url macro with text and uri terminator ':' should return target link updated and suffix", func() {
+			So(s.SubMacros("&lt;http://google.com):[texturl3]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'texturl3' ===> type 'link' target 'http://google.com' attrs: 'map[]'):")
+		})
+		Convey("Substitute raw url macro with a document using link should return modified target link", func() {
+			s.Document().(*testSubstDocumentAble).linkAttrs = true
+			So(s.SubMacros("&lt;http://google.com[\"text,url]"), ShouldEqual, "&lt;ContextIT 'anchor': text 'text,url*block*' ===> type 'link' target 'http://google.com' attrs: 'map[]'")
+			So(s.SubMacros("&lt;http://google2.com[\"text2,url2^]"), ShouldEqual, "&lt;ContextIT 'anchor': text '*block*text2,url2' ===> type 'link' target 'http://google2.com' attrs: 'map[]'")
+		})
+		Convey("Substitute raw url macro with text having uri inside: should return modified link text without uri", func() {
+			s.Document().(*testSubstDocumentAble).linkAttrs = false
+			s.Document().(*testSubstDocumentAble).hideUriScheme = true
+			So(s.SubMacros("&lt;http://google.com:test"), ShouldEqual, "&lt;ContextIT 'anchor': text '' ===> type 'link' target 'http://google.com:test' attrs: 'map[]'")
 		})
 	})
 

@@ -1235,13 +1235,16 @@ func (s *substitutors) SubMacros(source string) string {
 			// text = m[3] ? sub_attributes(m[3].gsub('\]', ']')) : ''
 			textLink := ""
 			if reres.LinkText() != "" {
+				//fmt.Printf("\nuseLinkAttrs='%v'\n", useLinkAttrs)
 				if useLinkAttrs && (strings.HasPrefix(reres.LinkText(), `"`) || strings.Contains(reres.LinkText(), ",")) {
 					rawAttrs := s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
-					attrs = s.parseAttributes(rawAttrs, []string{}, nil) // TOFIX: parseAttributes should return []string directly
+					attrs = s.parseAttributes(rawAttrs, []string{}, &OptionsParseAttributes{}) // FIXED: parseAttributes should return []string directly: NO
 					// attrs = parse_attributes(sub_attributes(m[3].gsub('\]', ']')), [])
 					// text = attrs[1]
 					// So parse_attributes is an array or map[string]string?
+					// Still hash, but with '1' has key. Simplify using "1"
 					textLink = attrs["1"].(string)
+					//fmt.Printf("\ntextLink='%v'\n", textLink)
 				} else {
 					textLink = s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkText(), "]"), nil)
 				}
@@ -1254,6 +1257,7 @@ func (s *substitutors) SubMacros(source string) string {
 				}
 			}
 
+			//fmt.Printf("\ntextLink NOW='%v' targetLink='%v'\n", textLink, targetLink)
 			if textLink == "" {
 				if s.Document() != nil && s.Document().HasAttr("hide-uri-scheme", nil, false) {
 					textLink = regexps.UriSniffRx.ReplaceAllString(targetLink, "")
