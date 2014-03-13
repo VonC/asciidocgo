@@ -1277,6 +1277,35 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		res = res + suffix
 	}
+	if found.macroish && (strings.Contains(res, "link:") || strings.Contains(res, "mailto:")) {
+		// inline link macros, link:target[text]
+		reres := regexps.NewLinkInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			rawTarget := reres.LinkInlineTarget()
+			mailto := strings.HasPrefix(rawTarget, "mailto:")
+			targetIM := rawTarget
+			if mailto {
+				targetIM = "mailto:" + rawTarget
+			}
+
+			suffix = reres.Suffix()
+			reres.Next()
+		}
+		res = res + suffix
+	}
 	return res
 }
 
