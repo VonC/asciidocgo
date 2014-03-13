@@ -1295,7 +1295,7 @@ func (s *substitutors) SubMacros(source string) string {
 			}
 
 			rawTarget := reres.LinkInlineTarget()
-			mailto := strings.HasPrefix(rawTarget, "mailto:")
+			mailto := strings.HasPrefix(reres.FullMatch(), "mailto:")
 			targetIM := rawTarget
 			if mailto {
 				targetIM = "mailto:" + rawTarget
@@ -1332,6 +1332,7 @@ func (s *substitutors) SubMacros(source string) string {
 			if textIM == "" {
 				if s.Document() != nil && s.Document().HasAttr("hide-uri-scheme", nil, false) {
 					textIM = regexps.UriSniffRx.ReplaceAllString(rawTarget, "")
+					//fmt.Printf("\n'%v' ReplaceAllString '%v' => '%v'\n", regexps.UriSniffRx, rawTarget, textIM)
 				} else {
 					textIM = rawTarget
 				}
@@ -1351,7 +1352,9 @@ func (s *substitutors) SubMacros(source string) string {
 	return res
 }
 
-var EncodeUriCharsRx, _ = regexp.Compile(`[^\w\-.!~*';:@=+$,()\[\]]`)
+// REGEXP_ENCODE_URI_CHARS = /[^\w\-.!~*';:@=+$,()\[\]]/
+// BUG? doesn't work with the ^\w...
+var EncodeUriCharsRx, _ = regexp.Compile(`[\^\-!~*';:@=+$,()\[\]]`)
 
 func encodeUri(str string) string {
 	if str == "" {
@@ -1359,7 +1362,7 @@ func encodeUri(str string) string {
 	}
 	res := str
 	reres := regexps.NewReres(str, EncodeUriCharsRx)
-
+	//fmt.Printf("\n'%v' encodeUri '%v' => '%v': '%v'\n", EncodeUriCharsRx, str, reres)
 	if reres.HasNext() {
 		res = ""
 	}
@@ -1368,6 +1371,7 @@ func encodeUri(str string) string {
 
 		res = res + reres.Prefix()
 
+		//fmt.Printf("\nres '%v' => '%v'\n", res, reres.FullMatch())
 		res = res + fmt.Sprintf("%%%02X", reres.FullMatch())
 
 		suffix = reres.Suffix()

@@ -1,0 +1,1 @@
+C:\Users\vonc\prog\go\src\github.com\VonC\asciidocgo\asciidoctor>C:\prgs\git\PortableGit-1.9.0-preview20140217\bin\find.exe . -name "*.rb" -printf "%s %p\n"| C:\prgs\git\PortableGit-1.9.0-preview20140217\bin\sort.exe -nr

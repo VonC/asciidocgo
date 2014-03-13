@@ -177,7 +177,20 @@ func (tal *testAttributeListable) Parse(posAttrs []string) map[string]interface{
 	if tal.attrline == "\"text2,url2^" {
 		res["1"] = "*" + b + "*" + tal.attrline[1:]
 	}
-	//fmt.Printf("\npars='%v'\n", res)
+	if tal.attrline == "\"label, b^" {
+		res["1"] = tal.attrline[1:]
+	}
+	if tal.attrline == "\"a,b,c" {
+		res["1"] = "a"
+		res["2"] = "b"
+		res["3"] = "c"
+	}
+	if tal.attrline == "\"a,,c=(d)" {
+		res["1"] = "a"
+		res["2"] = ""
+		res["3"] = "c=(d)"
+	}
+	//fmt.Printf("\npars '%v'='%v'\n", tal.attrline, res)
 	return res
 }
 
@@ -723,6 +736,30 @@ the text %s5%s should be passed through as %s6%s text
 			s.Document().(*testSubstDocumentAble).linkAttrs = false
 			s.Document().(*testSubstDocumentAble).hideUriScheme = true
 			So(s.SubMacros("&lt;http://google.com:test"), ShouldEqual, "&lt;ContextIT 'anchor': text '' ===> type 'link' target 'http://google.com:test' attrs: 'map[]'")
+		})
+	})
+	Convey("A substitutors can substitute link inline macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
+		Convey("Substitute escaped link inline macro should return macro unescaped", func() {
+			So(s.SubMacros("\\link:path[label] \n \\mailto:doc.writer@example.com[]"), ShouldEqual, "link:path[label] \n mailto:doc.writer@example.com[]")
+		})
+		Convey("Substitute link inline macro with mailto: should return mailto: target", func() {
+			So(s.SubMacros("mailto:doc.writer@example.com[] "), ShouldEqual, "ContextIT 'anchor': text 'doc.writer@example.com' ===> type 'link' target 'mailto:doc.writer@example.com' attrs: 'map[]' ")
+		})
+		Convey("Substitute link inline macro with a document using link and quoted text should return modified target link", func() {
+			s.Document().(*testSubstDocumentAble).linkAttrs = true
+			So(s.SubMacros("link:path[\"label, b^] \n mailto:doc.writer@example.com[\"a,b,c] \n mailto:doc2.writer2@example2.com[\"a,,c=(d)]"), ShouldEqual, "ContextIT 'anchor': text 'label, b' ===> type 'link' target 'path' attrs: 'map[]' \n ContextIT 'anchor': text 'a' ===> type 'link' target 'mailto:doc.writer@example.com?subject=b&amp;body=c' attrs: 'map[]' \n ContextIT 'anchor': text 'a' ===> type 'link' target 'mailto:doc2.writer2@example2.com?subject=&amp;body=c%3D%28d%29' attrs: 'map[]'")
+		})
+		Convey("Substitute link inline macro with text having uri inside: should return modified link text without uri", func() {
+			s.Document().(*testSubstDocumentAble).linkAttrs = false
+			s.Document().(*testSubstDocumentAble).hideUriScheme = true
+			So(s.SubMacros("link:http://a[]"), ShouldEqual, "ContextIT 'anchor': text '' ===> type 'link' target 'http://a' attrs: 'map[]'")
 		})
 	})
 
