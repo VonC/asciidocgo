@@ -1301,6 +1301,48 @@ func (s *substitutors) SubMacros(source string) string {
 				targetIM = "mailto:" + rawTarget
 			}
 
+			attrs := make(map[string]interface{})
+			textIM := reres.LinkInlineText()
+			if useLinkAttrs && (strings.HasPrefix(textIM, `"`) || strings.Contains(textIM, ",")) {
+				rawAttrs := s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(textIM, "]"), nil)
+				attrs = s.parseAttributes(rawAttrs, []string{}, &OptionsParseAttributes{})
+				textIM = attrs["1"].(string)
+				if mailto {
+					if _, has2 := attrs["2"].(string); has2 {
+						targetIM = targetIM + "?subject=" + encodeUri(attrs["2"].(string))
+						if _, has3 := attrs["3"].(string); has3 {
+							targetIM = targetIM + "&amp;body=" + encodeUri(attrs["3"].(string))
+						}
+					}
+				}
+			} else {
+				textIM = s.SubAttributes(regexps.EscapedBracketRx.ReplaceAllString(reres.LinkInlineText(), "]"), nil)
+			}
+
+			if strings.HasSuffix(textIM, "^") {
+				textIM = textIM[:len(textIM)-1]
+				if _, hasWindowAttr := attrs["window"]; !hasWindowAttr {
+					attrs["window"] = "_blank"
+				}
+			}
+			if s.Document() != nil {
+				s.Document().Register("links", []string{targetIM})
+			}
+
+			if textIM == "" {
+				if s.Document() != nil && s.Document().HasAttr("hide-uri-scheme", nil, false) {
+					textIM = regexps.UriSniffRx.ReplaceAllString(rawTarget, "")
+				} else {
+					textIM = rawTarget
+				}
+			}
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "link"
+			optsInline.target = targetIM
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, textIM, optsInline)
+			res = res + inline.Convert()
+
 			suffix = reres.Suffix()
 			reres.Next()
 		}
