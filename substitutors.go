@@ -1309,6 +1309,32 @@ func (s *substitutors) SubMacros(source string) string {
 	return res
 }
 
+var EncodeUriCharsRx, _ = regexp.Compile(`[^\w\-.!~*';:@=+$,()\[\]]`)
+
+func encodeUri(str string) string {
+	if str == "" {
+		return ""
+	}
+	res := str
+	reres := regexps.NewReres(str, EncodeUriCharsRx)
+
+	if reres.HasNext() {
+		res = ""
+	}
+	suffix := ""
+	for reres.HasNext() {
+
+		res = res + reres.Prefix()
+
+		res = res + fmt.Sprintf("%%%02X", reres.FullMatch())
+
+		suffix = reres.Suffix()
+		reres.Next()
+	}
+	res = res + suffix
+	return res
+}
+
 /* Internal: Transform (render) a quoted text region
  match  - The MatchData for the quoted text region
  type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
