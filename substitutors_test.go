@@ -763,4 +763,20 @@ the text %s5%s should be passed through as %s6%s text
 		})
 	})
 
+	Convey("A substitutors can substitute email inline macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
+		Convey("Substitute escaped email link inline macro should ignore the escape", func() {
+			So(s.SubMacros("\\doc.writer@test.com[]"), ShouldEqual, "ContextIT 'anchor': text 'doc.writer@test.com' ===> type 'link' target 'mailto:doc.writer@test.com' attrs: 'map[]'[]")
+		})
+		Convey("Substitute email inline macro with mailto: should return mailto: target", func() {
+			So(s.SubMacros("doc.writer@test2.com[] "), ShouldEqual, "ContextIT 'anchor': text 'doc.writer@test2.com' ===> type 'link' target 'mailto:doc.writer@test2.com' attrs: 'map[]'[] ")
+		})
+	})
+
 }
