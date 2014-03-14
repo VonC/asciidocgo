@@ -598,4 +598,21 @@ func TestRegexps(t *testing.T) {
 			So(r.LinkInlineText(), ShouldEqual, "xxx")
 		})
 	})
+
+	Convey("Regexps can encapsulate EmailInlineMacroRx results in a struct EmailInlineMacroRxres", t, func() {
+		Convey("EmailInlineMacroRx should detect lead", func() {
+			r := NewEmailInlineMacroRxres(`doc.writer@example.com
+				:doc2.writer@example.com`)
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 2)
+
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.EmailLead(), ShouldEqual, "")
+
+			r.Next()
+
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.EmailLead(), ShouldEqual, ":")
+		})
+	})
 }

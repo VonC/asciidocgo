@@ -254,6 +254,26 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches an inline e-mail address.
+   doc.writer@example.com
+EmailInlineMacroRx = /([\\>:\/])?\w[\w.%+-]*@[#{CC_ALNUM}][#{CC_ALNUM}.-]*\.[#{CC_ALPHA}]{2,4}\b/ */
+
+var EmailInlineMacroRx, _ = regexp.Compile(`([\\>:\/])?\w[\w.%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,4}`)
+
+type EmailInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for EmailInlineMacroRx */
+func NewEmailInlineMacroRxres(s string) *EmailInlineMacroRxres {
+	return &EmailInlineMacroRxres{NewReres(s, EmailInlineMacroRx)}
+}
+
+/* Return target of the macro in 'image:target[attr1 attr2]' */
+func (eimr *EmailInlineMacroRxres) EmailLead() string {
+	return eimr.Group(1)
+}
+
 /* Matches an image or icon inline macro.
 Examples
    image:filename.png[Alt Text]
