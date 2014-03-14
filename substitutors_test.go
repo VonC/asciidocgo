@@ -747,7 +747,7 @@ the text %s5%s should be passed through as %s6%s text
 		s.inlineMaker = &testInlineMaker{}
 		s.attributeListMaker = &testAttributeListMaker{}
 		Convey("Substitute escaped link inline macro should return macro unescaped", func() {
-			So(s.SubMacros("\\link:path[label] \n \\mailto:doc.writer@example.com[]"), ShouldEqual, "link:path[label] \n mailto:doc.writer@example.com[]")
+			So(s.SubMacros("\\link:path[label] \n \\mailto:doc.writer@testlinkinlinemacro.com[]"), ShouldEqual, "link:path[label] \n mailto:doc.writer@testlinkinlinemacro.com[]")
 		})
 		Convey("Substitute link inline macro with mailto: should return mailto: target", func() {
 			So(s.SubMacros("mailto:doc.writer@example.com[] "), ShouldEqual, "ContextIT 'anchor': text 'doc.writer@example.com' ===> type 'link' target 'mailto:doc.writer@example.com' attrs: 'map[]' ")

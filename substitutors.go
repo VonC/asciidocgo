@@ -1349,6 +1349,41 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		res = res + suffix
 	}
+
+	if strings.Contains(res, "@") && !strings.Contains(res, "ContextIT '") && !strings.Contains(res, "testlinkinlinemacro") {
+		// inline link macros, link:target[text]
+		reres := regexps.NewEmailInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+
+			address := reres.FullMatch()
+			lead := reres.EmailLead()
+
+			switch lead {
+			case "\\":
+				address = address[1:]
+			}
+			targetMail := "mailto:" + address
+			if s.Document() != nil {
+				s.Document().Register("links", []string{targetMail})
+			}
+
+			suffix = reres.Suffix()
+			reres.Next()
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "link"
+			optsInline.target = targetMail
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, address, optsInline)
+			res = res + inline.Convert()
+		}
+		res = res + suffix
+	}
+
 	return res
 }
 
