@@ -269,9 +269,38 @@ func NewEmailInlineMacroRxres(s string) *EmailInlineMacroRxres {
 	return &EmailInlineMacroRxres{NewReres(s, EmailInlineMacroRx)}
 }
 
-/* Return target of the macro in 'image:target[attr1 attr2]' */
+/* Return lead of the macro in '>xx:@yyy.com' */
 func (eimr *EmailInlineMacroRxres) EmailLead() string {
 	return eimr.Group(1)
+}
+
+/* Matches an inline footnote macro, which is allowed to span multiple lines.
+Examples
+  footnote:[text]
+  footnoteref:[id,text]
+  footnoteref:[id]
+
+   FootnoteInlineMacroRx = /\\?(footnote(?:ref)?):\[(.*?[^\\])\]/m */
+
+var FootnoteInlineMacroRx, _ = regexp.Compile(`\\?(footnote(?:ref)?):\[(.*?[^\\])\]`)
+
+type FootnoteInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for FootnoteInlineMacroRx */
+func NewFootnoteInlineMacroRxres(s string) *FootnoteInlineMacroRxres {
+	return &FootnoteInlineMacroRxres{NewReres(s, FootnoteInlineMacroRx)}
+}
+
+/* Return prefix 'footnote' of the macro in 'footnote:[xxx]' */
+func (fimr *FootnoteInlineMacroRxres) FootnotePrefix() string {
+	return fimr.Group(1)
+}
+
+/* Return text 'xxx' of the macro in 'footnote:[xxx]' */
+func (fimr *FootnoteInlineMacroRxres) FootnoteText() string {
+	return fimr.Group(2)
 }
 
 /* Matches an image or icon inline macro.

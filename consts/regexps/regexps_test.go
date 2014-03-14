@@ -615,4 +615,36 @@ func TestRegexps(t *testing.T) {
 			So(r.EmailLead(), ShouldEqual, ":")
 		})
 	})
+
+	Convey("Regexps can encapsulate FootnoteInlineMacroRx results in a struct FootnoteInlineMacroRxres", t, func() {
+		Convey("FootnoteInlineMacroRx should detect lead", func() {
+			r := NewFootnoteInlineMacroRxres(`\footnote:[text]
+  footnoteref:[text]
+  footnoteref:[id,text]
+  footnoteref:[id]`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 4)
+
+			So(r.IsEscaped(), ShouldBeTrue)
+			So(r.FootnotePrefix(), ShouldEqual, "footnote")
+			So(r.FootnoteText(), ShouldEqual, "text")
+
+			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.FootnotePrefix(), ShouldEqual, "footnoteref")
+			So(r.FootnoteText(), ShouldEqual, "text")
+
+			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.FootnotePrefix(), ShouldEqual, "footnoteref")
+			So(r.FootnoteText(), ShouldEqual, "id,text")
+
+			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.FootnotePrefix(), ShouldEqual, "footnoteref")
+			So(r.FootnoteText(), ShouldEqual, "id")
+
+		})
+	})
 }
