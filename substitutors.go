@@ -1384,11 +1384,78 @@ func (s *substitutors) SubMacros(source string) string {
 		res = res + suffix
 	}
 
+	if found.macroish_short_form && strings.Contains(res, "footnote") {
+
+		// inline link macros, link:target[text]
+		reres := regexps.NewFootnoteInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			idf := ""
+			textf := ""
+			typef := ""
+			targetf := ""
+			indexf := ""
+			if reres.FootnotePrefix() == "footnote" {
+				// REVIEW it's a dirty job, but somebody's gotta do it
+				textf = "" // TODO restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string m[2], true)))
+				if s.Document() != nil {
+					indexf = s.Document().Counter("footnote-number", 0)
+					s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
+				}
+			} else {
+				r := strings.Split(reres.FootnoteText(), ",")
+				idf = strings.TrimSpace(r[0])
+				textf = r[1]
+				if textf != "" {
+					// REVIEW it's a dirty job, but somebody's gotta do it
+					textf = "" // TODO restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string text, true)))
+					if s.Document() != nil {
+						indexf = s.Document().Counter("footnote-number", 0)
+						s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
+					}
+					typef = "ref"
+				} else {
+					footnote := ""
+					if s.Document() != nil && footnote != "" { // TODO @document.references[:footnotes].find {|fn| fn.id == id })
+						indexf = "" // TODO footnote.index
+						textf = ""  // TODO footnote.text
+					} else {
+						textf = idf
+					}
+					targetf = idf
+					typef = "xref"
+				}
+			}
+
+			optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+			optsInline.attributes["index"] = indexf
+			optsInline.typeInline = typef
+			optsInline.target = targetf
+			optsInline.id = idf
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Footnote, textf, optsInline)
+			res = res + inline.Convert()
+
+		}
+		res = res + suffix
+	}
+	// TODO res = 	sub_inline_xrefs(sub_inline_anchors(res, found), found)
 	return res
 }
 
 // Internal: Substitute normal and bibliographic anchors
-func subInlineAnchors(text string, found *found) {
+func subInlineAnchors(text string, found *found) string {
 	res := text
 	if (found == nil || found.square_bracket) && strings.Contains(text, "[[[") {
 
