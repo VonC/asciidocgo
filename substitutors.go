@@ -1387,6 +1387,15 @@ func (s *substitutors) SubMacros(source string) string {
 	return res
 }
 
+// Internal: Substitute normal and bibliographic anchors
+func subInlineAnchors(text string, found *found) {
+	res := text
+	if (found == nil || found.square_bracket) && strings.Contains(text, "[[[") {
+
+	}
+	return res
+}
+
 // REGEXP_ENCODE_URI_CHARS = /[^\w\-.!~*';:@=+$,()\[\]]/
 // BUG? doesn't work with the ^\w...
 var EncodeUriCharsRx, _ = regexp.Compile(`[\^\-!~*';:@=+$,()\[\]]`)
