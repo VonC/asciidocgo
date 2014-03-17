@@ -1122,7 +1122,7 @@ func (s *substitutors) SubMacros(source string) string {
 					terms = splitSimpleCsv(normalizeString(reres.IndextermTextOrTerms(), true))
 				}
 				if s.Document() != nil {
-					s.Document().Register("indexterms", terms)
+					s.Document().Register("terms", terms)
 				}
 				attrs := make(map[string]interface{})
 				attrs["terms"] = terms
