@@ -14,6 +14,7 @@ const (
 	Image
 	IndexTerm
 	Anchor
+	Footnote
 	Unknown
 )
 
@@ -37,6 +38,8 @@ func (c Context) String() string {
 		return "indexterm"
 	case Anchor:
 		return "anchor"
+	case Footnote:
+		return "footnote"
 	}
 	return "unknown"
 }
