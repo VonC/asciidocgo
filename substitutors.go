@@ -1455,9 +1455,36 @@ func (s *substitutors) SubMacros(source string) string {
 }
 
 // Internal: Substitute normal and bibliographic anchors
-func subInlineAnchors(text string, found *found) string {
+func (s *substitutors) subInlineAnchors(text string, found *found) string {
 	res := text
 	if (found == nil || found.square_bracket) && strings.Contains(text, "[[[") {
+
+		// inline bibliography anchor inline [[[Foo]]]
+		reres := regexps.NewInlineBiblioAnchorRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			ibaId := reres.BibId()
+			ibaRefText := reres.BibId()
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "bibref"
+			optsInline.target = ibaId
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, ibaRefText, optsInline)
+			res = res + inline.Convert()
+		}
+		res = res + suffix
 
 	}
 	return res
