@@ -254,6 +254,43 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Inline macros */
+
+/* Matches an anchor (i.e., id + optional reference text) in the flow of text.
+ Examples
+   [[idname]]
+   [[idname,Reference Text]]
+   anchor:idname[]
+   anchor:idname[Reference Text]
+InlineAnchorRx = /\\?(?:\[\[([#{CC_ALPHA}:_][\w:.-]*)(?:,#{CC_BLANK}*(\S.*?))?\]\]|anchor:(\S+)\[(.*?[^\\])?\])/ */
+
+var InlineAnchorRx, _ = regexp.Compile(`\\?(?:\[\[([#{CC_ALPHA}:_][\w:.-]*)(?:,#{CC_BLANK}*(\S.*?))?\]\]|anchor:(\S+)\[(.*?[^\\])?\]`)
+
+type InlineAnchorRxres struct {
+	*Reres
+}
+
+/* Results for InlineAnchorRx */
+func NewInlineAnchorRxres(s string) *InlineAnchorRxres {
+	return &InlineAnchorRxres{NewReres(s, InlineAnchorRx)}
+}
+
+/* Return id of the macro in '[[idname]]' or 'anchor:idname[]' */
+func (iar *InlineAnchorRxres) BibAnchorId() string {
+	if iar.Group(1) != "" {
+		return iar.Group(1)
+	}
+	return iar.Group(3)
+}
+
+/* Return text of the macro in '[[idname,Reference Text]]' or 'anchor:idname[Reference Text]' */
+func (iar *InlineAnchorRxres) BibAnchorText() string {
+	if iar.Group(2) != "" {
+		return iar.Group(2)
+	}
+	return iar.Group(4)
+}
+
 /* Matches a bibliography anchor anywhere inline.
  Examples
    [[[Foo]]]
@@ -270,7 +307,7 @@ func NewInlineBiblioAnchorRxres(s string) *InlineBiblioAnchorRxres {
 	return &InlineBiblioAnchorRxres{NewReres(s, InlineBiblioAnchorRx)}
 }
 
-/* Return lead of the macro in '>xx:@yyy.com' */
+/* Return id of the macro in '[[[id]]]' */
 func (ibar *InlineBiblioAnchorRxres) BibId() string {
 	return ibar.Group(1)
 }
