@@ -254,6 +254,27 @@ between square brackets, ignoring escaped closing brackets
      TIP: Don't forget! */
 var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION_STYLES.Mult("|"), CC_BLANK))
 
+/* Matches a bibliography anchor anywhere inline.
+ Examples
+   [[[Foo]]]
+InlineBiblioAnchorRx = /\\?\[\[\[([\w:][\w:.-]*?)\]\]\]/ */
+
+var InlineBiblioAnchorRx, _ = regexp.Compile(`\\?\[\[\[([\w:][\w:.-]*?)\]\]\]`)
+
+type InlineBiblioAnchorRxres struct {
+	*Reres
+}
+
+/* Results for InlineBiblioAnchorRx */
+func NewInlineBiblioAnchorRxres(s string) *InlineBiblioAnchorRxres {
+	return &InlineBiblioAnchorRxres{NewReres(s, InlineBiblioAnchorRx)}
+}
+
+/* Return lead of the macro in '>xx:@yyy.com' */
+func (ibar *InlineBiblioAnchorRxres) BibId() string {
+	return ibar.Group(1)
+}
+
 /* Matches an inline e-mail address.
    doc.writer@example.com
 EmailInlineMacroRx = /([\\>:\/])?\w[\w.%+-]*@[#{CC_ALNUM}][#{CC_ALNUM}.-]*\.[#{CC_ALPHA}]{2,4}\b/ */

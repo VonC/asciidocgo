@@ -647,4 +647,23 @@ func TestRegexps(t *testing.T) {
 
 		})
 	})
+
+
+	Convey("Regexps can encapsulate InlineBiblioAnchorRx results in a struct InlineBiblioAnchorRxres", t, func() {
+		Convey("InlineBiblioAnchorRx should detect id", func() {
+			r := NewInlineBiblioAnchorRxres(`\[[[Foo]]]
+  [[[Bar]]]`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 2)
+
+			So(r.IsEscaped(), ShouldBeTrue)
+			So(r.BibId(), ShouldEqual, "Foo")
+
+			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
+			So(r.BibId(), ShouldEqual, "Bar")
+
+		})
+	})
 }
