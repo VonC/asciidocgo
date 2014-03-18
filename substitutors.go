@@ -244,6 +244,11 @@ type SubstDocumentable interface {
 	HasAttr(name string, expect interface{}, inherit bool) bool
 	Extensions() Extensionables
 	Register(typeDoc string, value []string)
+	References() Referencable
+}
+
+type Referencable interface {
+	HasId(id string) bool
 }
 
 type Convertable interface {
@@ -1475,8 +1480,59 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 				continue
 			}
 
-			ibaId := reres.BibId()
-			ibaRefText := reres.BibId()
+			ibId := reres.BibId()
+			ibRefText := reres.BibId()
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "bibref"
+			optsInline.target = ibId
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, ibRefText, optsInline)
+			res = res + inline.Convert()
+		}
+		res = res + suffix
+
+	}
+
+	if ((found == nil || found.square_bracket) && strings.Contains(res, "[[")) || ((found == nil || found.macroish) && strings.Contains(res, "anchor:")) {
+
+		// inline bibliography anchor inline [[[Foo]]]
+		reres := regexps.NewInlineAnchorRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			ibaId := reres.BibAnchorId()
+			ibaRefText := reres.BibAnchorText()
+			// reftext = %([#{id}]) if !reftext
+			if ibaRefText == "" {
+				ibaRefText = ibaId
+			}
+			/* # enable if we want to allow double quoted values
+			   #id = id.sub(DoubleQuotedRx, '\2')
+			   #if reftext
+			   #  reftext = reftext.sub(DoubleQuotedMultiRx, '\2')
+			   #else
+			   #  reftext = "[#{id}]"
+			   #end */
+
+			/* if @document.references[:ids].has_key? id
+			     # reftext may not match since inline substitutions have been applied
+			     #if reftext != @document.references[:ids][id]
+			     #  Debug.debug { "Mismatched reference for anchor #{id}" }
+			     #end
+			   else
+			     Debug.debug { "Missing reference for anchor #{id}" }
+			   end*/
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "bibref"
@@ -1485,7 +1541,6 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 			res = res + inline.Convert()
 		}
 		res = res + suffix
-
 	}
 	return res
 }
