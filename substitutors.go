@@ -1525,17 +1525,21 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 			   #  reftext = "[#{id}]"
 			   #end */
 
-			/* if @document.references[:ids].has_key? id
-			     # reftext may not match since inline substitutions have been applied
-			     #if reftext != @document.references[:ids][id]
-			     #  Debug.debug { "Mismatched reference for anchor #{id}" }
-			     #end
-			   else
-			     Debug.debug { "Missing reference for anchor #{id}" }
-			   end*/
+			// if @document.references[:ids].has_key? id
+			if s.Document() != nil {
+				if s.Document().References().HasId(ibaId) {
 
+					/* # reftext may not match since inline substitutions have been applied
+					   #if reftext != @document.references[:ids][id]
+					   #  Debug.debug { "Mismatched reference for anchor #{id}" }
+					   #end */
+				} else {
+					debug.Debug(fmt.Sprintf("Missing reference for anchor '%v'", ibaId))
+					//Debug.debug { "Missing reference for anchor #{id}" }
+				}
+			}
 			optsInline := &OptionsInline{}
-			optsInline.typeInline = "bibref"
+			optsInline.typeInline = "ref"
 			optsInline.target = ibaId
 			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, ibaRefText, optsInline)
 			res = res + inline.Convert()
