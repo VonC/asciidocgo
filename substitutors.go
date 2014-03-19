@@ -1549,6 +1549,39 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 	return res
 }
 
+// Internal: Substitute cross reference links
+func (s *substitutors) subInlineXrefs(text string, found *found) string {
+	res := text
+	if (found == nil || found.macroish) || strings.Contains(res, "&lt;&lt;") {
+
+		reres := regexps.NewXrefInlineMacroRxres(res)
+		if reres.HasNext() {
+			res = ""
+		}
+		suffix := ""
+		for reres.HasNext() {
+			res = res + reres.Prefix()
+			// honor the escape
+			if reres.IsEscaped() {
+				res = res + reres.FullMatch()[1:]
+				suffix = reres.Suffix()
+				reres.Next()
+				continue
+			}
+
+			xrId := reres.XId()
+			xrefText := reres.XrefText()
+
+			optsInline := &OptionsInline{}
+			optsInline.typeInline = "ref"
+			optsInline.target = ibaId
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, ibaRefText, optsInline)
+			res = res + inline.Convert()
+		}
+		res = res + suffix
+	}
+}
+
 // REGEXP_ENCODE_URI_CHARS = /[^\w\-.!~*';:@=+$,()\[\]]/
 // BUG? doesn't work with the ^\w...
 var EncodeUriCharsRx, _ = regexp.Compile(`[\^\-!~*';:@=+$,()\[\]]`)
