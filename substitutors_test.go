@@ -16,12 +16,24 @@ type testSubstDocumentAble struct {
 	te            *testExtensionables
 	linkAttrs     bool
 	hideUriScheme bool
+	references    *testReferencable
+}
+
+type testReferencable struct {
+}
+
+func (tr *testReferencable) HasId(id string) bool {
+	return false
 }
 
 func newTestSubstDocumentAble(s *substitutors) *testSubstDocumentAble {
 	tsd := &testSubstDocumentAble{s: s}
 	tsd.te = &testExtensionables{}
 	return tsd
+}
+
+func (tsd *testSubstDocumentAble) References() Referencable {
+	return tsd.references
 }
 
 func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, inherit bool) interface{} {
