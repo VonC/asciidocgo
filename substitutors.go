@@ -1571,6 +1571,11 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 
 			xrId := reres.XId()
 			xrefText := reres.XrefText()
+			if reres.Group(1) != "" {
+				// TODO
+				// id = id.sub(DoubleQuotedRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2')
+				// reftext = reftext.sub(DoubleQuotedMultiRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2') if reftext
+			}
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "ref"
