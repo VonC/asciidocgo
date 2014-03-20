@@ -711,6 +711,45 @@ func (pr *PassInlineMacroRxres) InlineSub() string {
 	return res
 }
 
+/* Matches an xref (i.e., cross-reference) inline macro,
+which may span multiple lines.
+ Examples
+   <<id,reftext>>
+   xref:id[reftext]
+NOTE special characters have already been escaped, hence the entity references
+XrefInlineMacroRx = /\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])/m */
+
+var XrefInlineMacroRx, _ = regexp.Compile(`(?s)\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])`)
+
+type XrefInlineMacroRxres struct {
+	*Reres
+}
+
+/* Results for XrefInlineMacroRx */
+func NewXrefInlineMacroRxres(s string) *XrefInlineMacroRxres {
+	return &XrefInlineMacroRxres{NewReres(s, XrefInlineMacroRx)}
+}
+
+/* Return id of '<<id,reftext>>' or xref:id[reftext]' */
+func (ximr *XrefInlineMacroRxres) XId() string {
+	if ximr.Group(1) != "" {
+		t := strings.Split(ximr.Group(1), ",")
+		return t[0]
+	} else {
+		return ximr.Group(2)
+	}
+}
+
+/* Return reftext of '<<id,reftext>>' or xref:id[reftext]' */
+func (ximr *XrefInlineMacroRxres) XrefText() string {
+	if ximr.Group(1) != "" {
+		t := strings.Split(ximr.Group(1), ",")
+		return t[1]
+	} else {
+		return ximr.Group(3)
+	}
+}
+
 /* Detects strings that resemble URIs.
 
    Examples
