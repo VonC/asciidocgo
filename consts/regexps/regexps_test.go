@@ -648,7 +648,6 @@ func TestRegexps(t *testing.T) {
 		})
 	})
 
-
 	Convey("Regexps can encapsulate InlineBiblioAnchorRx results in a struct InlineBiblioAnchorRxres", t, func() {
 		Convey("InlineBiblioAnchorRx should detect id", func() {
 			r := NewInlineBiblioAnchorRxres(`\[[[Foo]]]
@@ -664,6 +663,25 @@ func TestRegexps(t *testing.T) {
 			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.BibId(), ShouldEqual, "Bar")
 
+		})
+	})
+
+	Convey("Regexps can encapsulate double quoted text results in a struct DoubleQuotedRxres", t, func() {
+		Convey("InlineBiblioAnchorRx should detect text", func() {
+			r := NewDoubleQuotedRxres(`"Who goes there?"
+Who goes there2?
+"notext
+notext"`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 2)
+
+			So(r.DQQuote(), ShouldEqual, `"`)
+			So(r.DQText(), ShouldEqual, `Who goes there?`)
+
+			r.Next()
+			So(r.DQQuote(), ShouldEqual, ``)
+			So(r.DQText(), ShouldEqual, `Who goes there2?`)
 		})
 	})
 }

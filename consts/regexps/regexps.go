@@ -98,6 +98,7 @@ func newReresLA(s string, r *regexp.Regexp, q Qualifier) *Reres {
 				shift = shift + lg[0]
 				delta := lg[1] - lg[0]
 				match[1] = match[1] - delta
+				//fmt.Printf("\nBYQ (%v-%v)'%v' '%v' => lh='%v'\n'%v'\n-------\n", len(by), match[1], by, string(by), lh, match)
 				if q == nil || q(lh, match, s) {
 					m = append(m, match)
 				}
@@ -748,6 +749,42 @@ func (ximr *XrefInlineMacroRxres) XrefText() string {
 	} else {
 		return ximr.Group(3)
 	}
+}
+
+/* Matches a single-line of text enclosed in double quotes,
+capturing the quote char and text.
+ Examples
+   "Who goes there?"
+DoubleQuotedRx = /^("|)(.*)\1$/ */
+var DoubleQuotedRx, _ = regexp.Compile(`(?m)^("|)(.*?)("|)$`)
+
+type DoubleQuotedRxres struct {
+	*Reres
+}
+
+/* Results for DoubleQuotedRx */
+func NewDoubleQuotedRxres(s string) *DoubleQuotedRxres {
+	reres := NewReres(s, DoubleQuotedRx)
+	matches := [][]int{}
+	//fmt.Printf("\nmatches='%v'\n", reres.matches)
+	for _, m := range reres.matches {
+		//fmt.Printf("subm='%v' => '%v' vs. '%v'\n", s[m[0]:m[1]], s[m[2]:m[3]], s[m[6]:m[7]])
+		if s[m[2]:m[3]] == s[m[6]:m[7]] {
+			matches = append(matches, m)
+		}
+	}
+	reres.matches = matches
+	return &DoubleQuotedRxres{reres}
+}
+
+/* Return quote used for 'xxx' or '"yyy"' */
+func (dqr *DoubleQuotedRxres) DQQuote() string {
+	return dqr.Group(1)
+}
+
+/* Return quoted text in 'xxx' or '"yyy"' */
+func (dqr *DoubleQuotedRxres) DQText() string {
+	return dqr.Group(2)
 }
 
 /* Detects strings that resemble URIs.
