@@ -699,34 +699,42 @@ notext"`)
 			So(r.HasAnyMatch(), ShouldBeTrue)
 			So(len(r.matches), ShouldEqual, 8)
 
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.BibAnchorId(), ShouldEqual, `idname`)
 			So(r.BibAnchorText(), ShouldEqual, ``)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.BibAnchorId(), ShouldEqual, `idname2`)
 			So(r.BibAnchorText(), ShouldEqual, `Reference2 Text`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.BibAnchorId(), ShouldEqual, `idname3`)
 			So(r.BibAnchorText(), ShouldEqual, ``)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.BibAnchorId(), ShouldEqual, `idname4`)
 			So(r.BibAnchorText(), ShouldEqual, `Reference4 Text`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.BibAnchorId(), ShouldEqual, `idname5`)
 			So(r.BibAnchorText(), ShouldEqual, ``)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.BibAnchorId(), ShouldEqual, `idname6`)
 			So(r.BibAnchorText(), ShouldEqual, `Reference6 Text`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.BibAnchorId(), ShouldEqual, `idname7`)
 			So(r.BibAnchorText(), ShouldEqual, ``)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.BibAnchorId(), ShouldEqual, `idname8`)
 			So(r.BibAnchorText(), ShouldEqual, `Reference8 Text`)
 		})
@@ -742,18 +750,22 @@ notext"`)
 			So(r.HasAnyMatch(), ShouldBeTrue)
 			So(len(r.matches), ShouldEqual, 4)
 
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.XId(), ShouldEqual, `id`)
 			So(r.XrefText(), ShouldEqual, `reftext`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeTrue)
 			So(r.XId(), ShouldEqual, `id2`)
 			So(r.XrefText(), ShouldEqual, `reftext2`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.XId(), ShouldEqual, `id3`)
 			So(r.XrefText(), ShouldEqual, `reftext3`)
 
 			r.Next()
+			So(r.IsEscaped(), ShouldBeFalse)
 			So(r.XId(), ShouldEqual, `id4`)
 			So(r.XrefText(), ShouldEqual, `reftext4`)
 
