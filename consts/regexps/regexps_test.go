@@ -731,4 +731,32 @@ notext"`)
 			So(r.BibAnchorText(), ShouldEqual, `Reference8 Text`)
 		})
 	})
+
+	Convey("Regexps can encapsulate xref inline id and text results in a struct XrefInlineMacroRxres", t, func() {
+		Convey("XrefInlineMacroRxres should detect id and text", func() {
+			r := NewXrefInlineMacroRxres(`\&lt;&lt;id,reftext&gt;&gt;
+   \xref:id2[reftext2]
+   &lt;&lt;id3,reftext3&gt;&gt;
+   xref:id4[reftext4]`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 4)
+
+			So(r.XId(), ShouldEqual, `id`)
+			So(r.XrefText(), ShouldEqual, `reftext`)
+
+			r.Next()
+			So(r.XId(), ShouldEqual, `id2`)
+			So(r.XrefText(), ShouldEqual, `reftext2`)
+
+			r.Next()
+			So(r.XId(), ShouldEqual, `id3`)
+			So(r.XrefText(), ShouldEqual, `reftext3`)
+
+			r.Next()
+			So(r.XId(), ShouldEqual, `id4`)
+			So(r.XrefText(), ShouldEqual, `reftext4`)
+
+		})
+	})
 }
