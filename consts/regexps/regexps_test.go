@@ -684,4 +684,51 @@ notext"`)
 			So(r.DQText(), ShouldEqual, `Who goes there2?`)
 		})
 	})
+
+	Convey("Regexps can encapsulate inline anchor text results in a struct InlineAnchorRxres", t, func() {
+		Convey("InlineAnchorRxres should detect id and text", func() {
+			r := NewInlineAnchorRxres(`\[[idname]]
+   \[[idname2,Reference2 Text]]
+   \anchor:idname3[]
+   \anchor:idname4[Reference4 Text]
+   [[idname5]]
+   [[idname6,Reference6 Text]]
+   anchor:idname7[]
+   anchor:idname8[Reference8 Text]`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 8)
+
+			So(r.BibAnchorId(), ShouldEqual, `idname`)
+			So(r.BibAnchorText(), ShouldEqual, ``)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname2`)
+			So(r.BibAnchorText(), ShouldEqual, `Reference2 Text`)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname3`)
+			So(r.BibAnchorText(), ShouldEqual, ``)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname4`)
+			So(r.BibAnchorText(), ShouldEqual, `Reference4 Text`)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname5`)
+			So(r.BibAnchorText(), ShouldEqual, ``)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname6`)
+			So(r.BibAnchorText(), ShouldEqual, `Reference6 Text`)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname7`)
+			So(r.BibAnchorText(), ShouldEqual, ``)
+
+			r.Next()
+			So(r.BibAnchorId(), ShouldEqual, `idname8`)
+			So(r.BibAnchorText(), ShouldEqual, `Reference8 Text`)
+		})
+	})
 }

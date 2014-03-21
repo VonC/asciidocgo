@@ -265,7 +265,7 @@ var AdmonitionParagraphRx, _ = regexp.Compile(fmt.Sprintf("^(%v):%v", ADMONITION
    anchor:idname[Reference Text]
 InlineAnchorRx = /\\?(?:\[\[([#{CC_ALPHA}:_][\w:.-]*)(?:,#{CC_BLANK}*(\S.*?))?\]\]|anchor:(\S+)\[(.*?[^\\])?\])/ */
 
-var InlineAnchorRx, _ = regexp.Compile(`\\?(?:\[\[([#{CC_ALPHA}:_][\w:.-]*)(?:,#{CC_BLANK}*(\S.*?))?\]\]|anchor:(\S+)\[(.*?[^\\])?\]`)
+var InlineAnchorRx, _ = regexp.Compile(`\\?(?:\[\[([a-zA-Z:_][\w:.-]*)(?:,[\t ]*(\S.*?))?\]\]|anchor:(\S+)\[(.*?[^\\])?\])`)
 
 type InlineAnchorRxres struct {
 	*Reres
