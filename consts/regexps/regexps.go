@@ -787,6 +787,44 @@ func (dqr *DoubleQuotedRxres) DQText() string {
 	return dqr.Group(2)
 }
 
+/* Matches multiple lines of text enclosed in double quotes,
+capturing the quote char and text.
+    # Examples
+    #   "I am a run-on sentence and I like
+    #   to take up multiple lines and I
+    #   still want to be matched."
+DoubleQuotedMultiRx = /^("|)(.*)\1$/ */
+var DoubleQuotedMultiRx, _ = regexp.Compile(`(?sm)^("|)(.*?)("|)$`)
+
+type DoubleQuotedMultiRxres struct {
+	*Reres
+}
+
+/* Results for DoubleQuotedMultiRx */
+func NewDoubleQuotedMultiRxres(s string) *DoubleQuotedMultiRxres {
+	reres := NewReres(s, DoubleQuotedMultiRx)
+	matches := [][]int{}
+	//fmt.Printf("\nmatches='%v'\n", reres.matches)
+	for _, m := range reres.matches {
+		//fmt.Printf("subm='%v' => '%v' vs. '%v'\n", s[m[0]:m[1]], s[m[2]:m[3]], s[m[6]:m[7]])
+		if s[m[2]:m[3]] == s[m[6]:m[7]] {
+			matches = append(matches, m)
+		}
+	}
+	reres.matches = matches
+	return &DoubleQuotedMultiRxres{reres}
+}
+
+/* Return quote used for 'xxx' or '"yyy"' */
+func (dqr *DoubleQuotedMultiRxres) DQMQuote() string {
+	return dqr.Group(1)
+}
+
+/* Return quoted text in 'xxx' or '"yyy"' */
+func (dqr *DoubleQuotedMultiRxres) DQMText() string {
+	return dqr.Group(2)
+}
+
 /* Detects strings that resemble URIs.
 
    Examples
