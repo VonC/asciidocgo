@@ -1570,21 +1570,34 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 			}
 
 			xrId := reres.XId()
-			xrefText := reres.XrefText()
+			//xrefText := reres.XrefText()
 			if reres.Group(1) != "" {
-				// TODO
 				// id = id.sub(DoubleQuotedRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2')
+				reresdq := regexps.NewDoubleQuotedRxres(xrId)
+				if reresdq.HasNext() {
+					xrId = ""
+				}
+				suffixXrId := ""
+				for reresdq.HasNext() {
+					xrId = xrId + reresdq.Prefix()
+					xrId = xrId + reresdq.DQText()
+					suffixXrId = reresdq.Suffix()
+					reresdq.Next()
+				}
+				xrId = xrId + suffixXrId
+				// TODO
 				// reftext = reftext.sub(DoubleQuotedMultiRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2') if reftext
 			}
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "ref"
-			optsInline.target = ibaId
-			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, ibaRefText, optsInline)
+			//optsInline.target = ibaId
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, "" /* ibaRefText*/, optsInline)
 			res = res + inline.Convert()
 		}
 		res = res + suffix
 	}
+	return res
 }
 
 // REGEXP_ENCODE_URI_CHARS = /[^\w\-.!~*';:@=+$,()\[\]]/
