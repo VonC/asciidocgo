@@ -794,7 +794,7 @@ capturing the quote char and text.
     #   to take up multiple lines and I
     #   still want to be matched."
 DoubleQuotedMultiRx = /^("|)(.*)\1$/ */
-var DoubleQuotedMultiRx, _ = regexp.Compile(`(?sm)^("|)(.*?)("|)$`)
+var DoubleQuotedMultiRx, _ = regexp.Compile(`(?s)^("|)(.*?)("|)$`)
 
 type DoubleQuotedMultiRxres struct {
 	*Reres

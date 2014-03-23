@@ -771,4 +771,28 @@ notext"`)
 
 		})
 	})
+
+	Convey("Regexps can encapsulate double multi quoted text results in a struct DoubleQuotedMultiRxres", t, func() {
+		Convey("DoubleQuotedMultiRxres should detect text", func() {
+			r := NewDoubleQuotedMultiRxres(`"Who goes there
+				line2?"`)
+
+			So(r.HasAnyMatch(), ShouldBeTrue)
+			So(len(r.matches), ShouldEqual, 1)
+
+			So(r.DQMQuote(), ShouldEqual, `"`)
+			So(r.DQMText(), ShouldEqual, `Who goes there
+				line2?`)
+
+			r = NewDoubleQuotedMultiRxres(`Who goes there2
+				line22?`)
+			So(r.DQMQuote(), ShouldEqual, ``)
+			So(r.DQMText(), ShouldEqual, `Who goes there2
+				line22?`)
+
+			r = NewDoubleQuotedMultiRxres(`"Who goes there
+				line2?`)
+			So(r.HasAnyMatch(), ShouldBeFalse)
+		})
+	})
 }
