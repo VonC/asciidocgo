@@ -1570,7 +1570,7 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 			}
 
 			xrId := reres.XId()
-			//xrefText := reres.XrefText()
+			xrefText := reres.XrefText()
 			if reres.Group(1) != "" {
 				// id = id.sub(DoubleQuotedRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2')
 				reresdq := regexps.NewDoubleQuotedRxres(xrId)
@@ -1587,7 +1587,21 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				xrId = xrId + suffixXrId
 				// TODO
 				// reftext = reftext.sub(DoubleQuotedMultiRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2') if reftext
+
+				reresdqm := regexps.NewDoubleQuotedMultiRxres(xrefText)
+				if reresdqm.HasNext() {
+					xrefText = ""
+				}
+				suffixXrefText := ""
+				for reresdqm.HasNext() {
+					xrefText = xrefText + reresdqm.Prefix()
+					xrefText = xrefText + reresdqm.DQMText()
+					suffixXrefText = reresdqm.Suffix()
+					reresdqm.Next()
+				}
+				xrefText = xrefText + suffixXrefText
 			}
+			//xrefText := reres.XrefText()
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "ref"
