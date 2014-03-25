@@ -1601,7 +1601,23 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				}
 				xrefText = xrefText + suffixXrefText
 			}
-			//xrefText := reres.XrefText()
+
+			xrPath, xrFragment := ""
+			if strings.Contains(xrId, "#") {
+				xrIds := strings.Split(xrId, "#")
+				xrPath = xrIds[0]
+				xrFragment = xrIds[1]
+			}
+
+			xrefId, xrefTarget := ""
+			// handles form: id
+			if xrPath == "" {
+				xrefId = xrFragment
+				xrefTarget = "#" + xrFragment
+			} else {
+				// handles forms: doc#, doc.adoc#, doc#id and doc.adoc#id
+
+			}
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "ref"
