@@ -1603,27 +1603,61 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				xrefText = xrefText + suffixXrefText
 			}
 
-			xrPath, xrFragment := ""
+			xrPath := ""
+			xrFragment := ""
 			if strings.Contains(xrId, "#") {
 				xrIds := strings.Split(xrId, "#")
 				xrPath = xrIds[0]
 				xrFragment = xrIds[1]
 			}
 
-			xrefId, xrefTarget := ""
+			xrefId := ""
+			xrefTarget := ""
 			// handles form: id
 			if xrPath == "" {
 				xrefId = xrFragment
 				xrefTarget = "#" + xrFragment
 			} else {
 				// handles forms: doc#, doc.adoc#, doc#id and doc.adoc#id
-
+				ext := filepath.Ext(xrPath)
+				if ext != "" {
+					xrPath = xrPath[0 : len(xrPath)-len(ext)-1]
+					// the referenced path is this document, or its contents has been included in this document
+					if s.Document() != nil &&
+						s.Document().Attr("docname", compliance.AttributeUndefined(), false).(string) == xrPath ||
+						strings.Contains(s.Document().References().Get("includes"), xrPath) {
+						xrefId = xrFragment
+						xrPath = ""
+						xrefTarget = "#" + xrFragment
+					} else {
+						xrefId = xrPath + "#" + xrFragment
+						if xrFragment == "" {
+							xrefId = xrPath
+						}
+						xrPathPrefix := ""
+						if s.Document() != nil {
+							xrPathPrefix = s.Document().Attr("relfileprefix", nil, false).(string)
+						}
+						xrPathSuffix := s.Document().Attr("outfilesuffix", nil, false).(string)
+						if xrPathSuffix == "" {
+							xrPathSuffix = ".html"
+						}
+						xrPath = xrPathPrefix + xrPath + xrPathSuffix
+						xrefTarget = xrPath + "#" + xrFragment
+						if xrFragment == "" {
+							xrefTarget = xrPath
+						}
+					}
+				}
 			}
 
-			optsInline := &OptionsInline{}
-			optsInline.typeInline = "ref"
-			//optsInline.target = ibaId
-			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, "" /* ibaRefText*/, optsInline)
+			optsInline := &OptionsInline{attributes: make(map[string]interface{})}
+			optsInline.typeInline = "xref"
+			optsInline.target = xrefTarget
+			optsInline.attributes["path"] = xrPath
+			optsInline.attributes["fragment"] = xrFragment
+			optsInline.attributes["refid"] = xrefId
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Anchor, xrefText, optsInline)
 			res = res + inline.Convert()
 		}
 		res = res + suffix
