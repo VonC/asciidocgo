@@ -249,6 +249,7 @@ type SubstDocumentable interface {
 
 type Referencable interface {
 	HasId(id string) bool
+	Get(id string) string
 }
 
 type Convertable interface {

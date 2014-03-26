@@ -25,6 +25,9 @@ type testReferencable struct {
 func (tr *testReferencable) HasId(id string) bool {
 	return false
 }
+func (tr *testReferencable) Get(id string) string {
+	return ""
+}
 
 func newTestSubstDocumentAble(s *substitutors) *testSubstDocumentAble {
 	tsd := &testSubstDocumentAble{s: s}
