@@ -15,6 +15,7 @@ const (
 	IndexTerm
 	Anchor
 	Footnote
+	Quoted
 	Unknown
 )
 
@@ -40,6 +41,8 @@ func (c Context) String() string {
 		return "anchor"
 	case Footnote:
 		return "footnote"
+	case Quoted:
+		return "quoted"
 	}
 	return "unknown"
 }

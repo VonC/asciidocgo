@@ -18,6 +18,7 @@ func TestContext(t *testing.T) {
 		So(IndexTerm.String(), ShouldEqual, "indexterm")
 		So(Anchor.String(), ShouldEqual, "anchor")
 		So(Footnote.String(), ShouldEqual, "footnote")
+		So(Quoted.String(), ShouldEqual, "quoted")
 		So(Unknown.String(), ShouldEqual, "unknown")
 	})
 

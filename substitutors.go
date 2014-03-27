@@ -469,7 +469,7 @@ PassInlineLiteralRx:
 			}
 
 			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
-			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type
+			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type (later, to make them type safe instead of hash)
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
 
@@ -536,6 +536,41 @@ MathInlineMacroRx:
 
 ExtractPassthroughsRes:
 
+	return res
+}
+
+var PASS_MATCHRx, _ = regexp.Compile(`\u0096(\d+)\u0097`)
+
+/* Internal: Restore the passthrough text by reinserting into the placeholder positions
+text - The String text into which to restore the passthrough text
+returns The String text with the passthrough text restored */
+func (s *substitutors) restorePassthroughs(text string) string {
+	res := text
+	if s.passthroughs == nil || len(s.passthroughs) == 0 || strings.Contains(text, subPASS_START) {
+		return res
+	}
+
+	res = ""
+	suffix := ""
+	reres := regexps.NewReres(text, PASS_MATCHRx)
+	for reres.HasNext() {
+		res = res + reres.Prefix()
+		index, _ := strconv.Atoi(reres.Group(1))
+		pass := s.passthroughs[index]
+		subs := pass.subs
+		subbedText := pass.text
+		if subs != nil {
+			subbedText = s.ApplySubs(subbedText, subs)
+		}
+		typePT := pass.typePT
+		if typePT != "" {
+			optsInline := &OptionsInline{attributes: pass.attributes}
+			optsInline.typeInline = typePT
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Quoted, subbedText, optsInline)
+			res = res + inline.Convert()
+		}
+	}
+	res = res + suffix
 	return res
 }
 
