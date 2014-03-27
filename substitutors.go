@@ -1450,7 +1450,11 @@ func (s *substitutors) SubMacros(source string) string {
 			indexf := ""
 			if reres.FootnotePrefix() == "footnote" {
 				// REVIEW it's a dirty job, but somebody's gotta do it
-				textf = "" // TODO restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string m[2], true)))
+				// restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string m[2], true)))
+				normalizedString := normalizeString(reres.FootnoteText(), true)
+				subInlineAnchors := s.subInlineAnchors(normalizedString, nil)
+				subInlineXrefs := s.subInlineXrefs(subInlineAnchors, nil)
+				textf = s.restorePassthroughs(subInlineXrefs)
 				if s.Document() != nil {
 					indexf = s.Document().Counter("footnote-number", 0)
 					s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
@@ -1461,7 +1465,11 @@ func (s *substitutors) SubMacros(source string) string {
 				textf = r[1]
 				if textf != "" {
 					// REVIEW it's a dirty job, but somebody's gotta do it
-					textf = "" // TODO restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string text, true)))
+					// restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string text, true)))
+					normalizedString := normalizeString(textf, true)
+					subInlineAnchors := s.subInlineAnchors(normalizedString, nil)
+					subInlineXrefs := s.subInlineXrefs(subInlineAnchors, nil)
+					textf = s.restorePassthroughs(subInlineXrefs)
 					if s.Document() != nil {
 						indexf = s.Document().Counter("footnote-number", 0)
 						s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
@@ -1491,7 +1499,9 @@ func (s *substitutors) SubMacros(source string) string {
 		}
 		res = res + suffix
 	}
-	// TODO res = 	sub_inline_xrefs(sub_inline_anchors(res, found), found)
+	// res = 	sub_inline_xrefs(sub_inline_anchors(res, found), found)
+	subInlineAnchors := s.subInlineAnchors(res, found)
+	res = s.subInlineXrefs(subInlineAnchors, found)
 	return res
 }
 
