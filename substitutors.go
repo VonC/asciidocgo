@@ -539,14 +539,14 @@ ExtractPassthroughsRes:
 	return res
 }
 
-var PASS_MATCHRx, _ = regexp.Compile(`\u0096(\d+)\u0097`)
+var PASS_MATCHRx, _ = regexp.Compile("\u0096" + `(\d+)` + "\u0097")
 
 /* Internal: Restore the passthrough text by reinserting into the placeholder positions
 text - The String text into which to restore the passthrough text
 returns The String text with the passthrough text restored */
 func (s *substitutors) restorePassthroughs(text string) string {
 	res := text
-	if s.passthroughs == nil || len(s.passthroughs) == 0 || strings.Contains(text, subPASS_START) {
+	if s.passthroughs == nil || len(s.passthroughs) == 0 || !strings.Contains(text, subPASS_START) {
 		return res
 	}
 	fmt.Printf("\n%v => %v\n", s.passthroughs, len(s.passthroughs))
@@ -569,6 +569,8 @@ func (s *substitutors) restorePassthroughs(text string) string {
 			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Quoted, subbedText, optsInline)
 			res = res + inline.Convert()
 		}
+		suffix = reres.Suffix()
+		reres.Next()
 	}
 	res = res + suffix
 	return res
