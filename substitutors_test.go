@@ -794,4 +794,15 @@ the text %s5%s should be passed through as %s6%s text
 		})
 	})
 
+	Convey("A substitutors can restore passthrough", t, func() {
+		s := &substitutors{}
+		Convey("By default, empty passthrough means text is returned unchanged", func() {
+			So(s.restorePassthroughs("test"), ShouldEqual, "test")
+		})
+		Convey("passthrough get index from text", func() {
+			s.passthroughs = append(s.passthroughs, &passthrough{})
+			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abc\u00960\u0097def")
+		})
+	})
+
 }

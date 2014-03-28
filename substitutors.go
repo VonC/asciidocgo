@@ -300,7 +300,7 @@ This module is intented to be mixed-in to Section and Block to provide
 operations for performing the necessary substitutions. */
 type substitutors struct {
 	// A String Array of passthough (unprocessed) text captured from this block
-	passthroughs       []passthrough
+	passthroughs       []*passthrough
 	document           SubstDocumentable
 	inlineMaker        InlineMaker
 	abstractNodable    AbstractNodable
@@ -423,7 +423,7 @@ func (s *substitutors) extractPassthroughs(text string) string {
 				}
 			}
 			if textOri != "" {
-				p := passthrough{textOri, subsOri, make(map[string]interface{}), ""}
+				p := &passthrough{textOri, subsOri, make(map[string]interface{}), ""}
 				s.passthroughs = append(s.passthroughs, p)
 				index := len(s.passthroughs) - 1
 				res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -468,7 +468,7 @@ PassInlineLiteralRx:
 				attributes = s.parseAttributes(reres.Attributes(), []string{}, &OptionsParseAttributes{})
 			}
 
-			p := passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
+			p := &passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
 			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type (later, to make them type safe instead of hash)
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -523,7 +523,7 @@ MathInlineMacroRx:
 				}
 			}
 			attributes := make(map[string]interface{})
-			p := passthrough{mathText, mathSubs, attributes, mathType}
+			p := &passthrough{mathText, mathSubs, attributes, mathType}
 			s.passthroughs = append(s.passthroughs, p)
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
@@ -549,7 +549,7 @@ func (s *substitutors) restorePassthroughs(text string) string {
 	if s.passthroughs == nil || len(s.passthroughs) == 0 || strings.Contains(text, subPASS_START) {
 		return res
 	}
-
+	fmt.Printf("\n%v => %v\n", s.passthroughs, len(s.passthroughs))
 	res = ""
 	suffix := ""
 	reres := regexps.NewReres(text, PASS_MATCHRx)
