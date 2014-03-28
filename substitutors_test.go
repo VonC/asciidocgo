@@ -799,9 +799,9 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("By default, empty passthrough means text is returned unchanged", func() {
 			So(s.restorePassthroughs("test"), ShouldEqual, "test")
 		})
-		Convey("passthrough get index from text", func() {
+		Convey("empty passthrough removes index from text", func() {
 			s.passthroughs = append(s.passthroughs, &passthrough{})
-			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abc\u00960\u0097def")
+			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abcdef")
 		})
 	})
 
