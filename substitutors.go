@@ -1492,6 +1492,9 @@ func (s *substitutors) SubMacros(source string) string {
 				}
 			}
 
+			suffix = reres.Suffix()
+			reres.Next()
+
 			optsInline := &OptionsInline{attributes: make(map[string]interface{})}
 			optsInline.attributes["index"] = indexf
 			optsInline.typeInline = typef
@@ -1520,11 +1523,13 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 			res = ""
 		}
 		suffix := ""
+		//fmt.Printf("\nsubInlineAnchors text '%v' => match '%v'\n", text, reres.FullMatch())
 		for reres.HasNext() {
 			res = res + reres.Prefix()
 			// honor the escape
 			if reres.IsEscaped() {
 				res = res + reres.FullMatch()[1:]
+				//fmt.Printf("\nsubInlineAnchors escaped res '%v'\n", res)
 				suffix = reres.Suffix()
 				reres.Next()
 				continue
@@ -1532,6 +1537,9 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 
 			ibId := reres.BibId()
 			ibRefText := reres.BibId()
+
+			suffix = reres.Suffix()
+			reres.Next()
 
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "bibref"
@@ -1548,6 +1556,7 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 		// inline bibliography anchor inline [[[Foo]]]
 		reres := regexps.NewInlineAnchorRxres(res)
 		if reres.HasNext() {
+			//fmt.Printf("\nsubInlineAnchors [[ res '%v' => match '%v'\n", res, reres.FullMatch())
 			res = ""
 		}
 		suffix := ""
@@ -1588,6 +1597,10 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 					//Debug.debug { "Missing reference for anchor #{id}" }
 				}
 			}
+
+			suffix = reres.Suffix()
+			reres.Next()
+
 			optsInline := &OptionsInline{}
 			optsInline.typeInline = "ref"
 			optsInline.target = ibaId
