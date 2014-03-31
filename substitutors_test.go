@@ -822,4 +822,13 @@ the text %s5%s should be passed through as %s6%s text
 		})
 	})
 
+	Convey("A substitutors can Substitute normal and bibliographic anchors", t, func() {
+		s := &substitutors{}
+		Convey("Substiture normal ancher '[[['", func() {
+			s.inlineMaker = &testInlineMaker{}
+			So(s.subInlineAnchors(`\[[[test]]]`, nil), ShouldEqual, "[ContextAn 'anchor': text 'test' ===> type 'ref' target 'test' attrs: 'map[]']")
+			So(s.subInlineAnchors("[[[test]]]", nil), ShouldEqual, "ContextAn 'anchor': text 'test' ===> type 'bibref' target 'test' attrs: 'map[]'")
+		})
+	})
+
 }
