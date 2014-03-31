@@ -559,9 +559,11 @@ func (s *substitutors) restorePassthroughs(text string) string {
 		pass := s.passthroughs[index]
 		subs := pass.subs
 		subbedText := pass.text
+		//fmt.Printf("\nrestorePassthroughs subs '%v', index '%v' text '%v'\n", subs, index, subbedText)
 		if subs != nil {
 			subbedText = s.ApplySubs(subbedText, subs)
 		}
+		//fmt.Printf("subbedText '%v'\n", subbedText)
 		typePT := pass.typePT
 		if typePT != "" {
 			optsInline := &OptionsInline{attributes: pass.attributes}

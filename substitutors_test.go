@@ -143,6 +143,11 @@ func (tc *testConvertable) Convert() string {
 	return fmt.Sprintf("%v", tc.data)
 }
 
+type testAbstractNodable struct {
+}
+
+func (tan *testAbstractNodable) IsAbstractNodable() {}
+
 type testInlineMaker struct {
 }
 
@@ -163,6 +168,9 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 		return &testConvertable{msg}
 	case context.Anchor:
 		msg := fmt.Sprintf("ContextIT '%v': text '%v' ===> type '%v' target '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.Attributes())
+		return &testConvertable{msg}
+	case context.Quoted:
+		msg := fmt.Sprintf("ContextQt '%v': text '%v' ===> type '%v' target '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.Attributes())
 		return &testConvertable{msg}
 	}
 	return &testConvertable{"unknown context"}
@@ -799,9 +807,17 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("By default, empty passthrough means text is returned unchanged", func() {
 			So(s.restorePassthroughs("test"), ShouldEqual, "test")
 		})
-		Convey("empty passthrough removes index from text", func() {
-			s.passthroughs = append(s.passthroughs, &passthrough{})
-			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abcdef")
+		Convey("non-empty passthrough apply subs", func() {
+			p := &passthrough{}
+			// []*subsEnum
+			p.subs = append(p.subs, sub.title)
+			p.text = "test"
+			p.typePT = "visible"
+			// not really needed because testInlineMaker doesn't use parent
+			s.abstractNodable = &testAbstractNodable{}
+			s.inlineMaker = &testInlineMaker{}
+			s.passthroughs = append(s.passthroughs, p)
+			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abcContextQt 'quoted': text 'test' ===> type 'visible' target '' attrs: 'map[]'def")
 		})
 	})
 
