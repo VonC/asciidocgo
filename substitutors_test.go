@@ -827,18 +827,26 @@ the text %s5%s should be passed through as %s6%s text
 
 	Convey("A substitutors can Substitute normal and bibliographic anchors", t, func() {
 		s := &substitutors{}
-		Convey("Substiture normal anchor '[[['", func() {
+		Convey("Substitute normal anchor '[[['", func() {
 			s.inlineMaker = &testInlineMaker{}
 			So(s.subInlineAnchors(`\[[[test]]]`, nil), ShouldEqual, "[ContextAn 'anchor': text 'test' ===> type 'ref' target 'test' attrs: 'map[]']")
 			So(s.subInlineAnchors("[[[test]]]", nil), ShouldEqual, "ContextAn 'anchor': text 'test' ===> type 'bibref' target 'test' attrs: 'map[]'")
 		})
-		Convey("Substiture ref anchor '[['", func() {
+		Convey("Substitute ref anchor '[['", func() {
 			So(s.subInlineAnchors(`\[[testref]]`, nil), ShouldEqual, "[[testref]]")
 			testDocument := newTestSubstDocumentAble(s)
 			testDocument.references = &testReferencable{}
 			s.document = testDocument
 			So(s.subInlineAnchors(`[[testref]]`, nil), ShouldEqual, "ContextAn 'anchor': text 'testref' ===> type 'ref' target 'testref' attrs: 'map[]'")
 			So(s.subInlineAnchors(`[[testref2]]`, nil), ShouldEqual, "ContextAn 'anchor': text 'testref2' ===> type 'ref' target 'testref2' attrs: 'map[]'")
+		})
+	})
+
+	Convey("A substitutors can Substitute cross reference links", t, func() {
+		s := &substitutors{}
+		Convey("Substitute <<id,reftext>>", func() {
+			s.inlineMaker = &testInlineMaker{}
+			So(s.subInlineXrefs(`\&lt;&lt;id,reftext&gt;&gt;`, nil), ShouldEqual, "&lt;&lt;id,reftext&gt;&gt;")
 		})
 	})
 
