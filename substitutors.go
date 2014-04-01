@@ -1714,6 +1714,9 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				}
 			}
 
+			suffix = reres.Suffix()
+			reres.Next()
+
 			optsInline := &OptionsInline{attributes: make(map[string]interface{})}
 			optsInline.typeInline = "xref"
 			optsInline.target = xrefTarget

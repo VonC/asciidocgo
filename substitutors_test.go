@@ -847,6 +847,7 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute <<id,reftext>>", func() {
 			s.inlineMaker = &testInlineMaker{}
 			So(s.subInlineXrefs(`\&lt;&lt;id,reftext&gt;&gt;`, nil), ShouldEqual, "&lt;&lt;id,reftext&gt;&gt;")
+			So(s.subInlineXrefs(`&lt;&lt;id,reftext2&gt;&gt;`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext2' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
 		})
 	})
 
