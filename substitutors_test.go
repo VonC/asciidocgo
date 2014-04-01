@@ -849,6 +849,10 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.subInlineXrefs(`\&lt;&lt;id,reftext&gt;&gt;`, nil), ShouldEqual, "&lt;&lt;id,reftext&gt;&gt;")
 			So(s.subInlineXrefs(`&lt;&lt;id,reftext2&gt;&gt;`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext2' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
 		})
+		Convey("Substitute xref:id[reftext]", func() {
+			So(s.subInlineXrefs(`\xref:id3[reftext3]`, nil), ShouldEqual, "xref:id3[reftext3]")
+			So(s.subInlineXrefs(`xref:id3[reftext3]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext3' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
+		})
 	})
 
 }
