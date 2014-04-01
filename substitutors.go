@@ -1585,6 +1585,7 @@ func (s *substitutors) subInlineAnchors(text string, found *found) string {
 			   #end */
 
 			// if @document.references[:ids].has_key? id
+			// fmt.Printf("ibaId '%v', ibaRefText '%v', doc '%++v' \n", ibaId, ibaRefText, s.Document())
 			if s.Document() != nil {
 				if s.Document().References().HasId(ibaId) {
 
