@@ -1685,7 +1685,7 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				// handles forms: doc#, doc.adoc#, doc#id and doc.adoc#id
 				ext := filepath.Ext(xrPath)
 				if ext != "" {
-					xrPath = xrPath[0 : len(xrPath)-len(ext)-1]
+					xrPath = xrPath[0 : len(xrPath)-len(ext)]
 					// the referenced path is this document, or its contents has been included in this document
 					if s.Document() != nil &&
 						s.Document().Attr("docname", compliance.AttributeUndefined(), false).(string) == xrPath ||
@@ -1699,10 +1699,11 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 							xrefId = xrPath
 						}
 						xrPathPrefix := ""
+						xrPathSuffix := ""
 						if s.Document() != nil {
 							xrPathPrefix = s.Document().Attr("relfileprefix", nil, false).(string)
+							xrPathSuffix = s.Document().Attr("outfilesuffix", nil, false).(string)
 						}
-						xrPathSuffix := s.Document().Attr("outfilesuffix", nil, false).(string)
 						if xrPathSuffix == "" {
 							xrPathSuffix = ".html"
 						}
