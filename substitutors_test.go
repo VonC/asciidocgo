@@ -29,6 +29,9 @@ func (tr *testReferencable) HasId(id string) bool {
 	return false
 }
 func (tr *testReferencable) Get(id string) string {
+	if id == "includes" {
+		return "xxdoc8yy"
+	}
 	return ""
 }
 
@@ -60,6 +63,15 @@ func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, in
 			return "hide-uri-scheme"
 		}
 		return ""
+	}
+	if name == "relfileprefix" {
+		return "relfileprefixAttr"
+	}
+	if name == "outfilesuffix" {
+		return ""
+	}
+	if name == "docname" {
+		return "doc8"
 	}
 	return "mathtest"
 }
@@ -855,6 +867,15 @@ the text %s5%s should be passed through as %s6%s text
 		})
 		Convey("Substitute xref:id#xx[reftext]", func() {
 			So(s.subInlineXrefs(`xref:id5#xxx5[reftext5]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext5' ===> type 'xref' target '' attrs: 'map[path:id5 fragment:xxx5 refid:]'")
+		})
+		Convey("Substitute xref:doc.adoc#xx[reftext]", func() {
+			testDocument := newTestSubstDocumentAble(s)
+			testDocument.references = &testReferencable{}
+			s.document = testDocument
+			So(s.subInlineXrefs(`xref:doc6.adoc6#xxx6[reftext6]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext6' ===> type 'xref' target 'relfileprefixAttrdoc6.html#xxx6' attrs: 'map[path:relfileprefixAttrdoc6.html fragment:xxx6 refid:doc6#xxx6]'")
+
+			So(s.subInlineXrefs(`xref:doc7.adoc7#[reftext7]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext7' ===> type 'xref' target 'relfileprefixAttrdoc7.html' attrs: 'map[path:relfileprefixAttrdoc7.html fragment: refid:doc7]'")
+			So(s.subInlineXrefs(`xref:doc8.adoc8#frag8[reftext8]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext8' ===> type 'xref' target '#frag8' attrs: 'map[path: fragment:frag8 refid:frag8]'")
 		})
 	})
 
