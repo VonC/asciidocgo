@@ -846,12 +846,15 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		Convey("Substitute <<id,reftext>>", func() {
 			s.inlineMaker = &testInlineMaker{}
-			So(s.subInlineXrefs(`\&lt;&lt;id,reftext&gt;&gt;`, nil), ShouldEqual, "&lt;&lt;id,reftext&gt;&gt;")
-			So(s.subInlineXrefs(`&lt;&lt;id,reftext2&gt;&gt;`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext2' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
+			So(s.subInlineXrefs(`\&lt;&lt;id1,reftext&gt;&gt;`, nil), ShouldEqual, "&lt;&lt;id1,reftext&gt;&gt;")
+			So(s.subInlineXrefs(`&lt;&lt;id2,reftext2&gt;&gt;`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext2' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
 		})
 		Convey("Substitute xref:id[reftext]", func() {
 			So(s.subInlineXrefs(`\xref:id3[reftext3]`, nil), ShouldEqual, "xref:id3[reftext3]")
-			So(s.subInlineXrefs(`xref:id3[reftext3]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext3' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
+			So(s.subInlineXrefs(`xref:id4[reftext4]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext4' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'")
+		})
+		Convey("Substitute xref:id#xx[reftext]", func() {
+			So(s.subInlineXrefs(`xref:id5#xxx5[reftext5]`, nil), ShouldEqual, "ContextAn 'anchor': text 'reftext5' ===> type 'xref' target '' attrs: 'map[path:id5 fragment:xxx5 refid:]'")
 		})
 	})
 

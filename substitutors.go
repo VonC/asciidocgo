@@ -1668,6 +1668,7 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 
 			xrPath := ""
 			xrFragment := ""
+			//fmt.Printf("xrId '%v'\n", xrId)
 			if strings.Contains(xrId, "#") {
 				xrIds := strings.Split(xrId, "#")
 				xrPath = xrIds[0]
