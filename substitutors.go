@@ -549,7 +549,7 @@ func (s *substitutors) restorePassthroughs(text string) string {
 	if s.passthroughs == nil || len(s.passthroughs) == 0 || !strings.Contains(text, subPASS_START) {
 		return res
 	}
-	fmt.Printf("\n%v => %v\n", s.passthroughs, len(s.passthroughs))
+	// fmt.Printf("\n%v => %v\n", s.passthroughs, len(s.passthroughs))
 	res = ""
 	suffix := ""
 	reres := regexps.NewReres(text, PASS_MATCHRx)
@@ -1686,6 +1686,12 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 				ext := filepath.Ext(xrPath)
 				if ext != "" {
 					xrPath = xrPath[0 : len(xrPath)-len(ext)]
+					/*
+						fmt.Printf("\nxrPath.ext='%v'.'%v'\n", xrPath, ext)
+						if s.Document() != nil {
+							fmt.Printf("Document().Attr(docname)='%v' => '%v'\n", s.Document().Attr("docname", compliance.AttributeUndefined(), false).(string), s.Document().Attr("docname", compliance.AttributeUndefined(), false).(string) == xrPath)
+							fmt.Printf("s.Document().References().Get(includes)='%v' xrPath'%v' => '%v'\n", s.Document().References().Get("includes"), xrPath, strings.Contains(s.Document().References().Get("includes"), xrPath))
+						}*/
 					// the referenced path is this document, or its contents has been included in this document
 					if s.Document() != nil &&
 						s.Document().Attr("docname", compliance.AttributeUndefined(), false).(string) == xrPath ||
@@ -1694,6 +1700,7 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 						xrPath = ""
 						xrefTarget = "#" + xrFragment
 					} else {
+						//fmt.Printf("\nxrPath#xrFragment='%v'.'%v'\n", xrPath, xrFragment)
 						xrefId = xrPath + "#" + xrFragment
 						if xrFragment == "" {
 							xrefId = xrPath
@@ -1703,6 +1710,8 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 						if s.Document() != nil {
 							xrPathPrefix = s.Document().Attr("relfileprefix", nil, false).(string)
 							xrPathSuffix = s.Document().Attr("outfilesuffix", nil, false).(string)
+							// fmt.Printf("s.Document().Attr(relfileprefix) xrPathPrefix='%v'\n", xrPathPrefix)
+							// fmt.Printf("s.Document().Attr(outfilesuffix) xrPathSuffix='%v'\n", xrPathSuffix)
 						}
 						if xrPathSuffix == "" {
 							xrPathSuffix = ".html"
