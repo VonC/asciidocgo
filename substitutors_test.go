@@ -879,4 +879,16 @@ the text %s5%s should be passed through as %s6%s text
 		})
 	})
 
+	Convey("A substitutors can substitute footnote inline macro references", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		tim := &testInlineMacro{}
+		testDocument.te.inlineMacros = append(testDocument.te.inlineMacros, tim)
+		s.document = testDocument
+		s.inlineMaker = &testInlineMaker{}
+		s.attributeListMaker = &testAttributeListMaker{}
+		Convey("Substitute escaped footnote link inline macro should ignore the escape", func() {
+			So(s.SubMacros("test \\footnoteref:[id,text] ww\n \\footnote:[text]hh\nq q\\footnoteref:[id] ww"), ShouldEqual, "test footnoteref:[id,text] ww\n footnote:[text]hh\nq qfootnoteref:[id] ww")
+		})
+	})
 }
