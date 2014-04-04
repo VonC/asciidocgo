@@ -1459,6 +1459,10 @@ func (s *substitutors) SubMacros(source string) string {
 				subInlineAnchors := s.subInlineAnchors(normalizedString, nil)
 				subInlineXrefs := s.subInlineXrefs(subInlineAnchors, nil)
 				textf = s.restorePassthroughs(subInlineXrefs)
+				// fmt.Printf("\nnormalizedString='%v'\n", normalizedString)
+				// fmt.Printf("subInlineAnchors='%v'\n", subInlineAnchors)
+				// fmt.Printf("subInlineXrefs='%v'\n", subInlineXrefs)
+				// fmt.Printf("textf restorePassthroughs='%v'\n", textf)
 				if s.Document() != nil {
 					indexf = s.Document().Counter("footnote-number", 0)
 					s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
@@ -1474,6 +1478,10 @@ func (s *substitutors) SubMacros(source string) string {
 					subInlineAnchors := s.subInlineAnchors(normalizedString, nil)
 					subInlineXrefs := s.subInlineXrefs(subInlineAnchors, nil)
 					textf = s.restorePassthroughs(subInlineXrefs)
+					fmt.Printf("\nnormalizedString='%v'\n", normalizedString)
+					fmt.Printf("subInlineAnchors='%v'\n", subInlineAnchors)
+					fmt.Printf("subInlineXrefs='%v'\n", subInlineXrefs)
+					fmt.Printf("textf restorePassthroughs='%v'\n", textf)
 					if s.Document() != nil {
 						indexf = s.Document().Counter("footnote-number", 0)
 						s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
