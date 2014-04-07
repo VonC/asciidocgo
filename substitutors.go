@@ -1479,7 +1479,7 @@ func (s *substitutors) SubMacros(source string) string {
 					iidf, _ := strconv.Atoi(idf)
 					footnote := s.Document().NewFootnote(iindexf, iidf, textf)
 					// Bug? idf is always empty, meaning iidf is always 0
-					fmt.Printf("\nRegister footnote '%v' from index '%v', id '%v'\n", footnote.String(), indexf, idf)
+					//fmt.Printf("\nRegister footnote '%v' from index '%v', id '%v'\n", footnote.String(), indexf, idf)
 					s.Document().RegisterFootnote(footnote) // Document::Footnote.new(index, id, text)
 				}
 			} else {
@@ -1495,10 +1495,10 @@ func (s *substitutors) SubMacros(source string) string {
 					subInlineAnchors := s.subInlineAnchors(normalizedString, nil)
 					subInlineXrefs := s.subInlineXrefs(subInlineAnchors, nil)
 					textf = s.restorePassthroughs(subInlineXrefs)
-					fmt.Printf("\nnormalizedString='%v'\n", normalizedString)
-					fmt.Printf("subInlineAnchors='%v'\n", subInlineAnchors)
-					fmt.Printf("subInlineXrefs='%v'\n", subInlineXrefs)
-					fmt.Printf("textf restorePassthroughs='%v'\n", textf)
+					// fmt.Printf("\nnormalizedString='%v'\n", normalizedString)
+					// fmt.Printf("subInlineAnchors='%v'\n", subInlineAnchors)
+					// fmt.Printf("subInlineXrefs='%v'\n", subInlineXrefs)
+					// fmt.Printf("textf restorePassthroughs='%v'\n", textf)
 					if s.Document() != nil {
 						indexf = s.Document().Counter("footnote-number", 0)
 						iindexf, _ := strconv.Atoi(indexf)
