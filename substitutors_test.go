@@ -949,13 +949,19 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Substitute footnote:xx", func() {
 			So(s.SubMacros("test footnote:[text2] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text2' ===> type '' target '' id '' attrs: 'map[index:1]' ww\n ss")
 			// Normalize string: strips outboud spaces
-			So(s.SubMacros("test footnote:[  text3  aa ] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text3  aa' ===> type '' target '' id '' attrs: 'map[index:1]' ww\n ss")
+			So(s.SubMacros("test footnote:[  text3  aa ] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text3  aa' ===> type '' target '' id '' attrs: 'map[index:2]' ww\n ss")
 			// TOFIX? Is it normal that normalizedString='anchor:idname4[Reference4 Text4' and subInlineAnchors='anchor:idname4[Reference4 Text4'? Last ] is missing, which should prevent anchor to be detected... Yet it appears to besubstitute anyway
-			So(s.SubMacros("test footnote:[anchor:idname4[Reference4 Text4]] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'ContextAn 'anchor': text 'Reference4 Text4' ===> type '' target '' id '' attrs: 'map[index:1' ===> type 'ref' target 'idname4' attrs: 'map[]''] ww\n ss")
+			So(s.SubMacros("test footnote:[anchor:idname4[Reference4 Text4]] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'ContextAn 'anchor': text 'Reference4 Text4' ===> type '' target '' id '' attrs: 'map[index:3' ===> type 'ref' target 'idname4' attrs: 'map[]''] ww\n ss")
 			// At least, subInlineXrefs is detectable
-			So(s.SubMacros("test footnote:[&lt;&lt;id5,reftext5&gt;&gt;] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'ContextAn 'anchor': text 'reftext5' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'' ===> type '' target '' id '' attrs: 'map[index:1]' ww\n ss")
+			So(s.SubMacros("test footnote:[&lt;&lt;id5,reftext5&gt;&gt;] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'ContextAn 'anchor': text 'reftext5' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'' ===> type '' target '' id '' attrs: 'map[index:4]' ww\n ss")
 			// Restore passthrough works too
-			So(s.SubMacros("test footnote:[abc6\u00960\u0097def6] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'abc6ContextQt 'quoted': text 'test6' ===> type 'visible' target '' attrs: 'map[]'def6' ===> type '' target '' id '' attrs: 'map[index:1]' ww\n ss")
+			So(s.SubMacros("test footnote:[abc6\u00960\u0097def6] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'abc6ContextQt 'quoted': text 'test6' ===> type 'visible' target '' attrs: 'map[]'def6' ===> type '' target '' id '' attrs: 'map[index:5]' ww\n ss")
+		})
+		Convey("Substitute footnote:xx", func() {
+			So(s.SubMacros("test footnote:[text2] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text2' ===> type '' target '' id '' attrs: 'map[index:6]' ww\n ss")
+			So(len(testDocument.footnotes), ShouldEqual, 6)
+			footnote := testDocument.footnotes[len(testDocument.footnotes)-1]
+			So(footnote.String(), ShouldEqual, "footnote(0,6): 'text2'")
 		})
 	})
 }
