@@ -1475,7 +1475,12 @@ func (s *substitutors) SubMacros(source string) string {
 				// fmt.Printf("textf restorePassthroughs='%v'\n", textf)
 				if s.Document() != nil {
 					indexf = s.Document().Counter("footnote-number", 0)
-					s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
+					iindexf, _ := strconv.Atoi(indexf)
+					iidf, _ := strconv.Atoi(idf)
+					footnote := s.Document().NewFootnote(iindexf, iidf, textf)
+					// Bug? idf is always empty, meaning iidf is always 0
+					fmt.Printf("\nRegister footnote '%v' from index '%v', id '%v'\n", footnote.String(), indexf, idf)
+					s.Document().RegisterFootnote(footnote) // Document::Footnote.new(index, id, text)
 				}
 			} else {
 				r := strings.Split(reres.FootnoteText(), ",")
@@ -1494,16 +1499,19 @@ func (s *substitutors) SubMacros(source string) string {
 					fmt.Printf("textf restorePassthroughs='%v'\n", textf)
 					if s.Document() != nil {
 						indexf = s.Document().Counter("footnote-number", 0)
-						s.Document().Register("footnotes", nil) // TODO Document::Footnote.new(index, id, text)
+						iindexf, _ := strconv.Atoi(indexf)
+						iidf, _ := strconv.Atoi(idf)
+						footnote := s.Document().NewFootnote(iindexf, iidf, textf)
+						s.Document().RegisterFootnote(footnote) // Document::Footnote.new(index, id, text)
 					}
 					typef = "ref"
 				} else {
-					footnote := ""
-					if s.Document() != nil && footnote != "" { // TODO @document.references[:footnotes].find {|fn| fn.id == id })
-						indexf = "" // TODO footnote.index
-						textf = ""  // TODO footnote.text
-					} else {
-						textf = idf
+					textf = idf
+					if s.Document() != nil { // @document.references[:footnotes].find {|fn| fn.id == id })
+						iidf, _ := strconv.Atoi(idf)
+						footnote := s.Document().FindFootnote(iidf)
+						indexf = strconv.Itoa(footnote.Index()) // footnote.index
+						textf = footnote.Text()                 // footnote.text
 					}
 					targetf = idf
 					typef = "xref"
