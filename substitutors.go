@@ -245,6 +245,16 @@ type SubstDocumentable interface {
 	Extensions() Extensionables
 	Register(typeDoc string, value []string)
 	References() Referencable
+	NewFootnote(index int, id int, text string) Footnotable
+	RegisterFootnote(f Footnotable)
+	FindFootnote(id int) Footnotable
+}
+
+type Footnotable interface {
+	Index() int
+	Id() int
+	Text() string
+	String() string
 }
 
 type Referencable interface {
