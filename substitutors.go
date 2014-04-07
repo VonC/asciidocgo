@@ -1512,8 +1512,10 @@ func (s *substitutors) SubMacros(source string) string {
 					if s.Document() != nil { // @document.references[:footnotes].find {|fn| fn.id == id })
 						iidf, _ := strconv.Atoi(idf)
 						footnote := s.Document().FindFootnote(iidf)
-						indexf = strconv.Itoa(footnote.Index()) // footnote.index
-						textf = footnote.Text()                 // footnote.text
+						if footnote != nil {
+							indexf = strconv.Itoa(footnote.Index()) // footnote.index
+							textf = footnote.Text()                 // footnote.text
+						}
 					}
 					targetf = idf
 					typef = "xref"
