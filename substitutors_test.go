@@ -12,11 +12,13 @@ import (
 )
 
 type testSubstDocumentAble struct {
-	s             *substitutors
-	te            *testExtensionables
-	linkAttrs     bool
-	hideUriScheme bool
-	references    *testReferencable
+	s               *substitutors
+	te              *testExtensionables
+	linkAttrs       bool
+	hideUriScheme   bool
+	references      *testReferencable
+	footnotes       []Footnotable
+	counterFootnote int
 }
 
 type testReferencable struct {
@@ -38,6 +40,7 @@ func (tr *testReferencable) Get(id string) string {
 func newTestSubstDocumentAble(s *substitutors) *testSubstDocumentAble {
 	tsd := &testSubstDocumentAble{s: s}
 	tsd.te = &testExtensionables{}
+	tsd.footnotes = []Footnotable{}
 	return tsd
 }
 
@@ -78,6 +81,44 @@ func (tsd *testSubstDocumentAble) Attr(name string, defaultValue interface{}, in
 func (tsd *testSubstDocumentAble) Basebackend(base interface{}) bool {
 	return true
 }
+
+type testFootnotable struct {
+	index int
+	id    int
+	text  string
+}
+
+func (tf *testFootnotable) Index() int {
+	return tf.index
+}
+func (tf *testFootnotable) Id() int {
+	return tf.id
+}
+func (tf *testFootnotable) Text() string {
+	return tf.text
+}
+
+func (tf *testFootnotable) String() string {
+	return fmt.Sprintf("footnote(%v,%v): '%v'", tf.Id(), tf.Index(), tf.Text())
+}
+
+func (tsd *testSubstDocumentAble) NewFootnote(index int, id int, text string) Footnotable {
+	return &testFootnotable{index: index, id: id, text: text}
+}
+func (tsd *testSubstDocumentAble) RegisterFootnote(f Footnotable) {
+	tsd.footnotes = append(tsd.footnotes, f)
+}
+func (tsd *testSubstDocumentAble) FindFootnote(id int) Footnotable {
+	var footnote Footnotable
+	for _, f := range tsd.footnotes {
+		if f.Id() == id {
+			footnote = f
+			break
+		}
+	}
+	return footnote
+}
+
 func (tsd *testSubstDocumentAble) SubAttributes(data string, opts *OptionsParseAttributes) string {
 	if tsd.s != nil {
 		return tsd.s.SubAttributes(data, opts)
@@ -101,6 +142,10 @@ func (tsd *testSubstDocumentAble) HasAttr(name string, expect interface{}, inher
 }
 
 func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
+	if name == "footnote-number" {
+		tsd.counterFootnote = tsd.counterFootnote + 1
+		return strconv.Itoa(tsd.counterFootnote)
+	}
 	seed = seed + 1
 	return strconv.Itoa(seed)
 }
