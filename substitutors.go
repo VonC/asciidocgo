@@ -1485,7 +1485,9 @@ func (s *substitutors) SubMacros(source string) string {
 			} else {
 				r := strings.Split(reres.FootnoteText(), ",")
 				idf = strings.TrimSpace(r[0])
-				textf = r[1]
+				if len(r) > 1 {
+					textf = r[1]
+				}
 				if textf != "" {
 					// REVIEW it's a dirty job, but somebody's gotta do it
 					// restore_passthroughs(sub_inline_xrefs(sub_inline_anchors(normalize_string text, true)))

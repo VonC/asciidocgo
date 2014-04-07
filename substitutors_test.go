@@ -963,5 +963,8 @@ the text %s5%s should be passed through as %s6%s text
 			footnote := testDocument.footnotes[len(testDocument.footnotes)-1]
 			So(footnote.String(), ShouldEqual, "footnote(0,6): 'text2'")
 		})
+		Convey("Substitute footnoteref:[id]", func() {
+			So(s.SubMacros("test footnoteref:[4] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text '4' ===> type 'xref' target '4' id '4' attrs: 'map[index:]' ww\n ss")
+		})
 	})
 }
