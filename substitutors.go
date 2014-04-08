@@ -766,7 +766,12 @@ func (s *substitutors) SubAttributes(data string, opts *OptionsParseAttributes) 
 					case "set":
 						args := strings.Split(expr, ":")
 						fmt.Sprintf("%v", args)
-						/*_,*/ value := "" // TODO Parser.store_attribute(args[0], args[1] || '', @document)
+						arg0 := args[0]
+						arg1 := ""
+						if len(args) > 1 {
+							arg1 = args[1]
+						}
+						_, value := s.Parser().storeAttribute(arg0, arg1, s.Document(), nil) // Parser.store_attribute(args[0], args[1] || '', @document)
 						if value == "" {
 							//fmt.Printf("\ns.Document='%v'\n", s.Document())
 							//fmt.Printf("s.Document attr='%v'\n", s.Document().Attr("attribute-undefined", compliance.AttributeUndefined(), false))
