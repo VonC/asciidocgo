@@ -305,6 +305,10 @@ type AttributeListMaker interface {
 	NewAttributeList(attrline string, block ApplyNormalSubsable, delimiter string) AttributeListable
 }
 
+type GlobalParsable interface {
+	storeAttribute(name string, value string, doc SubstDocumentable, attrs map[string]interface{}) (nameRes string, valueRes string)
+}
+
 /* Methods to perform substitutions on lines of AsciiDoc text.
 This module is intented to be mixed-in to Section and Block to provide
 operations for performing the necessary substitutions. */
@@ -315,6 +319,11 @@ type substitutors struct {
 	inlineMaker        InlineMaker
 	abstractNodable    AbstractNodable
 	attributeListMaker AttributeListMaker
+	parser             GlobalParsable
+}
+
+func (s *substitutors) Parser() GlobalParsable {
+	return s.parser
 }
 
 func (s *substitutors) Document() SubstDocumentable {
