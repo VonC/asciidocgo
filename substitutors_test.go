@@ -152,6 +152,16 @@ func (tsd *testSubstDocumentAble) Counter(name string, seed int) string {
 func (tsd *testSubstDocumentAble) Register(typeDoc string, value []string) {
 }
 
+type testGlobalParsable struct {
+}
+
+func (tgp *testGlobalParsable) storeAttribute(name string, value string, doc SubstDocumentable, attrs map[string]interface{}) (nameRes string, valueRes string) {
+	if name == "undefined" {
+		return "undefined_tgpnres", ""
+	}
+	return name + "_tgpnres", value + "_tgpvres"
+}
+
 type testInlineMacro struct {
 	rx                     *regexp.Regexp
 	rxshort                *regexp.Regexp
@@ -521,6 +531,7 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		testDocument := newTestSubstDocumentAble(s)
 		s.document = testDocument
+		s.parser = &testGlobalParsable{}
 		opts := &OptionsParseAttributes{}
 		Convey("Substitute empty attribute references returns empty empty string", func() {
 			So(s.SubAttributes("", opts), ShouldEqual, "")
@@ -532,7 +543,8 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubAttributes("a \\{test1} b\nc {test2\\} d\n{noref", opts), ShouldEqual, "a test1 b\nc test2 d\n{noref")
 		})
 		Convey("Reference with set directive drops the line if Parser.store_attribute returns empty", func() {
-			So(s.SubAttributes("a {set:foo:bar} b", opts), ShouldEqual, "")
+			So(s.SubAttributes("a {set:foo:bar} b", opts), ShouldEqual, "a  b")
+			So(s.SubAttributes("a {set:undefined:bar} b2", opts), ShouldEqual, "")
 			s.document = nil
 		})
 		Convey("Reference with set directive and no document don't drops the line", func() {
