@@ -488,7 +488,7 @@ PassInlineLiteralRx:
 			}
 
 			p := &passthrough{reres.LiteralText(), subArray{subValue.specialcharacters}, attributes, "monospaced"}
-			s.passthroughs = append(s.passthroughs, p) //TODO attributes, type (later, to make them type safe instead of hash)
+			s.passthroughs = append(s.passthroughs, p) // (later, to make them type safe instead of hash)
 			index := len(s.passthroughs) - 1
 			res = res + fmt.Sprintf("%s%d%s", subPASS_START, index, subPASS_END)
 
