@@ -373,7 +373,7 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 		case "specialcharacters":
 			text = subSpecialCharacters(text)
 		case "quotes":
-			text = subQuotes(text)
+			text = s.subQuotes(text)
 		case "attributes":
 			text = s.SubAttributes(text, nil)
 		case "replacements":
@@ -637,13 +637,13 @@ func subSpecialCharacters(text string) string {
  text - The String text to process
 returns The String text with quoted text rendered using
 the backend templates */
-func subQuotes(text string) string {
+func (s *substitutors) subQuotes(text string) string {
 	result := text
 	//fmt.Printf("subQuotes result='%v'\n", result)
 	for _, qs := range quotes.QuoteSubs {
 		//fmt.Printf("subQuotes rx='%v' on '%v' (%v)\n", qs.Rx(), result, qs.Constrained())
 		match := quotes.NewQuoteSubRxres(result, qs)
-		result = convertQuotedText(match, qs.TypeQS(), qs.Constrained())
+		result = s.convertQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
 	return result
 }
@@ -1818,7 +1818,7 @@ func encodeUri(str string) string {
  type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
  scope  - The scope of the quoting (constrained or unconstrained)
 returns The rendered text for the quoted text region */
-func convertQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
+func (s *substitutors) convertQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
 	res := match.Text()
 	if match.HasAnyMatch() {
 		res = ""
@@ -1840,20 +1840,33 @@ func convertQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType,
 		}
 		if constrained {
 			if unescaped_attrs == "" {
+				fmt.Printf("\nconvertQuotedText constrained match.Attribute() '%v'\n", match.Attribute())
 				attributes := parseQuotedTextAttributes(match.Attribute())
-				id := attributes["id"]
+				id := attributes["id"].(string)
 				delete(attributes, "id")
 				fmt.Sprintf("'%v'", id)
-				res = res + match.PrefixQuote() // TODO + #Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).render
+				optsInline := &OptionsInline{attributes: attributes}
+				optsInline.typeInline = typeSub.String()
+				optsInline.id = id
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.Quoted, match.Quote(), optsInline)
+				res = res + match.PrefixQuote() + inline.Convert() // Inline.new(self, :quoted, match[3], :type => type, :id => id, :attributes => attributes).convert
 			} else {
-				res = res + unescaped_attrs // TODO + Inline.new(self, :quoted, match[3], :type => type).render
+				optsInline := &OptionsInline{}
+				optsInline.typeInline = typeSub.String()
+				inline := s.inlineMaker.NewInline(s.abstractNodable, context.Quoted, match.Quote(), optsInline)
+				res = res + unescaped_attrs + inline.Convert() // Inline.new(self, :quoted, match[3], :type => type).convert
 			}
 		} else {
+			fmt.Printf("\nconvertQuotedText UNconstrained match.Attribute() '%v'\n", match.Attribute())
 			attributes := parseQuotedTextAttributes(match.Attribute())
-			id := attributes["id"]
+			id := attributes["id"].(string)
 			delete(attributes, "id")
 			fmt.Sprintf("'%v'", id)
-			res = res + "" // TODO + Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).render
+			optsInline := &OptionsInline{attributes: attributes}
+			optsInline.typeInline = typeSub.String()
+			optsInline.id = id
+			inline := s.inlineMaker.NewInline(s.abstractNodable, context.Quoted, match.Quote(), optsInline)
+			res = res + inline.Convert() // Inline.new(self, :quoted, match[2], :type => type, :id => id, :attributes => attributes).convert
 		}
 		suffix = match.Suffix()
 		match.Next()
@@ -1920,6 +1933,9 @@ func (s *substitutors) ApplyNormalSubs(lines string) string {
 
 func parseQuotedTextAttributes(str string) map[string]interface{} {
 	res := make(map[string]interface{})
+	if str == "" {
+		return res
+	}
 	return res
 }
 

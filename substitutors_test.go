@@ -478,9 +478,10 @@ the text %s5%s should be passed through as %s6%s text
 
 	Convey("A substitutors can Extract inline quotes", t, func() {
 		s := &substitutors{}
+		s.inlineMaker = &testInlineMaker{}
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("test inline quote, constrained, no attribute", func() {
-			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ")
+			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ContextQt 'quoted': text 'quote' ===> type 'Emphasis' target '' attrs: 'map[]'")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, escaped, no attribute", func() {
@@ -488,7 +489,7 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 		Convey("test inline quote, constrained, escaped, with attribute", func() {
-			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "gray Hub")
+			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "grayContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' attrs: 'map[]' Hub")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, unescaped, attribute", func() {
