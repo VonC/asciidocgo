@@ -19,6 +19,28 @@ const (
 	Subscript
 )
 
+func (qsd QuoteSubType) String() string {
+	switch qsd {
+	case Strong:
+		return "Strong"
+	case Double:
+		return "Double"
+	case Emphasis:
+		return "Emphasis"
+	case Single:
+		return "Single"
+	case Monospaced:
+		return "Monospaced"
+	case None:
+		return "None"
+	case Superscript:
+		return "Superscript"
+	case Subscript:
+		return "Subscript"
+	}
+	return "unknown QuoteSubType"
+}
+
 type QuoteSub struct {
 	typeqs      QuoteSubType
 	constrained bool

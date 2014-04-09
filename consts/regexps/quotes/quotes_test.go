@@ -11,6 +11,18 @@ func TestQuotes(t *testing.T) {
 		So(len(QuoteSubs), ShouldEqual, 13)
 	})
 
+	Convey("Quotes types has a String representation", t, func() {
+		So(Strong.String(), ShouldEqual, "Strong")
+		So(Double.String(), ShouldEqual, "Double")
+		So(Emphasis.String(), ShouldEqual, "Emphasis")
+		So(Single.String(), ShouldEqual, "Single")
+		So(Monospaced.String(), ShouldEqual, "Monospaced")
+		So(None.String(), ShouldEqual, "None")
+		So(Superscript.String(), ShouldEqual, "Superscript")
+		So(Subscript.String(), ShouldEqual, "Subscript")
+		So(QuoteSubType(128).String(), ShouldEqual, "unknown QuoteSubType")
+	})
+
 	Convey("Quotes subs should detect unconstrained **strong** quotes", t, func() {
 		qs := QuoteSubs[0]
 		So(qs.Rx().String(), ShouldEqual, `(?s)\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*`)
