@@ -643,7 +643,7 @@ func subQuotes(text string) string {
 	for _, qs := range quotes.QuoteSubs {
 		//fmt.Printf("subQuotes rx='%v' on '%v' (%v)\n", qs.Rx(), result, qs.Constrained())
 		match := quotes.NewQuoteSubRxres(result, qs)
-		result = transformQuotedText(match, qs.TypeQS(), qs.Constrained())
+		result = convertQuotedText(match, qs.TypeQS(), qs.Constrained())
 	}
 	return result
 }
@@ -1051,7 +1051,7 @@ func (s *substitutors) SubMacros(source string) string {
 
 	// FIXME this location is somewhat arbitrary,
 	//       probably need to be able to control ordering
-	// TODO this handling needs some cleanup
+	// TO_DO this handling needs some cleanup
 	//fmt.Printf("s='%v'\n", s)
 	//fmt.Printf("s.Document()='%v'\n", s.Document())
 	//fmt.Printf("s.Document().Extensions()='%v'\n", s.Document().Extensions())
@@ -1693,9 +1693,7 @@ func (s *substitutors) subInlineXrefs(text string, found *found) string {
 					reresdq.Next()
 				}
 				xrId = xrId + suffixXrId
-				// TODO
 				// reftext = reftext.sub(DoubleQuotedMultiRx, ::RUBY_ENGINE_OPAL ? '$2' : '\2') if reftext
-
 				reresdqm := regexps.NewDoubleQuotedMultiRxres(xrefText)
 				if reresdqm.HasNext() {
 					xrefText = ""
@@ -1815,12 +1813,12 @@ func encodeUri(str string) string {
 	return res
 }
 
-/* Internal: Transform (render) a quoted text region
+/* Internal: Convert a quoted text region
  match  - The MatchData for the quoted text region
  type   - The quoting type (single, double, strong, emphasis, monospaced, etc)
  scope  - The scope of the quoting (constrained or unconstrained)
 returns The rendered text for the quoted text region */
-func transformQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
+func convertQuotedText(match *quotes.QuoteSubRxres, typeSub quotes.QuoteSubType, constrained bool) string {
 	res := match.Text()
 	if match.HasAnyMatch() {
 		res = ""
