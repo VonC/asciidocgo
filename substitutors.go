@@ -1841,7 +1841,7 @@ func (s *substitutors) convertQuotedText(match *quotes.QuoteSubRxres, typeSub qu
 		if constrained {
 			if unescaped_attrs == "" {
 				fmt.Printf("\nconvertQuotedText constrained match.Attribute() '%v'\n", match.Attribute())
-				attributes := parseQuotedTextAttributes(match.Attribute())
+				attributes := s.parseQuotedTextAttributes(match.Attribute())
 				id := attributes["id"].(string)
 				delete(attributes, "id")
 				fmt.Sprintf("'%v'", id)
@@ -1858,7 +1858,7 @@ func (s *substitutors) convertQuotedText(match *quotes.QuoteSubRxres, typeSub qu
 			}
 		} else {
 			fmt.Printf("\nconvertQuotedText UNconstrained match.Attribute() '%v'\n", match.Attribute())
-			attributes := parseQuotedTextAttributes(match.Attribute())
+			attributes := s.parseQuotedTextAttributes(match.Attribute())
 			id := attributes["id"].(string)
 			delete(attributes, "id")
 			fmt.Sprintf("'%v'", id)
@@ -1931,10 +1931,55 @@ func (s *substitutors) ApplyNormalSubs(lines string) string {
 	return s.ApplySubs(lines, nil)
 }
 
-func parseQuotedTextAttributes(str string) map[string]interface{} {
+func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interface{} {
 	res := make(map[string]interface{})
 	if str == "" {
 		return res
+	}
+	if strings.Contains(str, "{") {
+		str = s.SubAttributes(str, nil)
+	}
+	str = strings.TrimSpace(str)
+	// for compliance, only consider first positional attribute
+	if strings.Contains(str, ",") {
+		astr := strings.Split(str, ",")
+		str = ""
+		if len(astr) >= 1 {
+			str = astr[0]
+		}
+	}
+	if str == "" {
+		return res
+	}
+	if strings.HasPrefix(str, ".") || strings.HasPrefix(str, "#") {
+		segments := strings.Split(str, "#")
+		id := ""
+		moreRoles := []string{}
+		if len(segments) > 1 {
+			asegments := strings.Split(segments[1], ".")
+			id = asegments[0]
+			if len(asegments) > 1 {
+				moreRoles = asegments[1:]
+			}
+		}
+		roles := []string{}
+		if segments[0] != "" {
+			roles = strings.Split(segments[0], ".")
+			if len(roles) > 1 {
+				roles = roles[1:]
+			}
+		}
+		if len(moreRoles) > 0 {
+			roles = append(roles, moreRoles...)
+		}
+		if id != "" {
+			res["id"] = id
+		}
+		if len(roles) > 0 {
+			res["roles"] = roles
+		}
+	} else {
+		res["roles"] = []string{str}
 	}
 	return res
 }
