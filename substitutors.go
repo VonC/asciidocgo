@@ -1933,6 +1933,7 @@ func (s *substitutors) ApplyNormalSubs(lines string) string {
 
 func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interface{} {
 	res := make(map[string]interface{})
+	res["id"] = ""
 	if str == "" {
 		return res
 	}
