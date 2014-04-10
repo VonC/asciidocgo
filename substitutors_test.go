@@ -493,7 +493,7 @@ the text %s5%s should be passed through as %s6%s text
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, unescaped, attribute", func() {
-			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "Hub")
+			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' attrs: 'map[roles:[gray]]'Hub")
 			testsub = ""
 		})
 
