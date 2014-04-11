@@ -1943,6 +1943,7 @@ func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interfac
 	if str == "" {
 		return res
 	}
+	// fmt.Printf("\nparseQuotedTextAttributes str='%v'\n", str)
 	if strings.Contains(str, "{") {
 		str = s.SubAttributes(str, nil)
 	}
@@ -1960,10 +1961,12 @@ func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interfac
 	}
 	if strings.HasPrefix(str, ".") || strings.HasPrefix(str, "#") {
 		segments := strings.Split(str, "#")
+		// fmt.Printf("\nsegments='%v'\n", segments)
 		id := ""
 		moreRoles := []string{}
 		if len(segments) > 1 {
 			asegments := strings.Split(segments[1], ".")
+			// fmt.Printf("\nasegments='%v'\n", asegments)
 			id = asegments[0]
 			if len(asegments) > 1 {
 				moreRoles = asegments[1:]
@@ -1972,6 +1975,7 @@ func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interfac
 		roles := []string{}
 		if segments[0] != "" {
 			roles = strings.Split(segments[0], ".")
+			// fmt.Printf("\nroles dots='%v'\n", roles)
 			if len(roles) > 1 {
 				roles = roles[1:]
 			}
@@ -1979,6 +1983,7 @@ func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interfac
 		if len(moreRoles) > 0 {
 			roles = append(roles, moreRoles...)
 		}
+		// fmt.Printf("\nid='%v'\n", id)
 		if id != "" {
 			res["id"] = id
 		}
