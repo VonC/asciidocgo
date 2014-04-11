@@ -1840,11 +1840,14 @@ func (s *substitutors) convertQuotedText(match *quotes.QuoteSubRxres, typeSub qu
 		}
 		if constrained {
 			if unescaped_attrs == "" {
-				fmt.Printf("\nconvertQuotedText constrained match.Attribute() '%v'\n", match.Attribute())
+				// fmt.Printf("\nconvertQuotedText constrained match.Attribute() '%v'\n", match.Attribute())
 				attributes := s.parseQuotedTextAttributes(match.Attribute())
-				id := attributes["id"].(string)
-				delete(attributes, "id")
-				fmt.Sprintf("'%v'", id)
+				id := ""
+				if attributes["id"] != nil {
+					id = attributes["id"].(string)
+					delete(attributes, "id")
+				}
+				// fmt.Printf("\n=> idC='%v'\n", id)
 				optsInline := &OptionsInline{attributes: attributes}
 				optsInline.typeInline = typeSub.String()
 				optsInline.id = id
@@ -1857,11 +1860,15 @@ func (s *substitutors) convertQuotedText(match *quotes.QuoteSubRxres, typeSub qu
 				res = res + unescaped_attrs + inline.Convert() // Inline.new(self, :quoted, match[3], :type => type).convert
 			}
 		} else {
-			fmt.Printf("\nconvertQuotedText UNconstrained match.Attribute() '%v'\n", match.Attribute())
+			// fmt.Printf("\nconvertQuotedText UNconstrained match.Attribute() '%v'\n", match.Attribute())
 			attributes := s.parseQuotedTextAttributes(match.Attribute())
-			id := attributes["id"].(string)
-			delete(attributes, "id")
-			fmt.Sprintf("'%v'", id)
+			// fmt.Printf("\nconvertQuotedText UNconstrained attributes '%v'\n", attributes)
+			id := ""
+			if attributes["id"] != nil {
+				id = attributes["id"].(string)
+				delete(attributes, "id")
+			}
+			// fmt.Printf("\n=> idU='%v'\n", id)
 			optsInline := &OptionsInline{attributes: attributes}
 			optsInline.typeInline = typeSub.String()
 			optsInline.id = id

@@ -488,12 +488,14 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.ApplySubs(`\[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "[gray]__Git__Hub")
 			testsub = ""
 		})
-		Convey("test inline quote, constrained, escaped, with attribute", func() {
-			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "grayContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' attrs: 'map[]' Hub")
+		Convey("test inline quote, constrained, escaped or not, with attribute", func() {
+			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "grayContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[]' Hub")
+			So(s.ApplySubs(`[.bbb#gray3.gray4]_Git2_ Hub2`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git2' ===> type 'Emphasis' target '' id 'gray3' attrs: 'map[roles:[bbb gray4]]' Hub2")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, unescaped, attribute", func() {
-			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' attrs: 'map[roles:[gray]]'Hub")
+			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[roles:[gray]]'Hub")
+			So(s.ApplySubs(`[.aaa#gray1.gray2]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id 'gray1' attrs: 'map[roles:[aaa gray2]]'Hub")
 			testsub = ""
 		})
 
