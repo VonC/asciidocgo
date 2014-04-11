@@ -240,7 +240,7 @@ func (tim *testInlineMaker) NewInline(parent AbstractNodable, c context.Context,
 		msg := fmt.Sprintf("ContextAn '%v': text '%v' ===> type '%v' target '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.Attributes())
 		return &testConvertable{msg}
 	case context.Quoted:
-		msg := fmt.Sprintf("ContextQt '%v': text '%v' ===> type '%v' target '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.Attributes())
+		msg := fmt.Sprintf("ContextQt '%v': text '%v' ===> type '%v' target '%v' id '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.id, opts.Attributes())
 		return &testConvertable{msg}
 	case context.Footnote:
 		msg := fmt.Sprintf("ContextFt '%v': text '%v' ===> type '%v' target '%v' id '%v' attrs: '%v'", c, text, opts.TypeInline(), opts.Target(), opts.id, opts.Attributes())
@@ -481,7 +481,7 @@ the text %s5%s should be passed through as %s6%s text
 		s.inlineMaker = &testInlineMaker{}
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("test inline quote, constrained, no attribute", func() {
-			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ContextQt 'quoted': text 'quote' ===> type 'Emphasis' target '' attrs: 'map[]'")
+			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ContextQt 'quoted': text 'quote' ===> type 'Emphasis' target '' id '' attrs: 'map[]'")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, escaped, no attribute", func() {
@@ -917,7 +917,7 @@ the text %s5%s should be passed through as %s6%s text
 			s.abstractNodable = &testAbstractNodable{}
 			s.inlineMaker = &testInlineMaker{}
 			s.passthroughs = append(s.passthroughs, p)
-			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abcContextQt 'quoted': text 'test' ===> type 'visible' target '' attrs: 'map[]'def")
+			So(s.restorePassthroughs("abc\u00960\u0097def"), ShouldEqual, "abcContextQt 'quoted': text 'test' ===> type 'visible' target '' id '' attrs: 'map[]'def")
 		})
 	})
 
@@ -991,7 +991,7 @@ the text %s5%s should be passed through as %s6%s text
 			// At least, subInlineXrefs is detectable
 			So(s.SubMacros("test footnote:[&lt;&lt;id5,reftext5&gt;&gt;] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'ContextAn 'anchor': text 'reftext5' ===> type 'xref' target '#' attrs: 'map[path: fragment: refid:]'' ===> type '' target '' id '' attrs: 'map[index:4]' ww\n ss")
 			// Restore passthrough works too
-			So(s.SubMacros("test footnote:[abc6\u00960\u0097def6] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'abc6ContextQt 'quoted': text 'test6' ===> type 'visible' target '' attrs: 'map[]'def6' ===> type '' target '' id '' attrs: 'map[index:5]' ww\n ss")
+			So(s.SubMacros("test footnote:[abc6\u00960\u0097def6] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'abc6ContextQt 'quoted': text 'test6' ===> type 'visible' target '' id '' attrs: 'map[]'def6' ===> type '' target '' id '' attrs: 'map[index:5]' ww\n ss")
 		})
 		Convey("Substitute footnote:xx", func() {
 			So(s.SubMacros("test footnote:[text2] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text2' ===> type '' target '' id '' attrs: 'map[index:6]' ww\n ss")
