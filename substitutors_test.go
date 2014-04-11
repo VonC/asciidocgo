@@ -528,6 +528,29 @@ the text %s5%s should be passed through as %s6%s text
 			So(fmt.Sprintf("%v", attrs), ShouldEqual, "map[into1:[intoa1 intoa2] *testpi: test2*:[] *testpi: test3*:[]]")
 		})
 	})
+	Convey("A substitutors can parse quoted text attributes", t, func() {
+		s := &substitutors{}
+		testDocument := newTestSubstDocumentAble(s)
+		s.document = testDocument
+		s.parser = &testGlobalParsable{}
+		Convey("simple quoted text means no id, and quoted text as role", func() {
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes("test")), ShouldEqual, "map[roles:[test]]")
+		})
+		Convey("simple quoted text with {} means substituting attributes", func() {
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes("{set:foo:bar}")), ShouldEqual, "map[]")
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes("{counter:aaa:2}")), ShouldEqual, "map[roles:[3]]")
+		})
+		Convey("simple quoted text with ',' means only first part is considered", func() {
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes("test1,test2")), ShouldEqual, "map[roles:[test1]]")
+		})
+		Convey("simple quoted text starting with '.' means first part is skipped for roles", func() {
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes(".test3.test4.test5")), ShouldEqual, "map[roles:[test3 test4 test5]]")
+		})
+		Convey("simple quoted text starting with '#' means first part is id", func() {
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes("#aa.test6.test7.test8")), ShouldEqual, "map[id:aa roles:[test6 test7 test8]]")
+			So(fmt.Sprintf("%v", s.parseQuotedTextAttributes(".testA.testB#ccc.ddd")), ShouldEqual, "map[id:ccc roles:[testA testB ddd]]")
+		})
+	})
 	Convey("A substitutors can substitute attribute references", t, func() {
 		s := &substitutors{}
 		testDocument := newTestSubstDocumentAble(s)
