@@ -2076,7 +2076,71 @@ func splitSimpleCsv(str string) []string {
 	return values
 }
 
+/* Internal: Resolve the list of comma-delimited subs against the possible options.
+subs - A comma-delimited String of substitution aliases
+returns An Array of Symbols representing the substitution operation
+
+ def resolve_subs subs, type = :block, defaults = nil, subject = nil */
+func resolveSubs(subs string, typeSub string, defaults []string, subject string) []string {
+	if typeSub == "" {
+		typeSub = "block"
+	}
+	candidates := []string{}
+	if subs == "" {
+		return candidates
+	}
+	modificationGroup := "nil"
+	if len(defaults) == 0 {
+		modificationGroup = "false"
+	}
+	cdts := strings.Split(subs, ",")
+	for _, candidate := range cdts {
+		if candidate == "" {
+			continue
+		}
+		operation := ""
+		key := strings.TrimSpace(candidate)
+		// QUESTION can we encapsulate this logic?
+		if modificationGroup != "false" {
+			if first := key[0]; first == '+' {
+				operation = "append"
+			} else if first == '-' {
+				operation = "remove"
+				key = key[1:]
+			} else if strings.HasSuffix(key, "+") {
+				operation = "prepend"
+				key = key[:len(key)-1]
+			} else {
+				if modificationGroup == "true" {
+					s := ""
+					if subject != "" {
+						s = " for " + subject
+					}
+					log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid entry in substitution modification group%s: %s", s, key))
+					continue
+				} else {
+					modificationGroup = "nil"
+				}
+			}
+			// first time through
+			if modificationGroup == "nil" {
+				if operation != "" {
+					candidates = defaults
+					modificationGroup = "true"
+				} else {
+					modificationGroup = "false"
+				}
+			}
+		}
+		if typeSub == "inline" && (key == "varbatim" || key == "v") {
+
+		}
+	}
+	return candidates
+}
+
 func resolvePassSubs(str string) subArray {
 	// TODO resolve_subs subs, :inline, nil, 'passthrough macro'
+	// resolve_subs subs, :inline, nil, 'passthrough macro'
 	return subArray{}
 }
