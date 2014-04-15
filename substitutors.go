@@ -2082,11 +2082,11 @@ subs - A comma-delimited String of substitution aliases
 returns An Array of Symbols representing the substitution operation
 
  def resolve_subs subs, type = :block, defaults = nil, subject = nil */
-func resolveSubs(subs string, typeSub string, defaults []string, subject string) []string {
-	if typeSub == "" {
-		typeSub = "block"
+func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject string) subArray {
+	if typeSub == nil {
+		typeSub = subOption.block
 	}
-	candidates := []string{}
+	candidates := subArray{}
 	if subs == "" {
 		return candidates
 	}
@@ -2133,8 +2133,21 @@ func resolveSubs(subs string, typeSub string, defaults []string, subject string)
 				}
 			}
 		}
-		if typeSub == "inline" && (key == "varbatim" || key == "v") {
-
+		resolvedKeys := subArray{}
+		// TODO test if subenum from string works
+		keysub := &subsEnum{_sub(key)}
+		if typeSub == subOption.inline && (key == "verbatim" || key == "v") {
+			resolvedKeys = append(resolvedKeys, subValue.specialcharacters)
+		} else if compositeSub.keys().include(keysub) {
+			resolvedKeys = compositeSubs[keysub]
+		} else if typeSub == subOption.inline && len(key) == 1 && subSymbols[keysub] != nil {
+			aResolvedKey := subSymbols[keysub][0]
+			someResolvedKeys := compositeSubs[aResolvedKey]
+			if someResolvedKeys != nil {
+				resolvedKeys = someResolvedKeys
+			}
+		} else {
+			resolvedKeys = append(resolvedKeys, keysub)
 		}
 	}
 	return candidates
