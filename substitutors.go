@@ -158,6 +158,95 @@ var compositeSub = newCompositeSubsEnums()
 var subSymbol = newSubSymbolsEnums()
 var subOption = newSubOptionsEnums()
 
+func aToSE(key string) *subsEnum {
+	var res *subsEnum
+	switch key {
+	case string(subsBasic):
+		res = sub.basic
+	case string(subsNormal):
+		res = sub.normal
+	case string(subsVerbatim):
+		res = sub.verbatim
+	case string(subsTitle):
+		res = sub.title
+	case string(subsHeader):
+		res = sub.header
+	case string(subsPass):
+		res = sub.pass
+	case string(subsUnknown):
+		res = sub.unknown
+	}
+	return res
+}
+func aToSEValues(key string) *subsEnum {
+	var res *subsEnum
+	switch key {
+	case string(subsSpecialCharacters):
+		res = subValue.specialcharacters
+	case string(subsQuotes):
+		res = subValue.quotes
+	case string(subsAttributes):
+		res = subValue.attributes
+	case string(subsReplacements):
+		res = subValue.replacements
+	case string(subsMacros):
+		res = subValue.macros
+	case string(subsPostReplacements):
+		res = subValue.replacements
+	case string(subsCallout):
+		res = subValue.callouts
+	}
+	return res
+}
+func aToCompositeSE(key string) *subsEnum {
+	var res *subsEnum
+	switch key {
+	case string(subsNone):
+		res = compositeSub.none
+	case string(subsNormal):
+		res = compositeSub.normal
+	case string(subsVerbatim):
+		res = compositeSub.verbatim
+	case string(subsSpecialChars):
+		res = compositeSub.specialchars
+	}
+	return res
+}
+
+func aToSubSymbol(key string) *subsEnum {
+	var res *subsEnum
+	switch key {
+	case string(subsA):
+		res = subSymbol.a
+	case string(subsM):
+		res = subSymbol.m
+	case string(subsN):
+		res = subSymbol.n
+	case string(subsP):
+		res = subSymbol.p
+	case string(subsQ):
+		res = subSymbol.q
+	case string(subsR):
+		res = subSymbol.r
+	case string(subsC):
+		res = subSymbol.c
+	case string(subsV):
+		res = subSymbol.v
+	}
+	return res
+}
+
+func aToSubOption(key string) *subsEnum {
+	var res *subsEnum
+	switch key {
+	case string(subsBlock):
+		res = subOption.block
+	case string(subsInline):
+		res = subOption.inline
+	}
+	return res
+}
+
 type subArray []*subsEnum
 
 func (cses *compositeSubsEnums) keys() subArray {
