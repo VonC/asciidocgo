@@ -334,11 +334,12 @@ func (s *substitutors) Document() SubstDocumentable {
 
 source  - The String or String Array of text to process
 subs    - The substitutions to perform. Can be a Symbol or a Symbol Array (default: :normal)
-expand -  A Boolean to control whether sub aliases are expanded (default: true)
+expand -  A Boolean to control whether sub aliases are expanded (default: true) // BUG? code says false
 
 returns Either a String or String Array, whichever matches the type of the first argument */
 func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 	text := ""
+	// TODO add expand, implement first lines
 	var allSubs subArray
 	if len(someSubs) == 1 {
 		if someSubs[0] == sub.pass {
