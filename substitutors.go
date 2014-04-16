@@ -2232,19 +2232,23 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		}
 		resolvedKeys := subArray{}
 		// TODO test if subenum from string works
-		keysub := &subsEnum{_sub(key)}
-		if typeSub == subOption.inline && (key == "verbatim" || key == "v") {
+		keySubEnum := aToSE(key)
+		keyCompositeSub := aToCompositeSE(key)
+		keySubSymbol := aToSubSymbol(key)
+		if typeSub == subOption.inline && (keySubEnum == sub.verbatim || key == "v") {
 			resolvedKeys = append(resolvedKeys, subValue.specialcharacters)
-		} else if compositeSub.keys().include(keysub) {
-			resolvedKeys = compositeSubs[keysub]
-		} else if typeSub == subOption.inline && len(key) == 1 && subSymbols[keysub] != nil {
-			aResolvedKey := subSymbols[keysub][0]
-			someResolvedKeys := compositeSubs[aResolvedKey]
-			if someResolvedKeys != nil {
-				resolvedKeys = someResolvedKeys
+		} else if keyCompositeSub != nil {
+			resolvedKeys = compositeSubs[keyCompositeSub]
+		} else if typeSub == subOption.inline && keySubSymbol != nil {
+			aResolvedKey := subSymbols[keySubSymbol][0]
+			candidates = compositeSubs[aResolvedKey]
+			if candidates != nil {
+				resolvedKeys = candidates
+			} else {
+				resolvedKeys = append(resolvedKeys, aResolvedKey)
 			}
 		} else {
-			resolvedKeys = append(resolvedKeys, keysub)
+			resolvedKeys = append(resolvedKeys, keySubEnum)
 		}
 	}
 	return candidates
