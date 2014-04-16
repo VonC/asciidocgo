@@ -249,6 +249,14 @@ func aToSubOption(key string) *subsEnum {
 
 type subArray []*subsEnum
 
+func (sa *subArray) dup() *subArray {
+	res := subArray{}
+	for _, sub := range *sa {
+		res = append(res, sub)
+	}
+	return &res
+}
+
 func (cses *compositeSubsEnums) keys() subArray {
 	res := subArray{}
 	res = append(res, cses.none)
@@ -2215,7 +2223,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 			// first time through
 			if modificationGroup == "nil" {
 				if operation != "" {
-					candidates = defaults
+					candidates = defaults.dup()
 					modificationGroup = "true"
 				} else {
 					modificationGroup = "false"
