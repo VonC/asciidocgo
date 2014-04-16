@@ -249,7 +249,7 @@ func aToSubOption(key string) *subsEnum {
 
 type subArray []*subsEnum
 
-func (sa *subArray) dup() subArray {
+func (sa *subArray) Dup() subArray {
 	res := subArray{}
 	for _, sub := range *sa {
 		res = append(res, sub)
@@ -2240,7 +2240,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 			// first time through
 			if modificationGroup == "nil" {
 				if operation != "" {
-					candidates = defaults.dup()
+					candidates = defaults.Dup()
 					modificationGroup = "true"
 				} else {
 					modificationGroup = "false"
