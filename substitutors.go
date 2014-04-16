@@ -284,12 +284,12 @@ var compositeSubs = map[*subsEnum]subArray{
 var subSymbols = map[*subsEnum]subArray{
 	subSymbol.a: subArray{subValue.attributes},
 	subSymbol.m: subArray{subValue.macros},
-	subSymbol.n: subArray{sub.normal},
+	subSymbol.n: subArray{compositeSub.normal},
 	subSymbol.p: subArray{subValue.postReplacements},
 	subSymbol.q: subArray{subValue.quotes},
 	subSymbol.r: subArray{subValue.replacements},
-	subSymbol.c: subArray{subValue.specialcharacters},
-	subSymbol.v: subArray{sub.verbatim},
+	subSymbol.c: subArray{compositeSub.specialchars},
+	subSymbol.v: subArray{compositeSub.verbatim},
 }
 var subOptions = map[*subsEnum]subArray{
 	subOption.block:  append(append(compositeSub.keys(), subs[sub.normal]...), subValue.callouts),
