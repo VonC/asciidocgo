@@ -249,12 +249,12 @@ func aToSubOption(key string) *subsEnum {
 
 type subArray []*subsEnum
 
-func (sa *subArray) dup() *subArray {
+func (sa *subArray) dup() subArray {
 	res := subArray{}
 	for _, sub := range *sa {
 		res = append(res, sub)
 	}
-	return &res
+	return res
 }
 
 func (cses *compositeSubsEnums) keys() subArray {
