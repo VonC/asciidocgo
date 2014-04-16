@@ -2300,6 +2300,23 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		} else {
 			candidates = append(candidates, resolvedKeys...)
 		}
+		// weed out invalid options and remove duplicates (first wins)
+		// TO_DO may be use a set instead?
+		soptions := subOptions[typeSub]
+		resolved := candidates.Intersect(soptions)
+		invalid := candidates.Remove(resolved)
+		if len(invalid) > 0 {
+			plural := ""
+			if len(invalid) > 1 {
+				plural = "s"
+			}
+			fors := ""
+			if strings.TrimSpace(subject) != "" {
+				fors = " for "
+			}
+			log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid substitution type%s%s%s: %v", plural, fors, subject, invalid))
+		}
+		candidates = resolved
 	}
 	return candidates
 }
