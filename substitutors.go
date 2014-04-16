@@ -2267,6 +2267,22 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		} else {
 			resolvedKeys = append(resolvedKeys, keySubEnum)
 		}
+
+		if modificationGroup == "true" {
+			switch operation {
+			case "append":
+				candidates = append(candidates, resolvedKeys...)
+			case "prepend":
+				resolvedKeys = append(resolvedKeys, candidates...)
+				candidates = resolvedKeys
+			case "remove":
+				candidates = candidates.remove(&resolvedKeys)
+				// default
+				// ignore, invalid entry, shouldn't get here
+			}
+		} else {
+			candidates = append(candidates, resolvedKeys...)
+		}
 	}
 	return candidates
 }
