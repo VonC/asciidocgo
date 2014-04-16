@@ -274,6 +274,23 @@ func (sa *subArray) Remove(saToRemove subArray) subArray {
 	return res
 }
 
+func (sa *subArray) Intersect(saToIntersact subArray) subArray {
+	res := subArray{}
+	for _, s := range *sa {
+		found := false
+		for _, str := range saToIntersact {
+			if s == str {
+				found = true
+				break
+			}
+		}
+		if found {
+			res = append(res, s)
+		}
+	}
+	return res
+}
+
 func (cses *compositeSubsEnums) keys() subArray {
 	res := subArray{}
 	res = append(res, cses.none)
