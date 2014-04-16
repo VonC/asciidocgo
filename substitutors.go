@@ -257,11 +257,11 @@ func (sa *subArray) Dup() subArray {
 	return res
 }
 
-func (sa *subArray) remove(saToRemove *subArray) subArray {
+func (sa *subArray) Remove(saToRemove subArray) subArray {
 	res := subArray{}
 	for _, s := range *sa {
 		found := false
-		for _, str := range *saToRemove {
+		for _, str := range saToRemove {
 			if s == str {
 				found = true
 				break
@@ -2276,7 +2276,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 				resolvedKeys = append(resolvedKeys, candidates...)
 				candidates = resolvedKeys
 			case "remove":
-				candidates = candidates.remove(&resolvedKeys)
+				candidates = candidates.Remove(resolvedKeys)
 				// default
 				// ignore, invalid entry, shouldn't get here
 			}
