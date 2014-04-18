@@ -1012,4 +1012,28 @@ the text %s5%s should be passed through as %s6%s text
 			So(s.SubMacros("test footnoteref:[4] ww\n ss"), ShouldEqual, "test ContextFt 'footnote': text 'text4' ===> type 'xref' target '4' id '4' attrs: 'map[index:7]' ww\n ss")
 		})
 	})
+	Convey("A substitutors can resolve Subs references", t, func() {
+		Convey("Empty subs means empty candidates", func() {
+			So(len(resolveSubs("", nil, nil, "")), ShouldEqual, 0)
+		})
+		Convey("No subs means empty candidates", func() {
+			So(len(resolveSubs("test", nil, nil, "")), ShouldEqual, 0)
+		})
+		Convey("No defaults, no subOptions[key] means no subs returned, invalid warning", func() {
+			So(len(resolveSubs("basic", nil, nil, "")), ShouldEqual, 0)
+		})
+		Convey("No defaults, compositeSub key means same composite sub value returned", func() {
+			c := resolveSubs("specialchars", nil, nil, "")
+			So(len(c), ShouldEqual, 1)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters})]")
+			c = resolveSubs("verbatim", nil, nil, "")
+			So(len(c), ShouldEqual, 2)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters}) %!s(*asciidocgo.subsEnum=&{callouts})]")
+		})
+		Convey("No defaults, inline type for verbatim means returned", func() {
+			c := resolveSubs("verbatim", subOption.inline, nil, "")
+			So(len(c), ShouldEqual, 1)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters})]")
+		})
+	})
 }

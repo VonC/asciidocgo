@@ -2267,6 +2267,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		resolvedKeys := subArray{}
 		// TODO test if subenum from string works
 		keySubEnum := aToSE(key)
+		fmt.Printf("key='%v' => '%v'\n", key, keySubEnum)
 		keyCompositeSub := aToCompositeSE(key)
 		keySubSymbol := aToSubSymbol(key)
 		if typeSub == subOption.inline && (keySubEnum == sub.verbatim || key == "v") {
@@ -2284,6 +2285,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		} else {
 			resolvedKeys = append(resolvedKeys, keySubEnum)
 		}
+		fmt.Printf("=== keySubEnum='%v' =>\n==== resolvedKeys='%s'\n", keySubEnum, resolvedKeys)
 
 		if modificationGroup == "true" {
 			switch operation {
@@ -2305,6 +2307,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		soptions := subOptions[typeSub]
 		resolved := candidates.Intersect(soptions)
 		invalid := candidates.Remove(resolved)
+		fmt.Printf("typeSub='%v' =>\n  candidates='%s',\n  soptions='%s',\n  resolved='%s',\n  invalid='%s'\n", typeSub, candidates, soptions, resolved, invalid)
 		if len(invalid) > 0 {
 			plural := ""
 			if len(invalid) > 1 {
@@ -2314,7 +2317,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 			if strings.TrimSpace(subject) != "" {
 				fors = " for "
 			}
-			log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid substitution type%s%s%s: %v", plural, fors, subject, invalid))
+			log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid substitution type%s%s%s: %s", plural, fors, subject, invalid))
 		}
 		candidates = resolved
 	}
