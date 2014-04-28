@@ -1016,6 +1016,9 @@ the text %s5%s should be passed through as %s6%s text
 		Convey("Empty subs means empty candidates", func() {
 			So(len(resolveSubs("", nil, nil, "")), ShouldEqual, 0)
 		})
+		Convey("Empty subs means empty candidates", func() {
+			So(len(resolveSubs(",", nil, nil, "")), ShouldEqual, 0)
+		})
 		Convey("No subs means empty candidates", func() {
 			So(len(resolveSubs("test", nil, nil, "")), ShouldEqual, 0)
 		})

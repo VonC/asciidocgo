@@ -2226,6 +2226,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		modificationGroup = "false"
 	}
 	cdts := strings.Split(subs, ",")
+	fmt.Printf("cdts='%v'", cdts)
 	for _, candidate := range cdts {
 		if candidate == "" {
 			continue
