@@ -2221,6 +2221,7 @@ returns An Array of Symbols representing the substitution operation
 
  def resolve_subs subs, type = :block, defaults = nil, subject = nil */
 func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject string) subArray {
+	// fmt.Printf("\n-----------\n\n")
 	if typeSub == nil {
 		typeSub = subOption.block
 	}
@@ -2233,17 +2234,20 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		modificationGroup = "false"
 	}
 	cdts := strings.Split(subs, ",")
-	fmt.Printf("cdts='%v'", cdts)
-	for _, candidate := range cdts {
+	// fmt.Printf("cdts='%v'\n", cdts)
+	for posc, candidate := range cdts {
 		if candidate == "" {
 			continue
 		}
 		operation := ""
 		key := strings.TrimSpace(candidate)
+		first := key[0]
+		// fmt.Printf("*** (%v) key='%v', modificationGroup '%v': '%v'(%v)\n", posc, key, modificationGroup, first, (first == '+'))
 		// QUESTION can we encapsulate this logic?
 		if modificationGroup != "false" {
-			if first := key[0]; first == '+' {
+			if first == '+' {
 				operation = "append"
+				key = key[1:]
 			} else if first == '-' {
 				operation = "remove"
 				key = key[1:]
@@ -2256,7 +2260,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 					if subject != "" {
 						s = " for " + subject
 					}
-					log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid entry in substitution modification group%s: %s", s, key))
+					log.Println(fmt.Sprintf("asciidocgo: WARNING: invalid entry (%v) in substitution modification group%s: %s", posc, s, key))
 					continue
 				} else {
 					modificationGroup = "nil"
@@ -2275,25 +2279,33 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		resolvedKeys := subArray{}
 		// TODO test if subenum from string works
 		keySubEnum := aToSE(key)
-		fmt.Printf("key='%v' => '%v'\n", key, keySubEnum)
+		// fmt.Printf("(%v) ### key='%v' => '%v': operation='%v'\n", posc, key, keySubEnum, operation)
 		keyCompositeSub := aToCompositeSE(key)
 		keySubSymbol := aToSubSymbol(key)
+		// fmt.Printf("(%v) #-# typeSub='%v' => keySubSymbol '%v'\n", posc, typeSub, keySubSymbol)
 		if typeSub == subOption.inline && (keySubEnum == sub.verbatim || key == "v") {
 			resolvedKeys = append(resolvedKeys, subValue.specialcharacters)
 		} else if keyCompositeSub != nil {
 			resolvedKeys = compositeSubs[keyCompositeSub]
 		} else if typeSub == subOption.inline && keySubSymbol != nil {
 			aResolvedKey := subSymbols[keySubSymbol][0]
-			candidates = compositeSubs[aResolvedKey]
-			if candidates != nil {
-				resolvedKeys = candidates
-			} else {
-				resolvedKeys = append(resolvedKeys, aResolvedKey)
+			candidateSub := compositeSubs[aResolvedKey]
+			// fmt.Printf("(%v) #-- aResolvedKey='%v' => candidateSub '%s'\n", posc, aResolvedKey, candidateSub)
+			if candidateSub != nil {
+				resolvedKeys = candidateSub
+				candidate = ""
+				if candidateSub[0] != nil {
+					candidate = string(candidateSub[0].value)
+				}
 			}
+			// should never be nil (only if aResolvedKey was 'none', which isn't one of the symbols 'n', 'V', ...')
+			//  else {
+			// 	resolvedKeys = append(resolvedKeys, aResolvedKey)
+			// }
 		} else {
 			resolvedKeys = append(resolvedKeys, keySubEnum)
 		}
-		fmt.Printf("=== keySubEnum='%v' =>\n==== resolvedKeys='%s'\n", keySubEnum, resolvedKeys)
+		// fmt.Printf("(%v) === keySubEnum='%v' =>\n(%v) ==== resolvedKeys='%s'\n", posc, keySubEnum, posc, resolvedKeys)
 
 		if modificationGroup == "true" {
 			switch operation {
@@ -2315,7 +2327,7 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 		soptions := subOptions[typeSub]
 		resolved := candidates.Intersect(soptions)
 		invalid := candidates.Remove(resolved)
-		fmt.Printf("typeSub='%v' =>\n  candidates='%s',\n  soptions='%s',\n  resolved='%s',\n  invalid='%s'\n", typeSub, candidates, soptions, resolved, invalid)
+		// fmt.Printf("(%v) typeSub='%s' =>\n  candidates='%s',\n  soptions='%s',\n  resolved='%s',\n  invalid='%s'\n", posc, typeSub, candidates, soptions, resolved, invalid)
 		if len(invalid) > 0 {
 			plural := ""
 			if len(invalid) > 1 {

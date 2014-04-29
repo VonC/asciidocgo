@@ -1013,6 +1013,7 @@ the text %s5%s should be passed through as %s6%s text
 		})
 	})
 	Convey("A substitutors can resolve Subs references", t, func() {
+
 		Convey("Empty subs means empty candidates", func() {
 			So(len(resolveSubs("", nil, nil, "")), ShouldEqual, 0)
 		})
@@ -1037,6 +1038,49 @@ the text %s5%s should be passed through as %s6%s text
 			c := resolveSubs("verbatim", subOption.inline, nil, "")
 			So(len(c), ShouldEqual, 1)
 			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters})]")
+		})
+		Convey("Defaults, no operation", func() {
+			c := resolveSubs("verbatim", subOption.inline, subArray{sub.title}, "")
+			So(len(c), ShouldEqual, 1)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters})]")
+		})
+		Convey("Defaults, multiple candidates, no operation, no intersaction with subOptions", func() {
+			c := resolveSubs("basic", subOption.inline, subArray{sub.title}, "")
+			So(len(c), ShouldEqual, 0)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[]")
+		})
+
+		Convey("Defaults, multiple candidates, no operation, no intersaction with subOptions", func() {
+			c := resolveSubs("normal", subOption.inline, subArray{sub.title}, "testx")
+			So(len(c), ShouldEqual, 6)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters}) %!s(*asciidocgo.subsEnum=&{quotes}) %!s(*asciidocgo.subsEnum=&{attributes}) %!s(*asciidocgo.subsEnum=&{replacements}) %!s(*asciidocgo.subsEnum=&{macros}) %!s(*asciidocgo.subsEnum=&{post_replacements})]")
+		})
+
+		Convey("Subs with append, followed by invalid entry, Defaults, multiple candidates, no operation", func() {
+			c := resolveSubs("+normal,title", subOption.inline, subArray{sub.title}, "aSubject")
+			So(len(c), ShouldEqual, 6)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters}) %!s(*asciidocgo.subsEnum=&{quotes}) %!s(*asciidocgo.subsEnum=&{attributes}) %!s(*asciidocgo.subsEnum=&{replacements}) %!s(*asciidocgo.subsEnum=&{macros}) %!s(*asciidocgo.subsEnum=&{post_replacements})]")
+		})
+		Convey("Subs with append, Defaults, multiple candidates, no operation", func() {
+			c := resolveSubs("+normal", subOption.inline, subArray{sub.title}, "Subs with append")
+			So(len(c), ShouldEqual, 6)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters}) %!s(*asciidocgo.subsEnum=&{quotes}) %!s(*asciidocgo.subsEnum=&{attributes}) %!s(*asciidocgo.subsEnum=&{replacements}) %!s(*asciidocgo.subsEnum=&{macros}) %!s(*asciidocgo.subsEnum=&{post_replacements})]")
+		})
+
+		Convey("Subs with remove, Defaults, multiple candidates, no operation", func() {
+			c := resolveSubs("-v", subOption.block, subArray{sub.normal}, "Subs with remove")
+			So(len(c), ShouldEqual, 1)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal})]")
+		})
+		Convey("Subs with prepend, Defaults, multiple candidates, no operation", func() {
+			c := resolveSubs("normal+", subOption.inline, subArray{sub.title, sub.pass}, "Subs with prepend")
+			So(len(c), ShouldEqual, 6)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{specialcharacters}) %!s(*asciidocgo.subsEnum=&{quotes}) %!s(*asciidocgo.subsEnum=&{attributes}) %!s(*asciidocgo.subsEnum=&{replacements}) %!s(*asciidocgo.subsEnum=&{macros}) %!s(*asciidocgo.subsEnum=&{post_replacements})]")
+		})
+		Convey("Subs with append, with resolved symbol", func() {
+			c := resolveSubs("+C", subOption.inline, subArray{sub.normal}, "Subs with remove")
+			So(len(c), ShouldEqual, 2)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal}) %!s(*asciidocgo.subsEnum=&{specialcharacters})]")
 		})
 	})
 }
