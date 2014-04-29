@@ -1,6 +1,7 @@
 package asciidocgo
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -50,5 +51,14 @@ func TestSubstitutorSubs(t *testing.T) {
 		So(aToSubOption(string(subsBlock)), ShouldEqual, subOption.block)
 		So(aToSubOption(string(subsInline)), ShouldEqual, subOption.inline)
 		So(aToCompositeSE("xxxtestxxx4"), ShouldEqual, nil)
+	})
+
+	Convey("Subarrays with nil elements can be intersected or removed", t, func() {
+		s1 := &subArray{nil, aToSE(string(subsNormal)), aToSE(string(subsVerbatim))}
+		s2 := &subArray{aToSE(string(subsNormal)), nil}
+		s1i2 := s1.Intersect(*s2)
+		s1r2 := s1.Remove(*s2)
+		So(fmt.Sprintf("%s", s1i2), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal})]")
+		So(fmt.Sprintf("%s", s1r2), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{verbatim})]")
 	})
 }

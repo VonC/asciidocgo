@@ -262,7 +262,11 @@ func (sa *subArray) Remove(saToRemove subArray) subArray {
 	for _, s := range *sa {
 		found := false
 		for _, str := range saToRemove {
-			if s == str {
+			if str != nil && s != nil && string(s.value) == string(str.value) {
+				found = true
+				break
+			}
+			if s == nil && str == nil {
 				found = true
 				break
 			}
@@ -276,10 +280,12 @@ func (sa *subArray) Remove(saToRemove subArray) subArray {
 
 func (sa *subArray) Intersect(saToIntersact subArray) subArray {
 	res := subArray{}
+	// fmt.Printf("@@@ sa '%v' vs. saToIntersact '%v'\n@@@ sa '%s' vs. saToIntersact '%s'\n", sa, saToIntersact, sa, saToIntersact)
 	for _, s := range *sa {
 		found := false
 		for _, str := range saToIntersact {
-			if s == str {
+			// fmt.Printf("  @ s '%v' vs. str '%v'\n  @ s '%v' vs. str '%v'\n", s, str, string(s.value), string(str.value))
+			if str != nil && s != nil && string(s.value) == string(str.value) {
 				found = true
 				break
 			}
@@ -288,6 +294,7 @@ func (sa *subArray) Intersect(saToIntersact subArray) subArray {
 			res = append(res, s)
 		}
 	}
+	// fmt.Printf("@@@ RES '%v'\n", res)
 	return res
 }
 
