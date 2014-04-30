@@ -2344,8 +2344,11 @@ func resolveSubs(subs string, typeSub *subsEnum, defaults subArray, subject stri
 	return candidates
 }
 
-func resolvePassSubs(str string) subArray {
-	// TODO resolve_subs subs, :inline, nil, 'passthrough macro'
+func resolveBlockSubs(subs string, defaults subArray, subject string) subArray {
+	return resolveSubs(subs, subOption.block, defaults, subject)
+}
+
+func resolvePassSubs(subs string) subArray {
 	// resolve_subs subs, :inline, nil, 'passthrough macro'
-	return subArray{}
+	return resolveSubs(subs, subOption.inline, nil, "passthrough macro")
 }

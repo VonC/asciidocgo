@@ -1071,6 +1071,9 @@ the text %s5%s should be passed through as %s6%s text
 			c := resolveSubs("-v", subOption.block, subArray{sub.normal}, "Subs with remove")
 			So(len(c), ShouldEqual, 1)
 			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal})]")
+			c = resolveBlockSubs("-v", subArray{sub.normal}, "Subs with remove 2")
+			So(len(c), ShouldEqual, 1)
+			So(fmt.Sprintf("%s", c), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal})]")
 		})
 		Convey("Subs with prepend, Defaults, multiple candidates, no operation", func() {
 			c := resolveSubs("normal+", subOption.inline, subArray{sub.title, sub.pass}, "Subs with prepend")
