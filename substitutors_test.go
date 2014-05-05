@@ -328,21 +328,21 @@ func TestSubstitutor(t *testing.T) {
 		s := &substitutors{}
 
 		Convey("By default, no substitution or a pass subs will return source unchanged", func() {
-			So(s.ApplySubs(source, nil), ShouldEqual, source)
-			So(s.ApplySubs(source, subArray{sub.pass}), ShouldResemble, source)
-			So(len(s.ApplySubs(source, subArray{sub.unknown})), ShouldEqual, 0)
-			So(s.ApplySubs(source, subArray{sub.title}), ShouldEqual, "test")
+			So(s.ApplySubs(source, nil, false), ShouldEqual, source)
+			So(s.ApplySubs(source, subArray{sub.pass}, false), ShouldResemble, source)
+			So(len(s.ApplySubs(source, subArray{sub.unknown}, false)), ShouldEqual, 0)
+			So(s.ApplySubs(source, subArray{sub.title}, false), ShouldEqual, "test")
 		})
 
 		Convey("A normal substition will use normal substitution modes", func() {
 			testsub = "test_ApplySubs_allsubs"
-			So(s.ApplySubs(source, subArray{sub.normal}), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
-			So(s.ApplySubs(source, subArray{sub.title}), ShouldEqual, "[title]")
+			So(s.ApplySubs(source, subArray{sub.normal}, false), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
+			So(s.ApplySubs(source, subArray{sub.title}, false), ShouldEqual, "[title]")
 			testsub = ""
 		})
 		Convey("A macros substition will call extractPassthroughs", func() {
 			testsub = "test_ApplySubs_extractPassthroughs"
-			So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, "test")
+			So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, "test")
 			testsub = ""
 		})
 
@@ -359,7 +359,7 @@ func TestSubstitutor(t *testing.T) {
 			line3] end test4`
 		s := &substitutors{}
 		testsub = "test_ApplySubs_extractPassthroughs"
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, `test +++for
+		So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, `test +++for
 		a
 		passthrough+++ by test2 $$text
 			multiple
@@ -383,10 +383,10 @@ func TestSubstitutor(t *testing.T) {
 		testsub = "test_ApplySubs_extractPassthroughs"
 
 		Convey("If no inline macros substitution detected, return text unchanged", func() {
-			So(s.ApplySubs("test ++ nosub", subArray{subValue.macros}), ShouldEqual, "test ++ nosub")
+			So(s.ApplySubs("test ++ nosub", subArray{subValue.macros}, false), ShouldEqual, "test ++ nosub")
 		})
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
+		So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, fmt.Sprintf(`test %s0%s by test2 %s1%s for
 			test3 %s2%s end test4`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 		testsub = ""
 	})
@@ -408,7 +408,7 @@ func TestSubstitutor(t *testing.T) {
 		testsub = "test_ApplySubs_extractPassthroughs"
 		s.attributeListMaker = &testAttributeListMaker{}
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s%s1%s
+		So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, fmt.Sprintf(`%s0%s%s1%s
 [input]%s2%s
 \input`+"`"+`a few <monospaced> words`+"`"+` : \`+"`"+`a few <monospaced> words`+"`"+`
 %s3%s[input]%s4%s
@@ -416,7 +416,7 @@ the text %s5%s should be passed through as %s6%s text
 `+"`"+`Here`+"`"+`s Johnny!`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		Convey("If no literal text substitution detected, return text unchanged", func() {
-			So(s.ApplySubs("test`nosub", subArray{subValue.macros}), ShouldEqual, "test`nosub")
+			So(s.ApplySubs("test`nosub", subArray{subValue.macros}, false), ShouldEqual, "test`nosub")
 		})
 		testsub = ""
 	})
@@ -429,24 +429,24 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		testsub = "test_ApplySubs_extractPassthroughs"
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s0%s
+		So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, fmt.Sprintf(`%s0%s
    math:[x != 0]
    %s1%s
    %s2%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		s.document = newTestSubstDocumentAble(nil)
 
-		So(s.ApplySubs(source, subArray{subValue.macros}), ShouldEqual, fmt.Sprintf(`%s3%s
+		So(s.ApplySubs(source, subArray{subValue.macros}, false), ShouldEqual, fmt.Sprintf(`%s3%s
    math:[x != 0]
    %s4%s
    %s5%s`, subPASS_START, subPASS_END, subPASS_START, subPASS_END, subPASS_START, subPASS_END))
 
 		Convey("If no math literal substitution detected, return text unchanged", func() {
-			So(s.ApplySubs("math:nosub", subArray{subValue.macros}), ShouldEqual, "math:nosub")
+			So(s.ApplySubs("math:nosub", subArray{subValue.macros}, false), ShouldEqual, "math:nosub")
 		})
 
 		Convey("If no math literal substitution detected, return text unchanged", func() {
-			So(s.ApplySubs("asciimath:[x <> 0]", subArray{subValue.specialcharacters}), ShouldEqual, "asciimath:[x &lt;&gt; 0]")
+			So(s.ApplySubs("asciimath:[x <> 0]", subArray{subValue.specialcharacters}, false), ShouldEqual, "asciimath:[x &lt;&gt; 0]")
 		})
 
 		testsub = ""
@@ -471,7 +471,7 @@ the text %s5%s should be passed through as %s6%s text
 			s := &substitutors{}
 			source := "\\[input]`a few <monospaced> words`"
 			testsub = "test_ApplySubs_applyAllsubs"
-			So(s.ApplySubs(source, subArray{subValue.specialcharacters}), ShouldEqual, fmt.Sprintf("\\[input]`a few &lt;monospaced&gt; words`"))
+			So(s.ApplySubs(source, subArray{subValue.specialcharacters}, false), ShouldEqual, fmt.Sprintf("\\[input]`a few &lt;monospaced&gt; words`"))
 			testsub = ""
 		})
 	})
@@ -481,21 +481,21 @@ the text %s5%s should be passed through as %s6%s text
 		s.inlineMaker = &testInlineMaker{}
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("test inline quote, constrained, no attribute", func() {
-			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}), ShouldEqual, "test ContextQt 'quoted': text 'quote' ===> type 'Emphasis' target '' id '' attrs: 'map[]'")
+			So(s.ApplySubs("test 'quote'", subArray{subValue.quotes}, false), ShouldEqual, "test ContextQt 'quoted': text 'quote' ===> type 'Emphasis' target '' id '' attrs: 'map[]'")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, escaped, no attribute", func() {
-			So(s.ApplySubs(`\[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "[gray]__Git__Hub")
+			So(s.ApplySubs(`\[gray]__Git__Hub`, subArray{subValue.quotes}, false), ShouldEqual, "[gray]__Git__Hub")
 			testsub = ""
 		})
 		Convey("test inline quote, constrained, escaped or not, with attribute", func() {
-			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}), ShouldEqual, "grayContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[]' Hub")
-			So(s.ApplySubs(`[.bbb#gray3.gray4]_Git2_ Hub2`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git2' ===> type 'Emphasis' target '' id 'gray3' attrs: 'map[roles:[bbb gray4]]' Hub2")
+			So(s.ApplySubs(`\[gray]_Git_ Hub`, subArray{subValue.quotes}, false), ShouldEqual, "grayContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[]' Hub")
+			So(s.ApplySubs(`[.bbb#gray3.gray4]_Git2_ Hub2`, subArray{subValue.quotes}, false), ShouldEqual, "ContextQt 'quoted': text 'Git2' ===> type 'Emphasis' target '' id 'gray3' attrs: 'map[roles:[bbb gray4]]' Hub2")
 			testsub = ""
 		})
 		Convey("test inline quote, unconstrained, unescaped, attribute", func() {
-			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[roles:[gray]]'Hub")
-			So(s.ApplySubs(`[.aaa#gray1.gray2]__Git__Hub`, subArray{subValue.quotes}), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id 'gray1' attrs: 'map[roles:[aaa gray2]]'Hub")
+			So(s.ApplySubs(`[gray]__Git__Hub`, subArray{subValue.quotes}, false), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id '' attrs: 'map[roles:[gray]]'Hub")
+			So(s.ApplySubs(`[.aaa#gray1.gray2]__Git__Hub`, subArray{subValue.quotes}, false), ShouldEqual, "ContextQt 'quoted': text 'Git' ===> type 'Emphasis' target '' id 'gray1' attrs: 'map[roles:[aaa gray2]]'Hub")
 			testsub = ""
 		})
 
@@ -622,7 +622,7 @@ the text %s5%s should be passed through as %s6%s text
 		s.document = testDocument
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("reference counter attribute", func() {
-			So(s.ApplySubs("a1 {counter:aaa:2} b1", subArray{subValue.attributes}), ShouldEqual, "a1 3 b1")
+			So(s.ApplySubs("a1 {counter:aaa:2} b1", subArray{subValue.attributes}, false), ShouldEqual, "a1 3 b1")
 			testsub = ""
 		})
 	})
@@ -631,41 +631,41 @@ the text %s5%s should be passed through as %s6%s text
 		s := &substitutors{}
 		testsub = "test_ApplySubs_applyAllsubs"
 		Convey("(C) copyright sign is replaced", func() {
-			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(169)+" copyright")
-			So(s.ApplySubs(`text with \(C) escaped copyright`, subArray{subValue.replacements}), ShouldEqual, "text with (C) escaped copyright")
+			So(s.ApplySubs("text with (C) copyright", subArray{subValue.replacements}, false), ShouldEqual, "text with "+regexps.Rtos(169)+" copyright")
+			So(s.ApplySubs(`text with \(C) escaped copyright`, subArray{subValue.replacements}, false), ShouldEqual, "text with (C) escaped copyright")
 
-			So(s.ApplySubs("text with (R) Registered Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(174)+" Registered Trademark")
-			So(s.ApplySubs(`text with \(R) escaped Registered Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (R) escaped Registered Trademark")
+			So(s.ApplySubs("text with (R) Registered Trademark", subArray{subValue.replacements}, false), ShouldEqual, "text with "+regexps.Rtos(174)+" Registered Trademark")
+			So(s.ApplySubs(`text with \(R) escaped Registered Trademark`, subArray{subValue.replacements}, false), ShouldEqual, "text with (R) escaped Registered Trademark")
 
-			So(s.ApplySubs("text with (TM) Trademark", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8482)+" Trademark")
-			So(s.ApplySubs(`text with \(TM) escaped Trademark`, subArray{subValue.replacements}), ShouldEqual, "text with (TM) escaped Trademark")
+			So(s.ApplySubs("text with (TM) Trademark", subArray{subValue.replacements}, false), ShouldEqual, "text with "+regexps.Rtos(8482)+" Trademark")
+			So(s.ApplySubs(`text with \(TM) escaped Trademark`, subArray{subValue.replacements}, false), ShouldEqual, "text with (TM) escaped Trademark")
 
-			So(s.ApplySubs("text with -- dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with"+regexps.Rtos(8201, 8212, 8201)+"dash-dash")
-			So(s.ApplySubs(`text with \-- escaped dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with -- escaped dash-dash")
+			So(s.ApplySubs("text with -- dash-dash", subArray{subValue.replacements}, false), ShouldEqual, "text with"+regexps.Rtos(8201, 8212, 8201)+"dash-dash")
+			So(s.ApplySubs(`text with \-- escaped dash-dash`, subArray{subValue.replacements}, false), ShouldEqual, "text with -- escaped dash-dash")
 
-			So(s.ApplySubs("text with linked a--b--c dash-dash", subArray{subValue.replacements}), ShouldEqual, "text with linked a"+regexps.Rtos(8212)+"b"+regexps.Rtos(8212)+"c dash-dash")
-			So(s.ApplySubs(`text with linked a\--b\--c escaped dash-dash`, subArray{subValue.replacements}), ShouldEqual, "text with linked a--b--c escaped dash-dash")
+			So(s.ApplySubs("text with linked a--b--c dash-dash", subArray{subValue.replacements}, false), ShouldEqual, "text with linked a"+regexps.Rtos(8212)+"b"+regexps.Rtos(8212)+"c dash-dash")
+			So(s.ApplySubs(`text with linked a\--b\--c escaped dash-dash`, subArray{subValue.replacements}, false), ShouldEqual, "text with linked a--b--c escaped dash-dash")
 
-			So(s.ApplySubs("text with ... ellipsis", subArray{subValue.replacements}), ShouldEqual, "text with "+regexps.Rtos(8230)+" ellipsis")
-			So(s.ApplySubs(`text with \... escaped ellipsis`, subArray{subValue.replacements}), ShouldEqual, "text with ... escaped ellipsis")
+			So(s.ApplySubs("text with ... ellipsis", subArray{subValue.replacements}, false), ShouldEqual, "text with "+regexps.Rtos(8230)+" ellipsis")
+			So(s.ApplySubs(`text with \... escaped ellipsis`, subArray{subValue.replacements}, false), ShouldEqual, "text with ... escaped ellipsis")
 
-			So(s.ApplySubs("text with a'b'c' apostrophe or a closing single quote", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8217)+"b"+regexps.Rtos(8217)+"c"+regexps.Rtos(8217)+" apostrophe or a closing single quote")
-			So(s.ApplySubs(`text with a\'b\'c\' apostrophe or a closing single quote`, subArray{subValue.replacements}), ShouldEqual, "text with a'b'c' apostrophe or a closing single quote")
+			So(s.ApplySubs("text with a'b'c' apostrophe or a closing single quote", subArray{subValue.replacements}, false), ShouldEqual, "text with a"+regexps.Rtos(8217)+"b"+regexps.Rtos(8217)+"c"+regexps.Rtos(8217)+" apostrophe or a closing single quote")
+			So(s.ApplySubs(`text with a\'b\'c\' apostrophe or a closing single quote`, subArray{subValue.replacements}, false), ShouldEqual, "text with a'b'c' apostrophe or a closing single quote")
 
-			So(s.ApplySubs("text with a-&gt;b -&gt; right arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8594)+"b "+regexps.Rtos(8594)+" right arrow")
-			So(s.ApplySubs(`text with a\-&gt;b \-&gt; escaped right arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a-&gt;b -&gt; escaped right arrow")
+			So(s.ApplySubs("text with a-&gt;b -&gt; right arrow", subArray{subValue.replacements}, false), ShouldEqual, "text with a"+regexps.Rtos(8594)+"b "+regexps.Rtos(8594)+" right arrow")
+			So(s.ApplySubs(`text with a\-&gt;b \-&gt; escaped right arrow`, subArray{subValue.replacements}, false), ShouldEqual, "text with a-&gt;b -&gt; escaped right arrow")
 
-			So(s.ApplySubs("text with a=&gt;b =&gt; right double arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8658)+"b "+regexps.Rtos(8658)+" right double arrow")
-			So(s.ApplySubs(`text with a\=&gt;b \=&gt; escaped right double arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a=&gt;b =&gt; escaped right double arrow")
+			So(s.ApplySubs("text with a=&gt;b =&gt; right double arrow", subArray{subValue.replacements}, false), ShouldEqual, "text with a"+regexps.Rtos(8658)+"b "+regexps.Rtos(8658)+" right double arrow")
+			So(s.ApplySubs(`text with a\=&gt;b \=&gt; escaped right double arrow`, subArray{subValue.replacements}, false), ShouldEqual, "text with a=&gt;b =&gt; escaped right double arrow")
 
-			So(s.ApplySubs("text with a&lt;-b &lt;- left arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8592)+"b "+regexps.Rtos(8592)+" left arrow")
-			So(s.ApplySubs(`text with a\&lt;-b \&lt;- escaped left arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a&lt;-b &lt;- escaped left arrow")
+			So(s.ApplySubs("text with a&lt;-b &lt;- left arrow", subArray{subValue.replacements}, false), ShouldEqual, "text with a"+regexps.Rtos(8592)+"b "+regexps.Rtos(8592)+" left arrow")
+			So(s.ApplySubs(`text with a\&lt;-b \&lt;- escaped left arrow`, subArray{subValue.replacements}, false), ShouldEqual, "text with a&lt;-b &lt;- escaped left arrow")
 
-			So(s.ApplySubs("text with a&lt;=b &lt;= left double arrow", subArray{subValue.replacements}), ShouldEqual, "text with a"+regexps.Rtos(8656)+"b "+regexps.Rtos(8656)+" left double arrow")
-			So(s.ApplySubs(`text with a\&lt;=b \&lt;= escaped left double arrow`, subArray{subValue.replacements}), ShouldEqual, "text with a&lt;=b &lt;= escaped left double arrow")
+			So(s.ApplySubs("text with a&lt;=b &lt;= left double arrow", subArray{subValue.replacements}, false), ShouldEqual, "text with a"+regexps.Rtos(8656)+"b "+regexps.Rtos(8656)+" left double arrow")
+			So(s.ApplySubs(`text with a\&lt;=b \&lt;= escaped left double arrow`, subArray{subValue.replacements}, false), ShouldEqual, "text with a&lt;=b &lt;= escaped left double arrow")
 
-			So(s.ApplySubs("text with &amp;abc; &amp;#123; &amp;#123456; &amp;#xA1b2; &amp;#xA1b2c3; restore entities", subArray{subValue.replacements}), ShouldEqual, "text with &abc; &#123; &amp;#123456; &#xA1b2; &amp;#xA1b2c3; restore entities")
-			So(s.ApplySubs(`text with \&amp;abc; \&amp;#123; \&amp;#123456; \&amp;#xA1b2; \&amp;#xA1b2c3; escaped restore entities`, subArray{subValue.replacements}), ShouldEqual, "text with &amp;abc; &amp;#123; \\&amp;#123456; &amp;#xA1b2; \\&amp;#xA1b2c3; escaped restore entities")
+			So(s.ApplySubs("text with &amp;abc; &amp;#123; &amp;#123456; &amp;#xA1b2; &amp;#xA1b2c3; restore entities", subArray{subValue.replacements}, false), ShouldEqual, "text with &abc; &#123; &amp;#123456; &#xA1b2; &amp;#xA1b2c3; restore entities")
+			So(s.ApplySubs(`text with \&amp;abc; \&amp;#123; \&amp;#123456; \&amp;#xA1b2; \&amp;#xA1b2c3; escaped restore entities`, subArray{subValue.replacements}, false), ShouldEqual, "text with &amp;abc; &amp;#123; \\&amp;#123456; &amp;#xA1b2; \\&amp;#xA1b2c3; escaped restore entities")
 
 			testsub = ""
 		})
