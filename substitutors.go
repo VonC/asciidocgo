@@ -236,6 +236,11 @@ func aToSubSymbol(key string) *subsEnum {
 	return res
 }
 
+func (se *subsEnum) isSymbol() bool {
+	s := fmt.Sprintf("%v", se.value)
+	return aToSubSymbol(s) != nil
+}
+
 func aToSubOption(key string) *subsEnum {
 	var res *subsEnum
 	switch key {
@@ -475,9 +480,11 @@ subs    - The substitutions to perform. Can be a Symbol or a Symbol Array (defau
 expand -  A Boolean to control whether sub aliases are expanded (default: true) // BUG? code says false
 
 returns Either a String or String Array, whichever matches the type of the first argument */
-func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
+func (s *substitutors) ApplySubs(source string, someSubs subArray, expand bool) string {
 	text := ""
-	// TODO add expand, implement first lines
+	if someSubs == nil || len(someSubs) == 0 {
+		return source
+	}
 	var allSubs subArray
 	if len(someSubs) == 1 {
 		if someSubs[0] == sub.pass {
@@ -487,11 +494,22 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray) string {
 			return text
 		}
 	}
-	for _, aSub := range someSubs {
-		if aSub.isCompositeSub() {
-			allSubs = append(allSubs, compositeSubs[aSub]...)
+	if expand {
+		asub := someSubs[0]
+		if asub.isSymbol() {
+			if compositeSubs[asub] != nil {
+				someSubs = compositeSubs[asub]
+			}
 		} else {
-			allSubs = append(allSubs, aSub)
+			effectiveSubs := subArray{}
+			for _, asub := range someSubs {
+				if asub.isCompositeSub() {
+					effectiveSubs = append(allSubs, compositeSubs[asub]...)
+				} else {
+					effectiveSubs = append(effectiveSubs, asub)
+				}
+			}
+			allSubs = effectiveSubs
 		}
 	}
 	if testsub == "test_ApplySubs_allsubs" {
@@ -719,7 +737,7 @@ func (s *substitutors) restorePassthroughs(text string) string {
 		subbedText := pass.text
 		//fmt.Printf("\nrestorePassthroughs subs '%v', index '%v' text '%v'\n", subs, index, subbedText)
 		if subs != nil {
-			subbedText = s.ApplySubs(subbedText, subs)
+			subbedText = s.ApplySubs(subbedText, subs, false)
 		}
 		//fmt.Printf("subbedText '%v'\n", subbedText)
 		typePT := pass.typePT
@@ -2074,7 +2092,7 @@ func (s *substitutors) parseAttributes(attrline string, posAttrs []string, opts 
 }
 
 func (s *substitutors) ApplyNormalSubs(lines string) string {
-	return s.ApplySubs(lines, nil)
+	return s.ApplySubs(lines, subArray{sub.normal}, false)
 }
 
 func (s *substitutors) parseQuotedTextAttributes(str string) map[string]interface{} {
