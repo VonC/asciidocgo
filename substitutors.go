@@ -516,9 +516,6 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray, expand bool) 
 	if testsub == "test_ApplySubs_allsubs" {
 		return fmt.Sprintf("%v", values(allSubs))
 	}
-	if len(allSubs) == 0 {
-		return source
-	}
 	text = source
 	if allSubs.include(subValue.macros) {
 		text = s.extractPassthroughs(text)

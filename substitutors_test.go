@@ -338,6 +338,8 @@ func TestSubstitutor(t *testing.T) {
 			testsub = "test_ApplySubs_allsubs"
 			So(s.ApplySubs(source, subArray{sub.normal}, true), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
 			So(s.ApplySubs(source, subArray{sub.title}, false), ShouldEqual, "[title]")
+			So(s.ApplySubs(source, subArray{sub.title}, true), ShouldEqual, "[title]")
+			So(s.ApplySubs(source, subArray{subSymbol.v}, true), ShouldEqual, "[specialcharacters callouts]")
 			testsub = ""
 		})
 		Convey("A macros substition will call extractPassthroughs", func() {

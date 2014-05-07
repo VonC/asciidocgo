@@ -61,4 +61,8 @@ func TestSubstitutorSubs(t *testing.T) {
 		So(fmt.Sprintf("%s", s1i2), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{normal})]")
 		So(fmt.Sprintf("%s", s1r2), ShouldEqual, "[%!s(*asciidocgo.subsEnum=&{verbatim})]")
 	})
+	Convey("a sub can test for composite", t, func() {
+		So(aToCompositeSE(string(subsNormal)).isCompositeSub(), ShouldBeTrue)
+		So(aToSEValues(string(subsAttributes)).isCompositeSub(), ShouldBeFalse)
+	})
 }
