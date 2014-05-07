@@ -336,7 +336,7 @@ func TestSubstitutor(t *testing.T) {
 
 		Convey("A normal substition will use normal substitution modes", func() {
 			testsub = "test_ApplySubs_allsubs"
-			So(s.ApplySubs(source, subArray{sub.normal}, false), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
+			So(s.ApplySubs(source, subArray{sub.normal}, true), ShouldEqual, "[specialcharacters quotes attributes replacements macros post_replacements]")
 			So(s.ApplySubs(source, subArray{sub.title}, false), ShouldEqual, "[title]")
 			testsub = ""
 		})

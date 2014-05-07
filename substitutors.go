@@ -485,7 +485,6 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray, expand bool) 
 	if someSubs == nil || len(someSubs) == 0 {
 		return source
 	}
-	var allSubs subArray
 	if len(someSubs) == 1 {
 		if someSubs[0] == sub.pass {
 			return source
@@ -494,17 +493,19 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray, expand bool) 
 			return text
 		}
 	}
+	allSubs := someSubs
 	if expand {
 		asub := someSubs[0]
-		if asub.isSymbol() {
-			if compositeSubs[asub] != nil {
-				someSubs = compositeSubs[asub]
+		if len(someSubs) == 1 && asub.isSymbol() {
+			csub := subSymbols[asub][0]
+			if compositeSubs[csub] != nil {
+				allSubs = compositeSubs[csub]
 			}
 		} else {
 			effectiveSubs := subArray{}
 			for _, asub := range someSubs {
 				if asub.isCompositeSub() {
-					effectiveSubs = append(allSubs, compositeSubs[asub]...)
+					effectiveSubs = append(effectiveSubs, compositeSubs[asub]...)
 				} else {
 					effectiveSubs = append(effectiveSubs, asub)
 				}
