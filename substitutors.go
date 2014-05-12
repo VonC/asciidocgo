@@ -535,8 +535,9 @@ func (s *substitutors) ApplySubs(source string, someSubs subArray, expand bool) 
 			text = subReplacements(text)
 		case "macros":
 			text = s.SubMacros(text)
+		case "highlight":
+			text = s.HighlightSource(text, (allSubs.include(subValue.callouts)), nil)
 			/*
-				case "highlight":
 				case "callouts":
 				case "post_replacements":
 			*/
@@ -2367,4 +2368,20 @@ func resolveBlockSubs(subs string, defaults subArray, subject string) subArray {
 func resolvePassSubs(subs string) subArray {
 	// resolve_subs subs, :inline, nil, 'passthrough macro'
 	return resolveSubs(subs, subOption.inline, nil, "passthrough macro")
+}
+
+/* Highlight the source code if a source highlighter is defined
+on the document, otherwise return the text unprocessed
+
+Callout marks are stripped from the source prior to passing it to the
+highlighter, then later restored in converted form, so they are not
+incorrectly processed by the source highlighter.
+
+source - the source code String to highlight
+sub_callouts - a Boolean flag indicating whether callout marks should be substituted
+
+returns the highlighted source code, if a source highlighter is defined
+on the document, otherwise the unprocessed text */
+func (s *substitutors) HighlightSource(source string, subCallouts bool, highlighter interface{}) string {
+	return ""
 }

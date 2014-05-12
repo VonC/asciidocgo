@@ -1,0 +1,26 @@
+{
+  "version": "2013.5.23",
+  "licenseKey": "aa74vWhqjmns4u51xoggzhq2HwXezka5/r3FGmrhS4TGvIFzppzmLHh0VTv4RGjGOF2lWJr+TEmi7NF52YbRfw==",
+  "ticket": "{\"message\": \"{\\\"isValid\\\": true, \\\"licenseKey\\\": \\\"aa74vWhqjmns4u51xoggzhq2HwXezka5/r3FGmrhS4TGvIFzppzmLHh0VTv4RGjGOF2lWJr+TEmi7NF52YbRfw==\\\", \\\"expirationDate\\\": \\\"20140526\\\"}\", \"signature\": \"57afdd80f767977680920ed2b8a2a11abd22bc3aa00e778376c60129a65e7c99e18ed6765b2806fa43ff614f2e71c59f1fbf84549f291fae675ca94d1e5d9103805fb4fa82630f60fca8d7ab800bf6f32528c2243cc4aa36ec8ecebcff1f4305be1512712dd96b61d63af38d83a17e5eec0c7eebe37a2db9a2364892a9a47b5ee41f776af558485847e0a42c76b1659af3061941c58421795e8074f5c309ba13fe877a18433be27abe35ad814d71cc48355bcc47df29e4533a5a27e5c4350e065b01f2131d5c70ea9e5ab0dc0fd33a44ce05563cec075913b764f00e7e9196a5550592c99a762a4606652d56bbf9acc8c720bf33f32f36f8ac4fb361b2f69b3985db32f4f75b252856f1c631fbd70ed7ad2a4efa8a70eac0aa245da8e96f5a99b754aeaa72486283cbb5ea392ca41188755b3c2fb313bad94367474a474a1a2f5d5f0166a1e6004fe66252fa0b34933d46f0c313404b748255a286fcb6a586774cade18094f6666f6f662bc416faf19c7531b4ca1fdeb06bc7724e9d4e52e682\"}\n",
+  "replaceAltTab": false,
+  "groupWindowsInSwitcher": false,
+  "includedPaths": [
+    "C:\\prgs\\kitty\\kitty_0.63.0.7\\kitty.exe"
+  ],
+  "autoGroupingPaths": [
+    "C:\\prgs\\kitty\\kitty_0.63.0.7\\kitty.exe"
+  ],
+  "tabAppearance": {
+    "tabHeight": 25,
+    "tabMaxWidth": 200,
+    "tabOverlap": 20,
+    "tabNormalBgColor": "9FC4F0",
+    "tabHighlightBgColor": "BDD5F4",
+    "tabActiveBgColor": "FAFCFE",
+    "tabFlashBgColor": "FFBBBB",
+    "tabBorderColor": "3A70B1",
+    "tabHeightOffset": 1,
+    "tabIndentFlipped": 80,
+    "tabIndentNormal": 3
+  }
+}
